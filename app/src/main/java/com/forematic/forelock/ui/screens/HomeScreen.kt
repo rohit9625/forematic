@@ -12,9 +12,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,10 +51,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.forematic.forelock.R
-import com.forematic.forelock.ui.theme.SignalGSMTheme
+import com.forematic.forelock.ui.theme.ForeLockTheme
 import kotlinx.coroutines.launch
 
 data class NavigationItem(
@@ -65,7 +71,8 @@ fun HomeScreen(
     uiState: HomeUiState,
     onEvent: (HomeScreenEvent) -> Unit,
     hasPermission: ()-> Boolean,
-    requestPermission: () -> Unit
+    requestPermission: () -> Unit,
+    onAddNewDevice: () -> Unit
 ) {
     val navigationItems = listOf(
         NavigationItem("Home", R.drawable.ic_filled_home, R.drawable.ic_outline_home),
@@ -81,41 +88,27 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(
-                        text = stringResource(R.string.app_name),
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                    Column {
+                        Text(
+                            text = stringResource(R.string.app_name),
+                            style = MaterialTheme.typography.titleMedium.copy(fontSize = 18.sp),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "by Forematic",
+                            style = MaterialTheme.typography.labelSmall,
+                            modifier = Modifier.align(Alignment.End)
+                        )
+                    }
+                }
             )
         },
-        bottomBar = {
-            NavigationBar(
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
-                modifier = Modifier.clip(RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp))
-            ) {
-                navigationItems.forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        selected = selectedItemIndex == index,
-                        onClick = { selectedItemIndex = index },
-                        icon = {
-                            Icon(
-                                painter = painterResource(item.selectedIcon),
-                                contentDescription = item.title
-                            )
-                        },
-                        label = { Text(text = item.title) },
-                        alwaysShowLabel = false,
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = MaterialTheme.colorScheme.primary,
-                            selectedTextColor = MaterialTheme.colorScheme.primary
-                        )
-                    )
-                }
-            }
+        floatingActionButton = {
+            ExtendedFloatingActionButton(
+                onClick = onAddNewDevice,
+                icon = { Icon(Icons.Rounded.Add, "Extended floating action button.") },
+                text = { Text(text = "New Device") }
+            )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { innerPadding ->
@@ -270,12 +263,13 @@ fun OpenGateDialog(
 @Preview
 @Composable
 private fun HomeScreenPreview() {
-    SignalGSMTheme {
+    ForeLockTheme {
         HomeScreen(
             uiState = HomeUiState(),
             onEvent = { },
             hasPermission = { true },
-            requestPermission = { }
+            requestPermission = { },
+            onAddNewDevice = { }
         )
     }
 }

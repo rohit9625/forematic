@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.forematic.forelock.ui.theme.SignalGSMTheme
+import com.forematic.forelock.ui.theme.ForeLockTheme
 
 @Composable
 fun PermissionRationale(
@@ -101,7 +101,7 @@ class MessagePermissionText: PermissionTextProvider {
 @Preview
 @Composable
 private fun PermissionDialogPreview() {
-    SignalGSMTheme {
+    ForeLockTheme {
         Surface(tonalElevation = 5.dp) {
             PermissionRationale(
                 permissionTextProvider = MessagePermissionText(),

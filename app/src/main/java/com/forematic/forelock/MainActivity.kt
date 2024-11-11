@@ -16,11 +16,16 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.forematic.forelock.ui.components.MessagePermissionText
 import com.forematic.forelock.ui.components.PermissionRationale
 import com.forematic.forelock.ui.screens.HomeScreen
 import com.forematic.forelock.ui.screens.HomeViewModel
-import com.forematic.forelock.ui.theme.SignalGSMTheme
+import com.forematic.forelock.ui.screens.SetupNewDeviceScreen
+import com.forematic.forelock.ui.theme.ForeLockTheme
+import kotlinx.serialization.Serializable
 
 class MainActivity : ComponentActivity() {
     private var showPermissionRationale by mutableStateOf(false)
@@ -36,22 +41,36 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge()
         setContent {
-            SignalGSMTheme {
+            ForeLockTheme {
                 val viewModel = viewModel {
                     HomeViewModel(
                         smsManager = MyApplication.appModule.smsManager
                     )
                 }
                 val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+                val navController = rememberNavController()
 
-                HomeScreen(
-                    uiState = uiState,
-                    onEvent = viewModel::onEvent,
-                    hasPermission = { hasPermission(Manifest.permission.SEND_SMS) },
-                    requestPermission = {
-                        requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
+                NavHost(navController = navController, startDestination = Route.Home) {
+                    composable<Route.Home> {
+                        HomeScreen(
+                            uiState = uiState,
+                            onEvent = viewModel::onEvent,
+                            hasPermission = { hasPermission(Manifest.permission.SEND_SMS) },
+                            requestPermission = {
+                                requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
+                            },
+                            onAddNewDevice = {
+                                navController.navigate(Route.SetupDevice)
+                            }
+                        )
                     }
-                )
+
+                    composable<Route.SetupDevice> {
+                        SetupNewDeviceScreen(
+                            onNavigateBack = { navController.navigateUp() }
+                        )
+                    }
+                }
 
                 if (showPermissionRationale) {
                     PermissionRationale(
@@ -82,4 +101,12 @@ class MainActivity : ComponentActivity() {
             Uri.fromParts("package", packageName, null)
         ).also { startActivity(it) }
     }
+}
+
+sealed interface Route{
+    @Serializable
+    data object Home: Route
+
+    @Serializable
+    data object SetupDevice: Route
 }
