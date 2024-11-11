@@ -1,4 +1,4 @@
-package com.devx.signalgsm.ui.components
+package com.forematic.forelock.ui.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -18,7 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.devx.signalgsm.ui.theme.SignalGSMTheme
+import com.forematic.forelock.ui.theme.SignalGSMTheme
 
 @Composable
 fun PermissionRationale(

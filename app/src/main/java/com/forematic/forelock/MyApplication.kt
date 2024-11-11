@@ -1,8 +1,8 @@
-package com.devx.signalgsm
+package com.forematic.forelock
 
 import android.app.Application
-import com.devx.signalgsm.di.AppModule
-import com.devx.signalgsm.di.AppModuleImpl
+import com.forematic.forelock.di.AppModule
+import com.forematic.forelock.di.AppModuleImpl
 
 class MyApplication: Application() {
     companion object {

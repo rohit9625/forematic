@@ -1,4 +1,4 @@
-package com.devx.signalgsm
+package com.forematic.forelock
 
 import org.junit.Test
 

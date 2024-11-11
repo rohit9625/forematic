@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.devx.signalgsm"
+    namespace = "com.forematic.forelock"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.devx.signalgsm"
+        applicationId = "com.forematic.forelock"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

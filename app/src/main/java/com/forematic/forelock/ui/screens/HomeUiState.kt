@@ -1,4 +1,4 @@
-package com.devx.signalgsm.ui.screens
+package com.forematic.forelock.ui.screens
 
 data class HomeUiState(
     val pinNumber: String = "",

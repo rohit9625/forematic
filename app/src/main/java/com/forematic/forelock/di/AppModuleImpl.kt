@@ -1,4 +1,4 @@
-package com.devx.signalgsm.di
+package com.forematic.forelock.di
 
 import android.content.Context
 import android.os.Build

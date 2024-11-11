@@ -1,4 +1,4 @@
-package com.devx.signalgsm
+package com.forematic.forelock
 
 import android.Manifest
 import android.content.Intent
@@ -16,11 +16,11 @@ import androidx.compose.runtime.setValue
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.devx.signalgsm.ui.components.MessagePermissionText
-import com.devx.signalgsm.ui.components.PermissionRationale
-import com.devx.signalgsm.ui.screens.HomeScreen
-import com.devx.signalgsm.ui.screens.HomeViewModel
-import com.devx.signalgsm.ui.theme.SignalGSMTheme
+import com.forematic.forelock.ui.components.MessagePermissionText
+import com.forematic.forelock.ui.components.PermissionRationale
+import com.forematic.forelock.ui.screens.HomeScreen
+import com.forematic.forelock.ui.screens.HomeViewModel
+import com.forematic.forelock.ui.theme.SignalGSMTheme
 
 class MainActivity : ComponentActivity() {
     private var showPermissionRationale by mutableStateOf(false)

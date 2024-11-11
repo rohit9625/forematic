@@ -1,4 +1,4 @@
-package com.devx.signalgsm.ui.screens
+package com.forematic.forelock.ui.screens
 
 import android.telephony.SmsManager
 import androidx.lifecycle.ViewModel

@@ -1,4 +1,4 @@
-package com.devx.signalgsm.di
+package com.forematic.forelock.di
 
 import android.telephony.SmsManager
 

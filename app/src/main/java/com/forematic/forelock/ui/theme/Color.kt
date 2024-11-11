@@ -1,4 +1,4 @@
-package com.devx.signalgsm.ui.theme
+package com.forematic.forelock.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

@@ -1,4 +1,4 @@
-package com.devx.signalgsm.ui.screens
+package com.forematic.forelock.ui.screens
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
@@ -49,8 +49,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import com.devx.signalgsm.R
-import com.devx.signalgsm.ui.theme.SignalGSMTheme
+import com.forematic.forelock.R
+import com.forematic.forelock.ui.theme.SignalGSMTheme
 import kotlinx.coroutines.launch
 
 data class NavigationItem(

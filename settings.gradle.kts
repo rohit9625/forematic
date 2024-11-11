@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Signal GSM"
+rootProject.name = "ForeLock"
 include(":app")
