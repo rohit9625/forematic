@@ -23,6 +23,7 @@ import com.forematic.forelock.ui.components.MessagePermissionText
 import com.forematic.forelock.ui.components.PermissionRationale
 import com.forematic.forelock.ui.screens.HomeScreen
 import com.forematic.forelock.ui.screens.HomeViewModel
+import com.forematic.forelock.ui.screens.SetupDeviceViewModel
 import com.forematic.forelock.ui.screens.SetupNewDeviceScreen
 import com.forematic.forelock.ui.theme.ForeLockTheme
 import kotlinx.serialization.Serializable
@@ -42,16 +43,16 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ForeLockTheme {
-                val viewModel = viewModel {
-                    HomeViewModel(
-                        smsManager = MyApplication.appModule.smsManager
-                    )
-                }
-                val uiState by viewModel.uiState.collectAsStateWithLifecycle()
                 val navController = rememberNavController()
 
                 NavHost(navController = navController, startDestination = Route.Home) {
                     composable<Route.Home> {
+                        val viewModel = viewModel {
+                            HomeViewModel(
+                                smsManager = MyApplication.appModule.smsManager
+                            )
+                        }
+                        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
                         HomeScreen(
                             uiState = uiState,
                             onEvent = viewModel::onEvent,
@@ -66,7 +67,12 @@ class MainActivity : ComponentActivity() {
                     }
 
                     composable<Route.SetupDevice> {
+                        val viewModel = viewModel { SetupDeviceViewModel() }
+                        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
                         SetupNewDeviceScreen(
+                            uiState = uiState,
+                            onEvent = viewModel::onEvent,
                             onNavigateBack = { navController.navigateUp() }
                         )
                     }
