@@ -31,7 +31,7 @@ val titleFontFamily = FontFamily(
     Font(
         googleFont = GoogleFont("Montserrat"),
         fontProvider = provider,
-        weight = FontWeight.SemiBold
+        weight = FontWeight.Medium
     )
 )
 
