@@ -10,6 +10,15 @@ data class NewDeviceUiState(
     val outputRelay1: OutputRelay = OutputRelay(),
     val outputRelay2: OutputRelay? = null,
     val timezoneMode: TimezoneMode = TimezoneMode.FREE,
+    val callOutNumbers: List<CallOutNumber> = listOf(CallOutNumber())
+) {
+    val canAddMoreCallOutNumbers: Boolean
+        get() = callOutNumbers.size < 4
+}
+
+data class CallOutNumber(
+    val number: String = "",
+    val name: String = ""
 )
 
 data class OutputRelay(

@@ -28,6 +28,36 @@ class SetupDeviceViewModel: ViewModel() {
             }
 
             is SetupDeviceEvent.OutputRelayEvent -> onOutputRelayEvent(e)
+
+            is SetupDeviceEvent.CallOutNumberEvent -> onCallOutNumberEvent(e)
+        }
+    }
+
+    private fun onCallOutNumberEvent(e: SetupDeviceEvent.CallOutNumberEvent) {
+        when(e) {
+            is SetupDeviceEvent.CallOutNumberEvent.UpdateName -> {
+                _uiState.update {
+                    it.copy(
+                        callOutNumbers = it.callOutNumbers.mapIndexed { index, callOutNumber ->
+                            if (index == e.index) callOutNumber.copy(name = e.name) else callOutNumber
+                        }
+                    )
+                }
+            }
+
+            is SetupDeviceEvent.CallOutNumberEvent.UpdateNumber -> {
+                _uiState.update {
+                    it.copy(
+                        callOutNumbers = it.callOutNumbers.mapIndexed { index, callOutNumber ->
+                            if (index == e.index) callOutNumber.copy(number = e.number) else callOutNumber
+                        }
+                    )
+                }
+            }
+
+            SetupDeviceEvent.CallOutNumberEvent.AddMoreNumber -> {
+                _uiState.update { it.copy(callOutNumbers = it.callOutNumbers + CallOutNumber()) }
+            }
         }
     }
 

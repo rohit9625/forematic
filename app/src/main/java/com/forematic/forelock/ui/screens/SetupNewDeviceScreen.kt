@@ -2,6 +2,7 @@ package com.forematic.forelock.ui.screens
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -17,6 +18,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,24 +35,19 @@ import androidx.compose.material3.SliderState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.forematic.forelock.ui.components.CustomDropDown
@@ -71,6 +69,8 @@ fun SetupNewDeviceScreen(
     val scrollState = rememberScrollState()
     var isToolTipVisible by remember { mutableStateOf(false) }
     var modeToolTip : TimezoneMode? by remember { mutableStateOf(null) }
+    var showCallOutNumberInfo by remember { mutableStateOf(false) }
+
 
     Scaffold(
         topBar = {
@@ -267,7 +267,7 @@ fun SetupNewDeviceScreen(
                                             painter = painterResource(mode.icon),
                                             contentDescription = null
                                         )
-                                    }
+                                    },
                                 )
 
                                 ToolTipWithIcon(
@@ -280,6 +280,16 @@ fun SetupNewDeviceScreen(
                         }
                     }
                 }
+            )
+
+            CallOutNumbers(
+                callOutNumbers = uiState.callOutNumbers,
+                onEvent = { event -> onEvent(event) },
+                modifier = Modifier.padding(8.dp),
+                canAddMoreNumbers = uiState.canAddMoreCallOutNumbers,
+                showToolTip = showCallOutNumberInfo,
+                onToolTipClick = { showCallOutNumberInfo = !showCallOutNumberInfo },
+                onToolTipDismiss = { showCallOutNumberInfo = false }
             )
 
             AudioAdjustments(
@@ -368,6 +378,97 @@ fun SliderWithCustomTrackAndThumb() {
     }
 }
 
+@Composable
+fun CallOutNumbers(
+    callOutNumbers: List<CallOutNumber>,
+    onEvent: (SetupDeviceEvent.CallOutNumberEvent) -> Unit,
+    modifier: Modifier = Modifier,
+    canAddMoreNumbers: Boolean = true,
+    showToolTip: Boolean = false,
+    onToolTipClick: () -> Unit = { },
+    onToolTipDismiss: () -> Unit = { }
+) {
+    LabeledBox(
+        label = "Call-out Numbers",
+        modifier = modifier,
+        content = {
+            Box {
+                Column(
+                    modifier = Modifier
+                        .padding(vertical = 24.dp, horizontal = 16.dp)
+                        .fillMaxWidth()
+                ) {
+                    callOutNumbers.forEachIndexed { index, item->
+                        Row(
+                            modifier = Modifier.padding(vertical = 8.dp)
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "${index + 1}.")
+                            LabeledTextField(
+                                label = "Call Number",
+                                value = item.number,
+                                onValueChange = {
+                                    onEvent(SetupDeviceEvent.CallOutNumberEvent.UpdateNumber(index, it))
+                                },
+                                modifier = Modifier.weight(0.6f),
+                                shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                            )
+
+                            LabeledTextField(
+                                label = "Name",
+                                value = item.name,
+                                onValueChange = {
+                                    onEvent(SetupDeviceEvent.CallOutNumberEvent.UpdateName(index, it))
+                                },
+                                modifier = Modifier.weight(0.4f),
+                                shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                            )
+                        }
+                    }
+
+                    AssistChip(
+                        onClick = { onEvent(SetupDeviceEvent.CallOutNumberEvent.AddMoreNumber) },
+                        label = { Text(text = "More") },
+                        enabled = canAddMoreNumbers,
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Add,
+                                contentDescription = null
+                            )
+                        },
+                        modifier = Modifier.align(Alignment.End)
+                    )
+                }
+                ToolTipWithIcon(
+                    showToolTip = showToolTip,
+                    onClick = onToolTipClick,
+                    onDismiss = onToolTipDismiss,
+                    infoText = "If a call is not answered, it redirects call to the next number the list.",
+                    modifier = Modifier.align(Alignment.TopEnd)
+                )
+            }
+        }
+    )
+}
+
+@Preview
+@Composable
+private fun CallOutNumbersPreview() {
+    ForeLockTheme {
+        Surface {
+            CallOutNumbers(
+                callOutNumbers = listOf(
+                    CallOutNumber(number = "1234567890", name = "John Doe"),
+                    CallOutNumber(number = "0987654321", name = "Jane Doe")
+                ),
+                onEvent = { },
+                modifier = Modifier.padding(8.dp)
+            )
+        }
+    }
+}
 
 @Preview
 @Composable

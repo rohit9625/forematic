@@ -15,4 +15,10 @@ sealed interface SetupDeviceEvent {
         data class UpdateTextRelay2(val text: OutputRelayText): OutputRelayEvent
         data class UpdateTimeRelay2(val relayTime: String): OutputRelayEvent
     }
+
+    sealed interface CallOutNumberEvent: SetupDeviceEvent {
+        data class UpdateNumber(val index: Int, val number: String): CallOutNumberEvent
+        data class UpdateName(val index: Int, val name: String): CallOutNumberEvent
+        data object AddMoreNumber: CallOutNumberEvent
+    }
 }
