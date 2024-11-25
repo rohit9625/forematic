@@ -1,6 +1,7 @@
 package com.forematic.forelock.ui.components
 
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
@@ -46,7 +47,8 @@ fun ToolTipWithIcon(
                         containerColor = MaterialTheme.colorScheme.tertiaryContainer
                     ),
                     shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp, bottomStart = 12.dp),
-                    elevation = CardDefaults.elevatedCardElevation(4.dp)
+                    elevation = CardDefaults.elevatedCardElevation(4.dp),
+                    modifier = Modifier.width(164.dp)
                 ) {
                     Text(
                         text = infoText,
