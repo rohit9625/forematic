@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.forematic.forelock.R
+import com.forematic.forelock.home.presentation.components.ExpandableFAB
 import com.forematic.forelock.ui.theme.ForeLockTheme
 import kotlinx.coroutines.launch
 
@@ -77,6 +78,7 @@ fun HomeScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     var isToolTipVisible by remember { mutableStateOf(false) }
+    var isFabExpanded by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -98,10 +100,9 @@ fun HomeScreen(
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = onAddNewDevice,
-                icon = { Icon(Icons.Rounded.Add, "Extended floating action button.") },
-                text = { Text(text = "New Device") }
+            ExpandableFAB(
+                isExpanded = isFabExpanded,
+                onClick = { isFabExpanded = !isFabExpanded }
             )
         },
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
