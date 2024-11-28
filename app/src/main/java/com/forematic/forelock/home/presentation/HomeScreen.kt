@@ -1,4 +1,4 @@
-package com.forematic.forelock.ui.screens
+package com.forematic.forelock.home.presentation
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background

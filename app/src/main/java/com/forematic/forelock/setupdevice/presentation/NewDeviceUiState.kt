@@ -1,4 +1,4 @@
-package com.forematic.forelock.ui.screens
+package com.forematic.forelock.setupdevice.presentation
 
 import androidx.annotation.DrawableRes
 import com.forematic.forelock.R

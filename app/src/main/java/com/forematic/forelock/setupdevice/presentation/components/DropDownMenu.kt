@@ -1,4 +1,4 @@
-package com.forematic.forelock.ui.components
+package com.forematic.forelock.setupdevice.presentation.components
 
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,8 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.forematic.forelock.ui.screens.DeviceType
-import com.forematic.forelock.ui.screens.OutputRelayText
+import com.forematic.forelock.setupdevice.presentation.DeviceType
+import com.forematic.forelock.setupdevice.presentation.OutputRelayText
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

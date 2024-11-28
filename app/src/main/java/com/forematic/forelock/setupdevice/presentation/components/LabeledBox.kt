@@ -1,4 +1,4 @@
-package com.forematic.forelock.ui.components
+package com.forematic.forelock.setupdevice.presentation.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

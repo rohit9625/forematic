@@ -21,10 +21,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.forematic.forelock.ui.components.MessagePermissionText
 import com.forematic.forelock.ui.components.PermissionRationale
-import com.forematic.forelock.ui.screens.HomeScreen
-import com.forematic.forelock.ui.screens.HomeViewModel
-import com.forematic.forelock.ui.screens.SetupDeviceViewModel
-import com.forematic.forelock.ui.screens.SetupNewDeviceScreen
+import com.forematic.forelock.home.presentation.HomeScreen
+import com.forematic.forelock.home.presentation.HomeViewModel
+import com.forematic.forelock.setupdevice.presentation.SetupDeviceViewModel
+import com.forematic.forelock.setupdevice.presentation.SetupNewDeviceScreen
 import com.forematic.forelock.ui.theme.ForeLockTheme
 import kotlinx.serialization.Serializable
 

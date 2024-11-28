@@ -1,4 +1,4 @@
-package com.forematic.forelock.ui.screens
+package com.forematic.forelock.home.presentation
 
 import android.telephony.SmsManager
 import androidx.lifecycle.ViewModel

@@ -1,4 +1,4 @@
-package com.forematic.forelock.ui.screens
+package com.forematic.forelock.home.presentation
 
 sealed interface HomeScreenEvent {
     data class UpdateDialogVisibility(val value: Boolean): HomeScreenEvent

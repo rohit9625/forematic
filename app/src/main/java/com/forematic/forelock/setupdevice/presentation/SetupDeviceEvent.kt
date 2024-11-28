@@ -1,4 +1,4 @@
-package com.forematic.forelock.ui.screens
+package com.forematic.forelock.setupdevice.presentation
 
 sealed interface SetupDeviceEvent {
     data class DeviceTypeChanged(val deviceType: DeviceType): SetupDeviceEvent

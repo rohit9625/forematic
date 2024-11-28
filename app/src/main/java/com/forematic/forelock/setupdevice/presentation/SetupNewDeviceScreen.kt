@@ -1,4 +1,4 @@
-package com.forematic.forelock.ui.screens
+package com.forematic.forelock.setupdevice.presentation
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -7,11 +7,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
@@ -35,7 +37,6 @@ import androidx.compose.material3.SliderState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -50,10 +51,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.forematic.forelock.ui.components.CustomDropDown
-import com.forematic.forelock.ui.components.LabeledBox
-import com.forematic.forelock.ui.components.LabeledTextField
-import com.forematic.forelock.ui.components.ToolTipWithIcon
+import com.forematic.forelock.setupdevice.presentation.components.CustomDropDown
+import com.forematic.forelock.setupdevice.presentation.components.LabeledBox
+import com.forematic.forelock.setupdevice.presentation.components.LabeledTextField
+import com.forematic.forelock.setupdevice.presentation.components.ToolTipWithIcon
 import com.forematic.forelock.ui.theme.ForeLockTheme
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -152,7 +153,11 @@ fun SetupNewDeviceScreen(
                             LabeledTextField(
                                 label = "Programming password",
                                 value = uiState.programmingPassword,
-                                onValueChange = { onEvent(SetupDeviceEvent.ProgrammingPasswordChanged(it)) },
+                                onValueChange = { onEvent(
+                                    SetupDeviceEvent.ProgrammingPasswordChanged(
+                                        it
+                                    )
+                                ) },
                                 modifier = Modifier.width(164.dp),
                                 shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
                             )
@@ -189,15 +194,7 @@ fun SetupNewDeviceScreen(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                            LabeledTextField(
-                                label = "Relay Name",
-                                value = uiState.outputRelay1.name,
-                                onValueChange = {
-                                    onEvent(SetupDeviceEvent.OutputRelayEvent.UpdateNameRelay1(it))
-                                },
-                                modifier = Modifier.weight(0.7f),
-                                shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
-                            )
+
 
                             LabeledTextField(
                                 label = "Relay Time",
@@ -300,6 +297,151 @@ fun SetupNewDeviceScreen(
 }
 
 @Composable
+fun OutputRelaySection1(
+    outputName: String,
+    onOutputNameChange: (String)-> Unit,
+    modifier: Modifier = Modifier,
+    label: String = "Output Relay",
+    showToolTip: Boolean = false,
+    onToolTipClick: () -> Unit = { },
+    onToolTipDismiss: () -> Unit = { }
+) {
+    LabeledBox(
+        label = label,
+        modifier = modifier,
+        content = {
+            Column(
+                modifier = Modifier.padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                OutputNaming(
+                    outputName = outputName,
+                    onOutputNameChange = onOutputNameChange
+                )
+            }
+        }
+    )
+}
+
+@Composable
+private fun OutputNaming(
+    outputName: String,
+    onOutputNameChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            LabeledTextField(
+                label = "Output Name",
+                value = "",
+                onValueChange = {
+//                            onEvent(SetupDeviceEvent.OutputRelayEvent.UpdateNameRelay1(it))
+                },
+                trailingIcon = {
+                    ToolTipWithIcon(
+                        showToolTip = false,
+                        onClick = { },
+                        onDismiss = { },
+                        infoText = "This is a sample text."
+                    )
+                },
+                modifier = Modifier.weight(0.7f),
+                shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+            )
+
+            Row {
+                Button(
+                    onClick = { /*TODO("Fetch output name from the device")*/ },
+                    modifier = Modifier.widthIn(max = 96.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = "Get Output Name",
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium.copy(fontSize = 12.sp)
+                    )
+                }
+
+                ToolTipWithIcon(
+                    showToolTip = false,
+                    onClick = { },
+                    onDismiss = { },
+                    infoText = "This is a sample text."
+                )
+            }
+        }
+
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(16.dp),
+            verticalAlignment = Alignment.Bottom
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier
+            ) {
+                Text(
+                    text = "Choose icon text",
+                    style = MaterialTheme.typography.labelMedium
+                )
+                CustomDropDown(
+                    isExpanded = false,
+                    onExpandedChange = { },
+                    value = "Open/Close",
+                    onValueChange = {
+//                                onEvent(SetupDeviceEvent.OutputRelayEvent.UpdateTextRelay1(it))
+                    },
+                    options = listOf("Open/Close", "Lock/Unlock", "Up/Down", "On/Off", "Set/Unset"),
+                    modifier = Modifier.width(156.dp)
+                )
+            }
+
+            AssistChip(
+                onClick = { /*TODO("Open select icon dialog")*/ },
+                label = {
+                    Text(
+                        text = "Choose an icon",
+                        modifier = Modifier.padding(vertical = 4.dp),
+                        textAlign = TextAlign.Center,
+                    )
+                },
+                modifier = Modifier.widthIn(max = 96.dp)
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun OutputRelaySectionPreview() {
+    ForeLockTheme {
+        Surface {
+            Column {
+                OutputRelaySection1(
+                    outputName = "Jaguar",
+                    onOutputNameChange = { },
+                    label = "Output Naming 1",
+                    modifier = Modifier.padding(8.dp).fillMaxWidth()
+                )
+
+                OutputRelaySection1(
+                    outputName = "Jaguar",
+                    onOutputNameChange = { },
+                    label = "Output Naming 2",
+                    modifier = Modifier.padding(8.dp).fillMaxWidth()
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun AudioAdjustments(modifier: Modifier = Modifier) {
     LabeledBox(
         label = "Audio Adjustments",
@@ -338,7 +480,6 @@ fun AudioAdjustments(modifier: Modifier = Modifier) {
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun SliderWithCustomTrackAndThumb() {
     val sliderState = remember {
@@ -400,7 +541,8 @@ fun CallOutNumbers(
                 ) {
                     callOutNumbers.forEachIndexed { index, item->
                         Row(
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            modifier = Modifier
+                                .padding(vertical = 8.dp)
                                 .fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically
@@ -410,7 +552,12 @@ fun CallOutNumbers(
                                 label = "Call Number",
                                 value = item.number,
                                 onValueChange = {
-                                    onEvent(SetupDeviceEvent.CallOutNumberEvent.UpdateNumber(index, it))
+                                    onEvent(
+                                        SetupDeviceEvent.CallOutNumberEvent.UpdateNumber(
+                                            index,
+                                            it
+                                        )
+                                    )
                                 },
                                 modifier = Modifier.weight(0.6f),
                                 shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
@@ -420,7 +567,12 @@ fun CallOutNumbers(
                                 label = "Name",
                                 value = item.name,
                                 onValueChange = {
-                                    onEvent(SetupDeviceEvent.CallOutNumberEvent.UpdateName(index, it))
+                                    onEvent(
+                                        SetupDeviceEvent.CallOutNumberEvent.UpdateName(
+                                            index,
+                                            it
+                                        )
+                                    )
                                 },
                                 modifier = Modifier.weight(0.4f),
                                 shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
@@ -453,34 +605,7 @@ fun CallOutNumbers(
     )
 }
 
-@Preview
-@Composable
-private fun CallOutNumbersPreview() {
-    ForeLockTheme {
-        Surface {
-            CallOutNumbers(
-                callOutNumbers = listOf(
-                    CallOutNumber(number = "1234567890", name = "John Doe"),
-                    CallOutNumber(number = "0987654321", name = "Jane Doe")
-                ),
-                onEvent = { },
-                modifier = Modifier.padding(8.dp)
-            )
-        }
-    }
-}
-
-@Preview
-@Composable
-private fun AudioAdjustmentPreview() {
-    ForeLockTheme {
-        Surface {
-            AudioAdjustments(modifier = Modifier.padding(16.dp))
-        }
-    }
-}
-
-@Preview
+//@Preview
 @Composable
 private fun SetupNewDeviceScreenPreview() {
     ForeLockTheme {

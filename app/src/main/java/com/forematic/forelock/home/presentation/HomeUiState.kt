@@ -1,4 +1,4 @@
-package com.forematic.forelock.ui.screens
+package com.forematic.forelock.home.presentation
 
 data class HomeUiState(
     val pinNumber: String = "",
