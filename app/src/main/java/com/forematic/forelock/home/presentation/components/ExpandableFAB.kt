@@ -47,6 +47,7 @@ import com.forematic.forelock.ui.theme.ForeLockTheme
 @Composable
 fun ExpandableFAB(
     isExpanded: Boolean,
+    menuItems: List<Pair<String, () -> Unit>>,
     onClick: ()-> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -82,33 +83,17 @@ fun ExpandableFAB(
                     ),
                 elevation = CardDefaults.elevatedCardElevation(0.dp)
             ) {
-                Text(
-                    text = "R21 Relay",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { /* TODO("Navigate to corresponding setup screen") */ }
-                        .padding(12.dp)
-                )
-                Text(
-                    text = "G64 Relay",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { /* TODO("Navigate to corresponding setup screen") */ }
-                        .padding(12.dp)
-                )
-                Text(
-                    text = "G24 Intercom",
-                    textAlign = TextAlign.Center,
-                    style = MaterialTheme.typography.bodyMedium,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable { /* TODO("Navigate to corresponding setup screen") */ }
-                        .padding(12.dp)
-                )
+                menuItems.forEach { (text, onClick) ->
+                    Text(
+                        text = text,
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.bodyMedium,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable { onClick() }
+                            .padding(12.dp)
+                    )
+                }
             }
         }
         ExtendedFloatingActionButton(
@@ -161,6 +146,11 @@ private fun ExpandableFABPreview() {
         ) {
             ExpandableFAB(
                 isExpanded = isExpanded,
+                menuItems = listOf(
+                    "R21 Relay" to { /* Navigate to R21 Relay setup */ },
+                    "G64 Relay" to { /* Navigate to G64 Relay setup */ },
+                    "G24 Intercom" to { /* Navigate to G24 Intercom setup */ }
+                ),
                 onClick = { isExpanded = !isExpanded },
                 modifier = Modifier
                     .padding(16.dp)

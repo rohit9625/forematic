@@ -10,6 +10,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -19,12 +22,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.forematic.forelock.ui.components.MessagePermissionText
-import com.forematic.forelock.ui.components.PermissionRationale
 import com.forematic.forelock.home.presentation.HomeScreen
 import com.forematic.forelock.home.presentation.HomeViewModel
 import com.forematic.forelock.setupdevice.presentation.SetupDeviceViewModel
 import com.forematic.forelock.setupdevice.presentation.SetupNewDeviceScreen
+import com.forematic.forelock.ui.components.MessagePermissionText
+import com.forematic.forelock.ui.components.PermissionRationale
 import com.forematic.forelock.ui.theme.ForeLockTheme
 import kotlinx.serialization.Serializable
 
@@ -60,13 +63,36 @@ class MainActivity : ComponentActivity() {
                             requestPermission = {
                                 requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
                             },
-                            onAddNewDevice = {
-                                navController.navigate(Route.SetupDevice)
-                            }
+                            navController = navController
                         )
                     }
 
-                    composable<Route.SetupDevice> {
+                    composable<Route.G24SetupScreen>(
+                        enterTransition = {
+                            slideInHorizontally(
+                                initialOffsetX = { it }, // Slide in from the right
+                                animationSpec = tween(durationMillis = 300)
+                            )
+                        },
+                        exitTransition = {
+                            slideOutHorizontally(
+                                targetOffsetX = { it }, // Slide out to the right
+                                animationSpec = tween(durationMillis = 300)
+                            )
+                        },
+                        popEnterTransition = {
+                            slideInHorizontally(
+                                initialOffsetX = { it }, // Slide in from the right
+                                animationSpec = tween(durationMillis = 300)
+                            )
+                        },
+                        popExitTransition = {
+                            slideOutHorizontally(
+                                targetOffsetX = { it }, // Slide out to the right
+                                animationSpec = tween(durationMillis = 300)
+                            )
+                        }
+                    ) {
                         val viewModel = viewModel { SetupDeviceViewModel() }
                         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
@@ -115,4 +141,7 @@ sealed interface Route{
 
     @Serializable
     data object SetupDevice: Route
+
+    @Serializable
+    data object G24SetupScreen: Route
 }

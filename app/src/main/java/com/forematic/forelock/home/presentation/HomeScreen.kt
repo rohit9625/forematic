@@ -1,6 +1,5 @@
 package com.forematic.forelock.home.presentation
 
-import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,11 +11,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -28,11 +25,9 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,16 +43,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.forematic.forelock.R
+import com.forematic.forelock.Route
 import com.forematic.forelock.home.presentation.components.ExpandableFAB
 import com.forematic.forelock.ui.theme.ForeLockTheme
 import kotlinx.coroutines.launch
-
-data class NavigationItem(
-    val title: String,
-    @DrawableRes val selectedIcon: Int,
-    @DrawableRes val unselectedIcon: Int,
-)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,19 +58,18 @@ fun HomeScreen(
     onEvent: (HomeScreenEvent) -> Unit,
     hasPermission: ()-> Boolean,
     requestPermission: () -> Unit,
-    onAddNewDevice: () -> Unit
+    navController: NavController
 ) {
-    val navigationItems = listOf(
-        NavigationItem("Home", R.drawable.ic_filled_home, R.drawable.ic_outline_home),
-        NavigationItem("Keypad", R.drawable.ic_baseline_dialpad, R.drawable.ic_baseline_dialpad),
-        NavigationItem("Phone", R.drawable.ic_baseline_phone, R.drawable.ic_baseline_phone),
-        NavigationItem("More", R.drawable.ic_baseline_more, R.drawable.ic_baseline_more)
-    )
-    var selectedItemIndex by rememberSaveable { mutableIntStateOf(0) }
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
     var isToolTipVisible by remember { mutableStateOf(false) }
     var isFabExpanded by remember { mutableStateOf(false) }
+    val menuItems by remember { mutableStateOf(listOf(
+            "R21 Relay" to { /* Navigate to R21 Relay setup */ },
+            "G64 Relay" to { /* Navigate to G64 Relay setup */ },
+            "G24 Intercom" to { navController.navigate(Route.G24SetupScreen) }
+        ))
+    }
 
     Scaffold(
         topBar = {
@@ -102,6 +93,7 @@ fun HomeScreen(
         floatingActionButton = {
             ExpandableFAB(
                 isExpanded = isFabExpanded,
+                menuItems = menuItems,
                 onClick = { isFabExpanded = !isFabExpanded }
             )
         },
@@ -264,7 +256,7 @@ private fun HomeScreenPreview() {
             onEvent = { },
             hasPermission = { true },
             requestPermission = { },
-            onAddNewDevice = { }
+            navController = rememberNavController()
         )
     }
 }
