@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.sp
 import com.forematic.forelock.setupdevice.presentation.components.CustomDropDown
 import com.forematic.forelock.setupdevice.presentation.components.LabeledBox
 import com.forematic.forelock.setupdevice.presentation.components.LabeledTextField
+import com.forematic.forelock.setupdevice.presentation.components.SetKeypadCodeSection
 import com.forematic.forelock.setupdevice.presentation.components.ToolTipWithIcon
 import com.forematic.forelock.ui.theme.ForeLockTheme
 
@@ -100,34 +101,8 @@ fun SetupNewDeviceScreen(
                 .fillMaxSize()
                 .verticalScroll(scrollState)
         ) {
-            LabeledBox(
-                label = "Device Type",
-                modifier = Modifier.padding(8.dp),
-                content = {
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .padding(16.dp)
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Choose a device type",
-                            style = MaterialTheme.typography.bodyMedium
-                        )
-                        CustomDropDown(
-                            isExpanded = isDeviceTypeExpanded,
-                            onExpandedChange = { isDeviceTypeExpanded = it },
-                            value = uiState.deviceType,
-                            onValueChange = {
-                                onEvent(SetupDeviceEvent.DeviceTypeChanged(it))
-                                isDeviceTypeExpanded = false
-                            },
-                            options = DeviceType.entries,
-                            modifier = Modifier.width(164.dp)
-                        )
-                    }
-                }
+            SetKeypadCodeSection(
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
 
             LabeledBox(
@@ -417,7 +392,7 @@ private fun OutputNaming(
     }
 }
 
-@Preview
+//@Preview
 @Composable
 private fun OutputRelaySectionPreview() {
     ForeLockTheme {
@@ -427,14 +402,18 @@ private fun OutputRelaySectionPreview() {
                     outputName = "Jaguar",
                     onOutputNameChange = { },
                     label = "Output Naming 1",
-                    modifier = Modifier.padding(8.dp).fillMaxWidth()
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
                 )
 
                 OutputRelaySection1(
                     outputName = "Jaguar",
                     onOutputNameChange = { },
                     label = "Output Naming 2",
-                    modifier = Modifier.padding(8.dp).fillMaxWidth()
+                    modifier = Modifier
+                        .padding(8.dp)
+                        .fillMaxWidth()
                 )
             }
         }
@@ -605,7 +584,22 @@ fun CallOutNumbers(
     )
 }
 
+@Composable
+fun SetupKeypadCodeSection(modifier: Modifier = Modifier) {
+    
+}
+
 //@Preview
+@Composable
+private fun SetupKeypadCodeSectionPreview() {
+    ForeLockTheme {
+        Surface {
+            SetupKeypadCodeSection(modifier = Modifier.padding(16.dp))
+        }
+    }
+}
+
+@Preview
 @Composable
 private fun SetupNewDeviceScreenPreview() {
     ForeLockTheme {
