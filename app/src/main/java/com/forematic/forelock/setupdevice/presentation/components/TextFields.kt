@@ -40,7 +40,7 @@ fun LabeledTextField(
     keyboardActions: KeyboardActions = KeyboardActions.Default,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
-    shape: Shape = RoundedCornerShape(topStart = 12.dp, topEnd = 12.dp)
+    shape: Shape = RoundedCornerShape(12.dp)
 ) {
     Column(
         modifier = modifier.width(IntrinsicSize.Max),
@@ -52,7 +52,7 @@ fun LabeledTextField(
         ) {
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelSmall
             )
 
             secondaryLabel?.let {
