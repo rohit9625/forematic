@@ -5,12 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Card
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -34,8 +32,6 @@ fun TimezoneModeSection(
     onModeSelection: (TimezoneMode) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var tooltipMode: TimezoneMode? by remember { mutableStateOf(null) }
-
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
@@ -52,28 +48,19 @@ fun TimezoneModeSection(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 TimezoneMode.entries.forEach { mode ->
-                    Row(
+                    FilterChipWithToolTip(
+                        isSelected = mode == selectedMode,
+                        onClick = { onModeSelection(mode) },
+                        label = mode.displayName,
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(mode.icon),
+                                contentDescription = null
+                            )
+                        },
+                        toolTipText = mode.displayName,
                         modifier = Modifier.width(IntrinsicSize.Max)
-                    ) {
-                        FilterChip(
-                            selected = mode == selectedMode,
-                            onClick = { onModeSelection(mode) },
-                            label = { Text(text = mode.displayName) },
-                            leadingIcon = {
-                                Icon(
-                                    painter = painterResource(mode.icon),
-                                    contentDescription = null
-                                )
-                            },
-                        )
-
-                        ToolTipWithIcon(
-                            showToolTip = mode == tooltipMode,
-                            onClick = { tooltipMode = mode },
-                            onDismiss = { tooltipMode = null },
-                            infoText = mode.displayName
-                        )
-                    }
+                    )
                 }
             }
         }
