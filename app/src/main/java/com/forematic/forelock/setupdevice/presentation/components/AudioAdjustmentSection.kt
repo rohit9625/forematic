@@ -2,7 +2,12 @@ package com.forematic.forelock.setupdevice.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -42,8 +47,8 @@ fun AudioAdjustmentSection(
                         style = MaterialTheme.typography.labelMedium
                     )
                     SliderWithIndicator(
-                        steps = 7,
-                        valueRange = 0f..8f
+                        steps = 4,
+                        valueRange = 0f..5f
                     )
                 }
 
@@ -61,6 +66,37 @@ fun AudioAdjustmentSection(
                         steps = 7,
                         valueRange = 0f..8f
                     )
+                }
+
+                HorizontalDivider()
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column {
+                        Text(
+                            text = "Strength: 24",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "(1-31)",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    Button(
+                        onClick = { },
+                        shape = RoundedCornerShape(12.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
+                    ) {
+                        Text(
+                            text = "Check Signal Strength",
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    }
                 }
             }
         }
