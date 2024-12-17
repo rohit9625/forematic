@@ -33,6 +33,11 @@ fun CallInNumberSection(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
     ) {
+        Text(
+            text = "Setup Call-In Number",
+            style = MaterialTheme.typography.labelLarge,
+            modifier = Modifier.padding(start = 8.dp)
+        )
         Card {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),

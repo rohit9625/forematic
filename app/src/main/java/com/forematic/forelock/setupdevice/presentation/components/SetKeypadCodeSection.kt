@@ -147,7 +147,6 @@ fun KeypadCodeWithLocation(
                 value = code,
                 onValueChange = onCodeChange,
                 label = "Keypad Code",
-                secondaryLabel = "2-8",
                 modifier = Modifier.widthIn(max = 128.dp),
                 shape = RoundedCornerShape(12.dp)
             )

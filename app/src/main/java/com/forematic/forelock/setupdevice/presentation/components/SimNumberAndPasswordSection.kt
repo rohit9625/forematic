@@ -66,7 +66,7 @@ fun SimNumberAndPasswordSection(modifier: Modifier = Modifier) {
                             modifier = Modifier,
                             shape = RoundedCornerShape(12.dp)
                         ) {
-                            Text(text = "Get ID")
+                            Text(text = "Update")
                         }
 //                                ToolTipWithIcon(
 //                                    showToolTip = isToolTipVisible,

@@ -2,7 +2,9 @@ package com.forematic.forelock.setupdevice.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -21,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.forematic.forelock.setupdevice.presentation.components.AudioAdjustmentSection
+import com.forematic.forelock.setupdevice.presentation.components.CallInNumberSection
 import com.forematic.forelock.setupdevice.presentation.components.CallOutNumberSection
 import com.forematic.forelock.setupdevice.presentation.components.OutputNamingSection
 import com.forematic.forelock.setupdevice.presentation.components.SetKeypadCodeSection
@@ -75,13 +78,17 @@ fun SetupNewDeviceScreen(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 
+            TimezoneModeSection(
+                selectedMode = uiState.timezoneMode,
+                onModeSelection = { onEvent(SetupDeviceEvent.TimezoneModeChanged(it)) },
+                modifier = Modifier.padding(horizontal = 8.dp)
+            )
+
             SetKeypadCodeSection(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 
-            TimezoneModeSection(
-                selectedMode = uiState.timezoneMode,
-                onModeSelection = { onEvent(SetupDeviceEvent.TimezoneModeChanged(it)) },
+            CallInNumberSection(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 
@@ -95,6 +102,8 @@ fun SetupNewDeviceScreen(
             AudioAdjustmentSection(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
+
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }

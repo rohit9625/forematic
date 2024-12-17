@@ -39,7 +39,7 @@ enum class TimezoneMode(val displayName: String, @DrawableRes val icon: Int) {
     FREE("Free", R.drawable.ic_outline_free_24),
     DAY("Day", R.drawable.ic_rounded_day_24),
     NIGHT("Night", R.drawable.ic_outline_night_24),
-    NOTIFY("Notify", R.drawable.ic_outline_notifications_24)
+//    NOTIFY("Notify", R.drawable.ic_outline_notifications_24)
 }
 
 enum class DeviceType(val displayName: String) {
