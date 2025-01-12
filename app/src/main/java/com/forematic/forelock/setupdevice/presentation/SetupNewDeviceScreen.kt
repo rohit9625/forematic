@@ -68,6 +68,17 @@ fun SetupNewDeviceScreen(
                 .verticalScroll(scrollState)
         ) {
             SimNumberAndPasswordSection(
+                simNumber = uiState.simAndPasswordState.simNumber,
+                onSimNumberChange = {
+                    onEvent(SetupDeviceEvent.SimAndPasswordEvent.OnSimNumberChange(it))
+                },
+                password = uiState.simAndPasswordState.programmingPassword,
+                onPasswordChange = {
+                    onEvent(SetupDeviceEvent.SimAndPasswordEvent.OnPasswordChange(it))
+                },
+                onUpdateClick = {
+                    onEvent(SetupDeviceEvent.SimAndPasswordEvent.OnUpdateClick)
+                },
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 

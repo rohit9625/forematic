@@ -93,7 +93,7 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
-                        val viewModel = viewModel { SetupDeviceViewModel() }
+                        val viewModel = viewModel { SetupDeviceViewModel(MyApplication.appModule.inputValidator) }
                         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
                         SetupNewDeviceScreen(

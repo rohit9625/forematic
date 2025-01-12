@@ -5,8 +5,7 @@ import com.forematic.forelock.R
 
 data class NewDeviceUiState(
     val deviceType: DeviceType = DeviceType.G24_INTERCOM,
-    val simNumber: String = "",
-    val programmingPassword: String = "",
+    val simAndPasswordState: SimAndPasswordState = SimAndPasswordState(),
     val outputRelay1: OutputRelay = OutputRelay(),
     val outputRelay2: OutputRelay? = null,
     val timezoneMode: TimezoneMode = TimezoneMode.FREE,
@@ -15,6 +14,12 @@ data class NewDeviceUiState(
     val canAddMoreCallOutNumbers: Boolean
         get() = callOutNumbers.size < 4
 }
+
+data class SimAndPasswordState(
+    val simNumber: String = "",
+    val programmingPassword: String = "",
+    val error: String? = null
+)
 
 data class CallOutNumber(
     val number: String = "",
@@ -29,7 +34,7 @@ data class OutputRelay(
 
 enum class OutputRelayText(val displayName: String) {
     OPEN_CLOSE("Open/Close"),
-    LOCK_UNLOCK("Lock/Unlock"),
+    UNLOCK_LOCK("Unlock/Lock"),
     UP_DOWN("Up/Down"),
     ON_OFF("On/Off"),
     SET_UNSET("Set/Unset")

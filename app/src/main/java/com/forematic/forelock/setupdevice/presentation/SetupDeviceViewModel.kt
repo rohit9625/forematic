@@ -1,16 +1,23 @@
 package com.forematic.forelock.setupdevice.presentation
 
 import androidx.lifecycle.ViewModel
+import com.forematic.forelock.core.domain.InputValidator
+import com.forematic.forelock.core.domain.model.InputError
+import com.forematic.forelock.core.domain.model.Result
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
-class SetupDeviceViewModel: ViewModel() {
+class SetupDeviceViewModel(
+    private val inputValidator: InputValidator
+): ViewModel() {
     private val _uiState = MutableStateFlow(NewDeviceUiState())
     val uiState = _uiState.asStateFlow()
 
     fun onEvent(e: SetupDeviceEvent) {
         when(e) {
+            is SetupDeviceEvent.SimAndPasswordEvent -> onSimAndPasswordEvent(e)
+
             is SetupDeviceEvent.DeviceTypeChanged -> {
                 _uiState.update { it.copy(deviceType = e.deviceType) }
             }
@@ -19,17 +26,36 @@ class SetupDeviceViewModel: ViewModel() {
                 _uiState.update { it.copy(timezoneMode = e.timezoneMode) }
             }
 
-            is SetupDeviceEvent.SimNumberChanged -> {
-                _uiState.update { it.copy(simNumber = e.simNumber) }
-            }
-
-            is SetupDeviceEvent.ProgrammingPasswordChanged -> {
-                _uiState.update { it.copy(programmingPassword = e.password) }
-            }
-
             is SetupDeviceEvent.OutputRelayEvent -> onOutputRelayEvent(e)
 
             is SetupDeviceEvent.CallOutNumberEvent -> onCallOutNumberEvent(e)
+        }
+    }
+
+    private fun onSimAndPasswordEvent(e: SetupDeviceEvent.SimAndPasswordEvent) {
+        when(e) {
+            is SetupDeviceEvent.SimAndPasswordEvent.OnSimNumberChange -> {
+                _uiState.update {
+                    it.copy(simAndPasswordState = it.simAndPasswordState.copy(simNumber = e.number))
+                }
+            }
+            is SetupDeviceEvent.SimAndPasswordEvent.OnPasswordChange -> {
+                val error = when(val result = inputValidator.validateProgrammingPassword(e.password)) {
+                    is Result.Failure -> when(result.error) {
+                        InputError.PasswordError.INVALID_LENGTH -> "Programming password must be 4 characters"
+                        InputError.PasswordError.INVALID_CHARS -> ""
+                    }
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(simAndPasswordState = it.simAndPasswordState
+                        .copy(programmingPassword = e.password, error = error))
+                }
+            }
+            SetupDeviceEvent.SimAndPasswordEvent.OnUpdateClick -> {
+                
+                TODO("Update the Sim and Password to device")
+            }
         }
     }
 

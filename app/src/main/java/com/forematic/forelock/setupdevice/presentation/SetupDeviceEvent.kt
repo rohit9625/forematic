@@ -2,9 +2,13 @@ package com.forematic.forelock.setupdevice.presentation
 
 sealed interface SetupDeviceEvent {
     data class DeviceTypeChanged(val deviceType: DeviceType): SetupDeviceEvent
-    data class SimNumberChanged(val simNumber: String): SetupDeviceEvent
-    data class ProgrammingPasswordChanged(val password: String): SetupDeviceEvent
     data class TimezoneModeChanged(val timezoneMode: TimezoneMode): SetupDeviceEvent
+
+    sealed interface SimAndPasswordEvent: SetupDeviceEvent {
+        data class OnSimNumberChange(val number: String): SimAndPasswordEvent
+        data class OnPasswordChange(val password: String): SimAndPasswordEvent
+        data object OnUpdateClick: SimAndPasswordEvent
+    }
 
     sealed interface OutputRelayEvent: SetupDeviceEvent {
         data class UpdateNameRelay1(val name: String): OutputRelayEvent
