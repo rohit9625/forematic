@@ -29,7 +29,8 @@ data class CallOutNumber(
 data class OutputRelay(
     val name: String = "",
     val text: OutputRelayText = OutputRelayText.OPEN_CLOSE,
-    val relayTime: String = ""
+    val relayTime: String = "",
+    @DrawableRes val icon: Int = R.drawable.ic_rounded_image_24
 )
 
 enum class OutputRelayText(val displayName: String) {

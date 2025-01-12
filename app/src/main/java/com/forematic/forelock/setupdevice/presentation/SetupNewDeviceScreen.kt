@@ -83,9 +83,9 @@ fun SetupNewDeviceScreen(
             )
 
             OutputNamingSection(
-                outputRelay1 = OutputRelay(),
-                outputRelay2 = OutputRelay(),
-                onEvent = { },
+                outputRelay1 = uiState.outputRelay1,
+                outputRelay2 = uiState.outputRelay2,
+                onEvent = onEvent,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 

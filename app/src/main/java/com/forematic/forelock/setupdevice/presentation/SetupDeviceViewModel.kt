@@ -11,7 +11,12 @@ import kotlinx.coroutines.flow.update
 class SetupDeviceViewModel(
     private val inputValidator: InputValidator
 ): ViewModel() {
-    private val _uiState = MutableStateFlow(NewDeviceUiState())
+    private val _uiState = MutableStateFlow(NewDeviceUiState(
+        deviceType = DeviceType.G24_INTERCOM,
+        simAndPasswordState = SimAndPasswordState(programmingPassword = "CCCC"),
+        outputRelay1 = OutputRelay(),
+        outputRelay2 = OutputRelay(),
+    ))
     val uiState = _uiState.asStateFlow()
 
     fun onEvent(e: SetupDeviceEvent) {
@@ -89,25 +94,35 @@ class SetupDeviceViewModel(
 
     private fun onOutputRelayEvent(e: SetupDeviceEvent.OutputRelayEvent) {
         when(e) {
-            is SetupDeviceEvent.OutputRelayEvent.UpdateNameRelay1 -> {
+            is SetupDeviceEvent.OutputRelayEvent.OnRelay1NameChange -> {
                 _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(name = e.name)) }
             }
-            is SetupDeviceEvent.OutputRelayEvent.UpdateTextRelay1 -> {
+            is SetupDeviceEvent.OutputRelayEvent.OnRelay1TextChange -> {
                 _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(text = e.text)) }
             }
-            is SetupDeviceEvent.OutputRelayEvent.UpdateTimeRelay1 -> {
+            is SetupDeviceEvent.OutputRelayEvent.OnRelay1TimeChange -> {
                 _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(relayTime = e.relayTime)) }
+            }
+            SetupDeviceEvent.OutputRelayEvent.OnGetNameForRelay1 -> {
+                /*TODO("Send SMS to device to get the output relay name")*/
             }
 
             // For Intercoms with two output relays
-            is SetupDeviceEvent.OutputRelayEvent.UpdateNameRelay2 -> {
+            is SetupDeviceEvent.OutputRelayEvent.OnRelay2NameChange -> {
                 _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(name = e.name)) }
             }
-            is SetupDeviceEvent.OutputRelayEvent.UpdateTextRelay2 -> {
+            is SetupDeviceEvent.OutputRelayEvent.OnRelay2TextChange -> {
                 _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(text = e.text)) }
             }
-            is SetupDeviceEvent.OutputRelayEvent.UpdateTimeRelay2 -> {
+            is SetupDeviceEvent.OutputRelayEvent.OnRelay2TimeChange -> {
                 _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(relayTime = e.relayTime)) }
+            }
+            SetupDeviceEvent.OutputRelayEvent.OnGetNameForRelay2 -> {
+                /*TODO("Send SMS to device to get the output relay name")*/
+            }
+
+            SetupDeviceEvent.OutputRelayEvent.OnUpdateClick -> {
+                /*TODO("Update the information on target device")*/
             }
         }
     }
