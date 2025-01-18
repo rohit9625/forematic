@@ -58,7 +58,7 @@ fun OutputNamingSection(
         )
         Card {
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
                 modifier = Modifier.padding(16.dp)
             ) {
                 OutputNaming(
@@ -82,9 +82,17 @@ fun OutputNamingSection(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                outputRelay2?.let { relay ->
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text(
+                        text = outputRelay1.error ?: "",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.align(Alignment.End)
+                    )
                     HorizontalDivider()
+                }
 
+                outputRelay2?.let { relay ->
                     OutputNaming(
                         outputName = relay.name,
                         relayTime = outputRelay2.relayTime,
@@ -105,9 +113,16 @@ fun OutputNamingSection(
                         label = "Output Naming 2",
                         modifier = Modifier.fillMaxWidth()
                     )
+                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        Text(
+                            text = outputRelay2.error ?: "",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.error,
+                            modifier = Modifier.align(Alignment.End)
+                        )
+                        HorizontalDivider()
+                    }
                 }
-
-                HorizontalDivider()
 
                 Button(
                     onClick = { onEvent(SetupDeviceEvent.OutputRelayEvent.OnUpdateClick) },
