@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
@@ -18,6 +19,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.forematic.forelock.setupdevice.presentation.CallerLineIdentification
@@ -26,7 +29,7 @@ import com.forematic.forelock.setupdevice.presentation.UserMode
 import com.forematic.forelock.ui.theme.ForeLockTheme
 
 @Composable
-fun CallInNumberSection(
+fun CallerLineSetupSection(
     callerLineId: CallerLineIdentification,
     onEvent: (SetupDeviceEvent.CallerLineIdEvent) -> Unit,
     modifier: Modifier = Modifier
@@ -75,7 +78,7 @@ fun CallInNumberSection(
                     }
                 }
 
-                CallInNumberWithLocation(
+                CallerLineIdWithLocation(
                     number = callerLineId.number,
                     onNumberChange = {
                         onEvent(SetupDeviceEvent.CallerLineIdEvent.OnNumberChange(it))
@@ -104,7 +107,7 @@ fun CallInNumberSection(
 }
 
 @Composable
-fun CallInNumberWithLocation(
+fun CallerLineIdWithLocation(
     number: String,
     onNumberChange: (String) -> Unit,
     location: String,
@@ -151,7 +154,11 @@ fun CallInNumberWithLocation(
                         )
                     }
                 },
-                isEnabled = isEnabled
+                isEnabled = isEnabled,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.NumberPassword,
+                    imeAction = ImeAction.Next
+                )
             )
 
             LabeledTextField(
@@ -160,7 +167,11 @@ fun CallInNumberWithLocation(
                 label = "Caller Number",
                 modifier = Modifier.widthIn(max = 172.dp),
                 shape = RoundedCornerShape(12.dp),
-                isEnabled = isEnabled
+                isEnabled = isEnabled,
+                keyboardOptions = KeyboardOptions(
+                    keyboardType = KeyboardType.NumberPassword,
+                    imeAction = ImeAction.Done
+                )
             )
         }
     }
@@ -168,10 +179,10 @@ fun CallInNumberWithLocation(
 
 @Preview
 @Composable
-private fun DialInNumberSectionPreview() {
+private fun CallerLineSetupSectionPreview() {
     ForeLockTheme {
         Surface {
-            CallInNumberSection(
+            CallerLineSetupSection(
                 callerLineId = CallerLineIdentification(),
                 onEvent = { },
                 modifier = Modifier.padding(8.dp)

@@ -23,7 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.forematic.forelock.setupdevice.presentation.components.AudioAdjustmentSection
-import com.forematic.forelock.setupdevice.presentation.components.CallInNumberSection
+import com.forematic.forelock.setupdevice.presentation.components.CallerLineSetupSection
 import com.forematic.forelock.setupdevice.presentation.components.CallOutNumberSection
 import com.forematic.forelock.setupdevice.presentation.components.OutputNamingSection
 import com.forematic.forelock.setupdevice.presentation.components.SetKeypadCodeSection
@@ -103,7 +103,7 @@ fun SetupNewDeviceScreen(
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 
-            CallInNumberSection(
+            CallerLineSetupSection(
                 callerLineId = uiState.callerLineId,
                 onEvent = onEvent,
                 modifier = Modifier.padding(horizontal = 8.dp)
