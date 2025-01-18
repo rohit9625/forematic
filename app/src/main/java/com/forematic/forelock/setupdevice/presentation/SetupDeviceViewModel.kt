@@ -33,6 +33,8 @@ class SetupDeviceViewModel(
 
             is SetupDeviceEvent.OutputRelayEvent -> onOutputRelayEvent(e)
 
+            is SetupDeviceEvent.KeypadCodeEvent -> onKeypadCodeEvent(e)
+
             is SetupDeviceEvent.CallOutNumberEvent -> onCallOutNumberEvent(e)
         }
     }
@@ -125,5 +127,44 @@ class SetupDeviceViewModel(
                 /*TODO("Update the information on target device")*/
             }
         }
+    }
+
+    private fun onKeypadCodeEvent(e: SetupDeviceEvent.KeypadCodeEvent) {
+        when(e) {
+            is SetupDeviceEvent.KeypadCodeEvent.OnKeypadCode1Change -> {
+                _uiState.update { it.copy(keypadCode1 = it.keypadCode1.copy(code = e.code)) }
+            }
+            is SetupDeviceEvent.KeypadCodeEvent.OnCodeLocation1Change -> {
+                _uiState.update { it.copy(keypadCode1 = it.keypadCode1.copy(location = e.location)) }
+            }
+            SetupDeviceEvent.KeypadCodeEvent.OnFindKeypadCode1Location -> {
+                /*TODO("Query Intercom to receive next available location")*/
+            }
+
+            is SetupDeviceEvent.KeypadCodeEvent.OnKeypadCode2Change -> {
+                _uiState.update { it.copy(keypadCode2 = it.keypadCode2.copy(code = e.code)) }
+            }
+            is SetupDeviceEvent.KeypadCodeEvent.OnCodeLocation2Change -> {
+                _uiState.update { it.copy(keypadCode2 = it.keypadCode2.copy(location = e.location)) }
+            }
+            SetupDeviceEvent.KeypadCodeEvent.OnFindKeypadCode2Location -> {
+                /*TODO("Query Intercom to receive next available location")*/
+            }
+
+            is SetupDeviceEvent.KeypadCodeEvent.OnDeliveryCodeChange -> {
+                _uiState.update { it.copy(deliveryCode = it.deliveryCode.copy(code = e.code)) }
+            }
+            is SetupDeviceEvent.KeypadCodeEvent.OnDeliveryCodeLocationChange -> {
+                _uiState.update { it.copy(deliveryCode = it.deliveryCode.copy(location = e.location)) }
+            }
+            SetupDeviceEvent.KeypadCodeEvent.OnFindDeliveryCodeLocation -> {
+                /*TODO("Query Intercom to receive next available location")*/
+            }
+
+            SetupDeviceEvent.KeypadCodeEvent.OnUpdateClick -> {
+                /*TODO("Save keypad codes to the target device")*/
+            }
+        }
+
     }
 }

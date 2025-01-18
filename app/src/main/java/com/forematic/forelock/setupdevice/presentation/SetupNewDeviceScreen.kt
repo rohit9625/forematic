@@ -96,6 +96,10 @@ fun SetupNewDeviceScreen(
             )
 
             SetKeypadCodeSection(
+                keypadCode1 = uiState.keypadCode1,
+                keypadCode2 = uiState.keypadCode2,
+                deliveryCode = uiState.deliveryCode,
+                onEvent = onEvent,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 

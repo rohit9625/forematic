@@ -9,6 +9,9 @@ data class NewDeviceUiState(
     val outputRelay1: OutputRelay = OutputRelay(),
     val outputRelay2: OutputRelay? = null,
     val timezoneMode: TimezoneMode = TimezoneMode.FREE,
+    val keypadCode1: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "001-100"),
+    val keypadCode2: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "101-149"),
+    val deliveryCode: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "150-199"),
     val callOutNumbers: List<CallOutNumber> = listOf(CallOutNumber())
 ) {
     val canAddMoreCallOutNumbers: Boolean
@@ -32,6 +35,12 @@ data class OutputRelay(
     val relayTime: String = "",
     @DrawableRes val icon: Int = R.drawable.ic_rounded_image_24,
     val error: String? = null
+)
+
+data class KeypadCodeForOutput(
+    val code: String = "",
+    val location: String = "",
+    val locationRange: String = ""
 )
 
 enum class OutputRelayText(val displayName: String) {

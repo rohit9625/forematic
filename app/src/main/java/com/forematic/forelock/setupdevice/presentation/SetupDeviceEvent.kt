@@ -24,6 +24,22 @@ sealed interface SetupDeviceEvent {
         data object OnUpdateClick: OutputRelayEvent
     }
 
+    sealed interface KeypadCodeEvent: SetupDeviceEvent {
+        data class OnKeypadCode1Change(val code: String): KeypadCodeEvent
+        data class OnCodeLocation1Change(val location: String): KeypadCodeEvent
+        data object OnFindKeypadCode1Location: KeypadCodeEvent
+
+        data class OnKeypadCode2Change(val code: String): KeypadCodeEvent
+        data class OnCodeLocation2Change(val location: String): KeypadCodeEvent
+        data object OnFindKeypadCode2Location: KeypadCodeEvent
+
+        data class OnDeliveryCodeChange(val code: String): KeypadCodeEvent
+        data class OnDeliveryCodeLocationChange(val location: String): KeypadCodeEvent
+        data object OnFindDeliveryCodeLocation: KeypadCodeEvent
+
+        data object OnUpdateClick: KeypadCodeEvent
+    }
+
     sealed interface CallOutNumberEvent: SetupDeviceEvent {
         data class UpdateNumber(val index: Int, val number: String): CallOutNumberEvent
         data class UpdateName(val index: Int, val name: String): CallOutNumberEvent
