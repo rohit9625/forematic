@@ -36,6 +36,8 @@ class SetupDeviceViewModel(
             is SetupDeviceEvent.KeypadCodeEvent -> onKeypadCodeEvent(e)
 
             is SetupDeviceEvent.CallOutNumberEvent -> onCallOutNumberEvent(e)
+
+            is SetupDeviceEvent.CallerLineIdEvent -> onCallerLineIdEvent(e)
         }
     }
 
@@ -166,5 +168,22 @@ class SetupDeviceViewModel(
             }
         }
 
+    }
+
+    private fun onCallerLineIdEvent(e: SetupDeviceEvent.CallerLineIdEvent) {
+        when(e) {
+            is SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange -> {
+                _uiState.update { it.copy(callerLineId = it.callerLineId.copy(userMode = e.userMode)) }
+            }
+            is SetupDeviceEvent.CallerLineIdEvent.OnNumberChange -> {
+                _uiState.update { it.copy(callerLineId = it.callerLineId.copy(number = e.number)) }
+            }
+            is SetupDeviceEvent.CallerLineIdEvent.OnLocationChange -> {
+                _uiState.update { it.copy(callerLineId = it.callerLineId.copy(location = e.location)) }
+            }
+            SetupDeviceEvent.CallerLineIdEvent.OnFindLocation -> {
+                /*TODO()*/
+            }
+        }
     }
 }

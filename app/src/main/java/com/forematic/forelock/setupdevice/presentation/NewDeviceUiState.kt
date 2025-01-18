@@ -12,6 +12,7 @@ data class NewDeviceUiState(
     val keypadCode1: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "001-100"),
     val keypadCode2: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "101-149"),
     val deliveryCode: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "150-199"),
+    val callerLineId: CallerLineIdentification = CallerLineIdentification(locationRange = "200-250"),
     val callOutNumbers: List<CallOutNumber> = listOf(CallOutNumber())
 ) {
     val canAddMoreCallOutNumbers: Boolean
@@ -42,6 +43,18 @@ data class KeypadCodeForOutput(
     val location: String = "",
     val locationRange: String = ""
 )
+
+data class CallerLineIdentification(
+    val userMode: UserMode = UserMode.ANY,
+    val number: String = "",
+    val location: String = "",
+    val locationRange: String = ""
+)
+
+enum class UserMode {
+    ANY,
+    AUTHORIZED
+}
 
 enum class OutputRelayText(val displayName: String) {
     OPEN_CLOSE("Open/Close"),

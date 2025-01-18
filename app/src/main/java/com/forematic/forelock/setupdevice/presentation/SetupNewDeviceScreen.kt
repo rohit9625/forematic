@@ -104,6 +104,8 @@ fun SetupNewDeviceScreen(
             )
 
             CallInNumberSection(
+                callerLineId = uiState.callerLineId,
+                onEvent = onEvent,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 

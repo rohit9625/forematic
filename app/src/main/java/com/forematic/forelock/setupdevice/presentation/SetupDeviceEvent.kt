@@ -40,6 +40,13 @@ sealed interface SetupDeviceEvent {
         data object OnUpdateClick: KeypadCodeEvent
     }
 
+    sealed interface CallerLineIdEvent: SetupDeviceEvent {
+        data class OnUserModeChange(val userMode: UserMode): CallerLineIdEvent
+        data class OnNumberChange(val number: String): CallerLineIdEvent
+        data class OnLocationChange(val location: String): CallerLineIdEvent
+        data object OnFindLocation: CallerLineIdEvent
+    }
+
     sealed interface CallOutNumberEvent: SetupDeviceEvent {
         data class UpdateNumber(val index: Int, val number: String): CallOutNumberEvent
         data class UpdateName(val index: Int, val name: String): CallOutNumberEvent

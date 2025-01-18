@@ -10,31 +10,33 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.forematic.forelock.R
+import com.forematic.forelock.setupdevice.presentation.CallerLineIdentification
+import com.forematic.forelock.setupdevice.presentation.SetupDeviceEvent
+import com.forematic.forelock.setupdevice.presentation.UserMode
 import com.forematic.forelock.ui.theme.ForeLockTheme
 
 @Composable
-fun CallInNumberSection(modifier: Modifier = Modifier) {
+fun CallInNumberSection(
+    callerLineId: CallerLineIdentification,
+    onEvent: (SetupDeviceEvent.CallerLineIdEvent) -> Unit,
+    modifier: Modifier = Modifier
+) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
     ) {
         Text(
-            text = "Setup Call-In Number",
+            text = "Setup CLI(Caller-Line Identification)",
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(start = 8.dp)
         )
@@ -56,27 +58,38 @@ fun CallInNumberSection(modifier: Modifier = Modifier) {
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         FilterChipWithToolTip(
-                            isSelected = false,
-                            onClick = { },
+                            isSelected = callerLineId.userMode == UserMode.ANY,
+                            onClick = {
+                                onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange(UserMode.ANY))
+                            },
                             label = "Any"
                         )
 
                         FilterChipWithToolTip(
-                            isSelected = true,
-                            onClick = { },
+                            isSelected = callerLineId.userMode == UserMode.AUTHORIZED,
+                            onClick = {
+                                onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange(UserMode.AUTHORIZED))
+                            },
                             label = "Authorized"
                         )
                     }
                 }
 
                 CallInNumberWithLocation(
-                    number = "",
-                    onNumberChange = { },
-                    location = "",
-                    onLocationChange = { },
-                    onFindAction = { },
+                    number = callerLineId.number,
+                    onNumberChange = {
+                        onEvent(SetupDeviceEvent.CallerLineIdEvent.OnNumberChange(it))
+                    },
+                    location = callerLineId.location,
+                    onLocationChange = {
+                        onEvent(SetupDeviceEvent.CallerLineIdEvent.OnLocationChange(it))
+                    },
+                    onFindAction = {
+                        onEvent(SetupDeviceEvent.CallerLineIdEvent.OnFindLocation)
+                    },
                     label = "Setup Authorized Call-In Number",
-                    locationRange = "200-250"
+                    locationRange = callerLineId.locationRange,
+                    isEnabled = callerLineId.userMode == UserMode.AUTHORIZED
                 )
 
                 Text(
@@ -99,7 +112,8 @@ fun CallInNumberWithLocation(
     onFindAction: () -> Unit,
     label: String,
     locationRange: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean = true
 ) {
     Column(
         modifier = modifier,
@@ -128,6 +142,7 @@ fun CallInNumberWithLocation(
                         onClick = onFindAction,
                         shape = RoundedCornerShape(topEnd = 12.dp, bottomEnd = 12.dp),
                         contentPadding = PaddingValues(),
+                        enabled = isEnabled,
                         modifier = Modifier.height(IntrinsicSize.Max)
                     ) {
                         Text(
@@ -135,7 +150,8 @@ fun CallInNumberWithLocation(
                             style = MaterialTheme.typography.labelMedium
                         )
                     }
-                }
+                },
+                isEnabled = isEnabled
             )
 
             LabeledTextField(
@@ -143,7 +159,8 @@ fun CallInNumberWithLocation(
                 onValueChange = onNumberChange,
                 label = "Caller Number",
                 modifier = Modifier.widthIn(max = 172.dp),
-                shape = RoundedCornerShape(12.dp)
+                shape = RoundedCornerShape(12.dp),
+                isEnabled = isEnabled
             )
         }
     }
@@ -155,6 +172,8 @@ private fun DialInNumberSectionPreview() {
     ForeLockTheme {
         Surface {
             CallInNumberSection(
+                callerLineId = CallerLineIdentification(),
+                onEvent = { },
                 modifier = Modifier.padding(8.dp)
             )
         }
