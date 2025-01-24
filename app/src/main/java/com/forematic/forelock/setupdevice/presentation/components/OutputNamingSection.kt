@@ -214,8 +214,9 @@ private fun OutputNaming(
             }
 
             Row(
-                horizontalArrangement = Arrangement.spacedBy(16.dp),
-                verticalAlignment = Alignment.Bottom
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.Bottom,
+                modifier = Modifier.fillMaxWidth()
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(2.dp),
@@ -247,8 +248,14 @@ private fun OutputNaming(
                         keyboardType = KeyboardType.Number,
                         imeAction = ImeAction.Next
                     ),
-                    placeholder = "Eg. 25",
-                    modifier = Modifier.widthIn(max = 96.dp).weight(1f, false)
+                    trailingIcon = {
+                        Text(
+                            text = "sec.",
+                            style = MaterialTheme.typography.labelMedium
+                        )
+                    },
+                    placeholder = "0-99",
+                    modifier = Modifier.widthIn(max = 116.dp).weight(1f, false)
                 )
 
                 Column {
