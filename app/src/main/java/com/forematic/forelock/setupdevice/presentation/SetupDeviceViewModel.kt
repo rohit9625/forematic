@@ -125,6 +125,9 @@ class SetupDeviceViewModel(
             is SetupDeviceEvent.OutputRelayEvent.OnRelay1TimeChange -> {
                 _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(relayTime = e.relayTime)) }
             }
+            is SetupDeviceEvent.OutputRelayEvent.OnRelay1IconChange -> {
+                _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(icon = e.icon)) }
+            }
             SetupDeviceEvent.OutputRelayEvent.OnGetNameForRelay1 -> {
                 /*TODO("Send SMS to device to get the output relay name")*/
             }
@@ -138,6 +141,9 @@ class SetupDeviceViewModel(
             }
             is SetupDeviceEvent.OutputRelayEvent.OnRelay2TimeChange -> {
                 _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(relayTime = e.relayTime)) }
+            }
+            is SetupDeviceEvent.OutputRelayEvent.OnRelay2IconChange -> {
+                _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(icon = e.icon)) }
             }
             SetupDeviceEvent.OutputRelayEvent.OnGetNameForRelay2 -> {
                 /*TODO("Send SMS to device to get the output relay name")*/

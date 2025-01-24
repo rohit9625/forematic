@@ -2,7 +2,6 @@ package com.forematic.forelock.setupdevice.presentation.components
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -17,6 +16,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
@@ -78,6 +78,9 @@ fun OutputNamingSection(
                     onGetOutputName = {
                         onEvent(SetupDeviceEvent.OutputRelayEvent.OnGetNameForRelay1)
                     },
+                    onSelectIcon = {
+                        onEvent(SetupDeviceEvent.OutputRelayEvent.OnRelay1IconChange(it))
+                    },
                     label = "Output Naming 1",
                     modifier = Modifier.fillMaxWidth()
                 )
@@ -109,6 +112,9 @@ fun OutputNamingSection(
                         },
                         onGetOutputName = {
                             onEvent(SetupDeviceEvent.OutputRelayEvent.OnGetNameForRelay2)
+                        },
+                        onSelectIcon = {
+                            onEvent(SetupDeviceEvent.OutputRelayEvent.OnRelay2IconChange(it))
                         },
                         label = "Output Naming 2",
                         modifier = Modifier.fillMaxWidth()
@@ -146,12 +152,21 @@ private fun OutputNaming(
     onRelayTimeChange: (String) -> Unit,
     onRelayTextChange: (OutputRelayText) -> Unit,
     onGetOutputName: () -> Unit,
+    onSelectIcon: (icon: Int) -> Unit,
     modifier: Modifier = Modifier,
     label: String = "Output Relay"
 ) {
     var isNameToolTipVisible by remember { mutableStateOf(false) }
     var isButtonToolTipVisible by remember { mutableStateOf(false) }
     var isIconTextDropDownExpanded by remember { mutableStateOf(false) }
+    var isIconDialogVisible by remember { mutableStateOf(false) }
+
+    if(isIconDialogVisible) {
+        SelectGateIconDialog(
+            onSelectIcon = onSelectIcon,
+            onDismiss = { isIconDialogVisible = false }
+        )
+    }
 
     Column(
         modifier = modifier,
@@ -265,14 +280,16 @@ private fun OutputNaming(
                         modifier = Modifier.padding(start = 4.dp)
                     )
                     OutlinedCard(
-                        onClick = { },
+                        onClick = {
+                            isIconDialogVisible = !isIconDialogVisible
+                        },
                         modifier = Modifier,
                         border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.tertiary),
                         colors = CardDefaults.outlinedCardColors(
                             containerColor = MaterialTheme.colorScheme.tertiaryContainer
                         )
                     ) {
-                        Image(
+                        Icon(
                             painter = painterResource(icon),
                             contentDescription = null,
                             modifier = Modifier.padding(8.dp).size(36.dp)

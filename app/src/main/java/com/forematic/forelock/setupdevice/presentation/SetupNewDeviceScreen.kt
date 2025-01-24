@@ -23,8 +23,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.forematic.forelock.setupdevice.presentation.components.AudioAdjustmentSection
-import com.forematic.forelock.setupdevice.presentation.components.CallerLineSetupSection
 import com.forematic.forelock.setupdevice.presentation.components.CallOutNumberSection
+import com.forematic.forelock.setupdevice.presentation.components.CallerLineSetupSection
 import com.forematic.forelock.setupdevice.presentation.components.OutputNamingSection
 import com.forematic.forelock.setupdevice.presentation.components.SetKeypadCodeSection
 import com.forematic.forelock.setupdevice.presentation.components.SimNumberAndPasswordSection

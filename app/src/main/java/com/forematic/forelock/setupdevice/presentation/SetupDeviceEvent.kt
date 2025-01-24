@@ -15,11 +15,13 @@ sealed interface SetupDeviceEvent {
         data class OnRelay1NameChange(val name: String): OutputRelayEvent
         data class OnRelay1TextChange(val text: OutputRelayText): OutputRelayEvent
         data class OnRelay1TimeChange(val relayTime: String): OutputRelayEvent
+        data class OnRelay1IconChange(val icon: Int): OutputRelayEvent
         data object OnGetNameForRelay1: OutputRelayEvent
 
         data class OnRelay2NameChange(val name: String): OutputRelayEvent
         data class OnRelay2TextChange(val text: OutputRelayText): OutputRelayEvent
         data class OnRelay2TimeChange(val relayTime: String): OutputRelayEvent
+        data class OnRelay2IconChange(val icon: Int): OutputRelayEvent
         data object OnGetNameForRelay2: OutputRelayEvent
 
         data object OnUpdateClick: OutputRelayEvent
