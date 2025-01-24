@@ -31,6 +31,10 @@ class SetupDeviceViewModel(
                 _uiState.update { it.copy(timezoneMode = e.timezoneMode) }
             }
 
+            is SetupDeviceEvent.OnTimezoneModeUpdate -> {
+                /*Send SMS to target device to update timezone mode*/
+            }
+
             is SetupDeviceEvent.OutputRelayEvent -> onOutputRelayEvent(e)
 
             is SetupDeviceEvent.KeypadCodeEvent -> onKeypadCodeEvent(e)
