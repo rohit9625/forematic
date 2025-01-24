@@ -202,6 +202,10 @@ class SetupDeviceViewModel(
             SetupDeviceEvent.CallerLineIdEvent.OnFindLocation -> {
                 /*TODO()*/
             }
+
+            SetupDeviceEvent.CallerLineIdEvent.OnUpdateClick -> {
+                /*TODO("Update information to the target device")*/
+            }
         }
     }
 }

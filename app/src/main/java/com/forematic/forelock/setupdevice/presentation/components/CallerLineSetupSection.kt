@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -45,7 +46,7 @@ fun CallerLineSetupSection(
         )
         Card {
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.padding(16.dp)
             ) {
                 Column(
@@ -95,12 +96,28 @@ fun CallerLineSetupSection(
                     isEnabled = callerLineId.userMode == UserMode.AUTHORIZED
                 )
 
-                Text(
-                    text = "Enter the last 8 digits of the caller's number",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.align(Alignment.End)
-                )
+                HorizontalDivider()
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Enter the last 8 digits of the caller's number",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.widthIn(max = 200.dp)
+                    )
+
+                    Button(
+                        onClick = {
+                            onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUpdateClick)
+                        },
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Text(text = "Update")
+                    }
+                }
             }
         }
     }

@@ -46,6 +46,7 @@ sealed interface SetupDeviceEvent {
         data class OnNumberChange(val number: String): CallerLineIdEvent
         data class OnLocationChange(val location: String): CallerLineIdEvent
         data object OnFindLocation: CallerLineIdEvent
+        data object OnUpdateClick: CallerLineIdEvent
     }
 
     sealed interface CallOutNumberEvent: SetupDeviceEvent {

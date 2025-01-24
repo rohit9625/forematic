@@ -55,7 +55,7 @@ fun SetKeypadCodeSection(
             colors = CardDefaults.cardColors()
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(12.dp),
                 modifier = Modifier.padding(16.dp)
             ) {
                 KeypadCodeWithLocation(
@@ -113,12 +113,27 @@ fun SetKeypadCodeSection(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Text(
-                    text = "The delivery code will self delete after it is used",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.tertiary,
-                    modifier = Modifier.align(Alignment.End)
-                )
+                HorizontalDivider()
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "The delivery code will self delete after it is used",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.widthIn(max = 200.dp)
+                    )
+                    Button(
+                        onClick = {
+                            onEvent(SetupDeviceEvent.KeypadCodeEvent.OnUpdateClick)
+                        },
+                        shape = MaterialTheme.shapes.medium
+                    ) {
+                        Text(text = "Update")
+                    }
+                }
             }
         }
     }
