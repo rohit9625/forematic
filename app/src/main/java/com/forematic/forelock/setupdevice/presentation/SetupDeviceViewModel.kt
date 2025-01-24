@@ -42,6 +42,16 @@ class SetupDeviceViewModel(
             is SetupDeviceEvent.CallOutNumberEvent -> onCallOutNumberEvent(e)
 
             is SetupDeviceEvent.CallerLineIdEvent -> onCallerLineIdEvent(e)
+
+            is SetupDeviceEvent.OnSpeakerVolumeChange -> {
+                _uiState.update { it.copy(speakerVolume = e.volume) }
+            }
+            is SetupDeviceEvent.OnMicVolumeChange -> {
+                _uiState.update { it.copy(micVolume = e.volume) }
+            }
+            SetupDeviceEvent.OnCheckSignalStrength -> {
+                /*TODO("Query device to check signal strength")*/
+            }
         }
     }
 

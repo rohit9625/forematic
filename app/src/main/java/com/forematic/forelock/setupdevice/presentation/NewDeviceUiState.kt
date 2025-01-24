@@ -13,7 +13,10 @@ data class NewDeviceUiState(
     val keypadCode2: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "101-149"),
     val deliveryCode: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "150-199"),
     val callerLineId: CallerLineIdentification = CallerLineIdentification(locationRange = "200-250"),
-    val callOutNumbers: List<CallOutNumber> = listOf(CallOutNumber())
+    val callOutNumbers: List<CallOutNumber> = listOf(CallOutNumber()),
+    val speakerVolume: Float = 0f,
+    val micVolume: Float = 0f,
+    val signalStrength: Int = 20
 ) {
     val canAddMoreCallOutNumbers: Boolean
         get() = callOutNumbers.size < 4

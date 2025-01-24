@@ -22,6 +22,12 @@ import com.forematic.forelock.ui.theme.ForeLockTheme
 
 @Composable
 fun AudioAdjustmentSection(
+    speakerVolume: Float,
+    micVolume: Float,
+    signalStrength: Int,
+    onSpeakerVolumeChange: (Float) -> Unit,
+    onMicVolumeChange: (Float) -> Unit,
+    onCheckSignalStrength: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -29,7 +35,7 @@ fun AudioAdjustmentSection(
         modifier = modifier
     ) {
         Text(
-            text = "Audio Adjustments",
+            text = "Audio Adjustments & Signal Strength",
             style = MaterialTheme.typography.labelLarge,
             modifier = Modifier.padding(start = 8.dp)
         )
@@ -43,10 +49,12 @@ fun AudioAdjustmentSection(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Panel Speaker Volume",
+                        text = "Panel Speaker Volume(0-5)",
                         style = MaterialTheme.typography.labelMedium
                     )
                     SliderWithIndicator(
+                        value = speakerVolume,
+                        onValueChange = onSpeakerVolumeChange,
                         steps = 4,
                         valueRange = 0f..5f
                     )
@@ -59,10 +67,12 @@ fun AudioAdjustmentSection(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Panel Microphone Volume",
+                        text = "Panel Microphone Volume(0-8)",
                         style = MaterialTheme.typography.labelMedium
                     )
                     SliderWithIndicator(
+                        value = micVolume,
+                        onValueChange = onMicVolumeChange,
                         steps = 7,
                         valueRange = 0f..8f
                     )
@@ -77,7 +87,7 @@ fun AudioAdjustmentSection(
                 ) {
                     Column {
                         Text(
-                            text = "Strength: 24",
+                            text = "Strength: $signalStrength",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -88,7 +98,7 @@ fun AudioAdjustmentSection(
                         )
                     }
                     Button(
-                        onClick = { },
+                        onClick = onCheckSignalStrength,
                         shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
                     ) {
@@ -109,6 +119,12 @@ private fun AudioAdjustmentSectionPreview() {
     ForeLockTheme {
         Surface {
             AudioAdjustmentSection(
+                speakerVolume = 3f,
+                micVolume = 6f,
+                signalStrength = 24,
+                onSpeakerVolumeChange = { },
+                onMicVolumeChange = { },
+                onCheckSignalStrength = { },
                 modifier = Modifier.padding(8.dp)
             )
         }
