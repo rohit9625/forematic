@@ -55,11 +55,30 @@ fun CallOutNumberSection(
             modifier = Modifier.padding(start = 8.dp)
         )
         Card {
-            Box {
+            Column {
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Last 6 digits will be used for identification",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.tertiary,
+                        modifier = Modifier.padding(start = 16.dp)
+                    )
+                    ToolTipWithIcon(
+                        showToolTip = isToolTipVisible,
+                        onClick = { isToolTipVisible = true },
+                        onDismiss = { isToolTipVisible = false },
+                        infoText = "If a call is not answered, it redirects call to the next number the list.",
+                        modifier = Modifier
+                    )
+                }
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
                     modifier = Modifier
-                        .padding(top = 24.dp, start = 16.dp, bottom = 8.dp, end = 16.dp)
+                        .padding(start = 16.dp, bottom = 8.dp, end = 16.dp)
                         .fillMaxWidth()
                 ) {
                     callOutNumbers.forEachIndexed { index, item->
@@ -155,13 +174,6 @@ fun CallOutNumberSection(
                         }
                     }
                 }
-                ToolTipWithIcon(
-                    showToolTip = isToolTipVisible,
-                    onClick = { isToolTipVisible = true },
-                    onDismiss = { isToolTipVisible = false },
-                    infoText = "If a call is not answered, it redirects call to the next number the list.",
-                    modifier = Modifier.align(Alignment.TopEnd)
-                )
             }
         }
     }
