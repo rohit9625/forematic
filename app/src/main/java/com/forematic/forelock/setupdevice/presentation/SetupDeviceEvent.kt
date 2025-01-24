@@ -52,5 +52,10 @@ sealed interface SetupDeviceEvent {
         data class UpdateNumber(val index: Int, val number: String): CallOutNumberEvent
         data class UpdateName(val index: Int, val name: String): CallOutNumberEvent
         data object AddMoreNumber: CallOutNumberEvent
+        data object OnUpdateClick: CallOutNumberEvent
     }
+
+    data class OnSpeakerVolumeChange(val volume: Float): SetupDeviceEvent
+    data class OnMicVolumeChange(val volume: Float): SetupDeviceEvent
+    data object OnCheckSignalStrength: SetupDeviceEvent
 }

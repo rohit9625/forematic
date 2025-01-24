@@ -97,6 +97,10 @@ class SetupDeviceViewModel(
             SetupDeviceEvent.CallOutNumberEvent.AddMoreNumber -> {
                 _uiState.update { it.copy(callOutNumbers = it.callOutNumbers + CallOutNumber()) }
             }
+
+            SetupDeviceEvent.CallOutNumberEvent.OnUpdateClick -> {
+                /*TODO("Update all call-out numbers in single-shot")*/
+            }
         }
     }
 

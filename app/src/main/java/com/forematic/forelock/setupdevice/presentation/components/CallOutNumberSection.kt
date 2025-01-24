@@ -6,10 +6,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Call
+import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -22,6 +25,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.forematic.forelock.setupdevice.presentation.CallOutNumber
@@ -58,20 +64,29 @@ fun CallOutNumberSection(
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(text = "${index + 1}.")
                             LabeledTextField(
-                                label = "Call-out Number",
+                                label = if(index == 0) "Admin Number" else "Call-out Number",
                                 value = item.number,
                                 onValueChange = {
                                     onEvent(
                                         SetupDeviceEvent.CallOutNumberEvent.UpdateNumber(index, it)
                                     )
                                 },
-                                modifier = Modifier.weight(0.6f),
-                                shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Call,
+                                        contentDescription = null
+                                    )
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Phone,
+                                    imeAction = ImeAction.Next
+                                ),
+                                modifier = Modifier.weight(0.5f)
                             )
 
                             LabeledTextField(
@@ -85,24 +100,49 @@ fun CallOutNumberSection(
                                         )
                                     )
                                 },
-                                modifier = Modifier.weight(0.4f),
-                                shape = RoundedCornerShape(bottomStart = 12.dp, bottomEnd = 12.dp)
+                                trailingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Rounded.Person,
+                                        contentDescription = null
+                                    )
+                                },
+                                keyboardOptions = KeyboardOptions(
+                                    capitalization = KeyboardCapitalization.Words,
+                                    keyboardType = KeyboardType.Text,
+                                    imeAction = ImeAction.Done
+                                ),
+                                modifier = Modifier.weight(0.5f)
                             )
                         }
                     }
 
-                    AssistChip(
-                        onClick = { onEvent(SetupDeviceEvent.CallOutNumberEvent.AddMoreNumber) },
-                        label = { Text(text = "More") },
-                        enabled = canAddMoreNumbers,
-                        leadingIcon = {
-                            Icon(
-                                imageVector = Icons.Rounded.Add,
-                                contentDescription = null
-                            )
-                        },
-                        modifier = Modifier.align(Alignment.End)
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        AssistChip(
+                            onClick = { onEvent(SetupDeviceEvent.CallOutNumberEvent.AddMoreNumber) },
+                            label = { Text(text = "More") },
+                            enabled = canAddMoreNumbers,
+                            leadingIcon = {
+                                Icon(
+                                    imageVector = Icons.Rounded.Add,
+                                    contentDescription = null
+                                )
+                            },
+                            modifier = Modifier
+                        )
+                        Button(
+                            onClick = {
+                                onEvent(SetupDeviceEvent.CallOutNumberEvent.OnUpdateClick)
+                            },
+                            shape = MaterialTheme.shapes.medium
+                        ) {
+                            Text(text = "Update")
+                        }
+                    }
                 }
                 ToolTipWithIcon(
                     showToolTip = isToolTipVisible,
