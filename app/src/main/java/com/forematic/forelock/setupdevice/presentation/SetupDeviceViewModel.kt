@@ -4,16 +4,18 @@ import androidx.lifecycle.ViewModel
 import com.forematic.forelock.core.domain.InputValidator
 import com.forematic.forelock.core.domain.model.InputError
 import com.forematic.forelock.core.domain.model.Result
+import com.forematic.forelock.setupdevice.domain.DeviceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class SetupDeviceViewModel(
+    private val deviceRepository: DeviceRepository,
     private val inputValidator: InputValidator
 ): ViewModel() {
     private val _uiState = MutableStateFlow(NewDeviceUiState(
         deviceType = DeviceType.G24_INTERCOM,
-        simAndPasswordState = SimAndPasswordState(programmingPassword = "CCCC"),
+        currentProgrammingPassword = "1234",
         outputRelay1 = OutputRelay(),
         outputRelay2 = OutputRelay(),
     ))

@@ -5,7 +5,8 @@ import com.forematic.forelock.R
 
 data class NewDeviceUiState(
     val deviceType: DeviceType = DeviceType.G24_INTERCOM,
-    val simAndPasswordState: SimAndPasswordState = SimAndPasswordState(),
+    val currentProgrammingPassword: String = "",
+    val simAndPasswordState: SimAndPasswordState = SimAndPasswordState(programmingPassword = currentProgrammingPassword),
     val outputRelay1: OutputRelay = OutputRelay(),
     val outputRelay2: OutputRelay? = null,
     val timezoneMode: TimezoneMode = TimezoneMode.FREE,
@@ -25,6 +26,7 @@ data class NewDeviceUiState(
 data class SimAndPasswordState(
     val simNumber: String = "",
     val programmingPassword: String = "",
+    val isLoading: Boolean = false,
     val error: String? = null
 )
 

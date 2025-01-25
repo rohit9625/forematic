@@ -72,6 +72,7 @@ fun SetupNewDeviceScreen(
                 onSimNumberChange = {
                     onEvent(SetupDeviceEvent.SimAndPasswordEvent.OnSimNumberChange(it))
                 },
+                currentPassword = uiState.currentProgrammingPassword,
                 password = uiState.simAndPasswordState.programmingPassword,
                 onPasswordChange = {
                     onEvent(SetupDeviceEvent.SimAndPasswordEvent.OnPasswordChange(it))
@@ -79,6 +80,7 @@ fun SetupNewDeviceScreen(
                 onUpdateClick = {
                     onEvent(SetupDeviceEvent.SimAndPasswordEvent.OnUpdateClick)
                 },
+                isLoading = uiState.simAndPasswordState.isLoading,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 
@@ -143,7 +145,7 @@ fun SetupNewDeviceScreen(
 private fun SetupNewDeviceScreenPreview() {
     ForeLockTheme {
         SetupNewDeviceScreen(
-            uiState = NewDeviceUiState(),
+            uiState = NewDeviceUiState(currentProgrammingPassword = "1234"),
             onEvent = { },
             onNavigateBack = { }
         )

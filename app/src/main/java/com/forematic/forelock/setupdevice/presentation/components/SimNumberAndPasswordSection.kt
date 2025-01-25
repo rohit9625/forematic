@@ -13,7 +13,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Edit
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
@@ -31,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.forematic.forelock.ui.theme.ForeLockTheme
@@ -39,10 +39,12 @@ import com.forematic.forelock.ui.theme.ForeLockTheme
 fun SimNumberAndPasswordSection(
     simNumber: String,
     onSimNumberChange: (String) -> Unit,
+    currentPassword: String,
     password: String,
     onPasswordChange: (String) -> Unit,
     onUpdateClick: () -> Unit,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
     error: String? = null
 ) {
     var canEditPassword by remember { mutableStateOf(false) }
@@ -73,25 +75,49 @@ fun SimNumberAndPasswordSection(
                 modifier = Modifier.padding(start = 16.dp, bottom = 24.dp, end = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                LabeledTextField(
-                    label = "Enter SIM card number",
-                    value = simNumber,
-                    onValueChange = onSimNumberChange,
-                    placeholder = "Eg. 01234567891",
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Rounded.Call,
-                            contentDescription = null
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Phone
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalAlignment = Alignment.Bottom,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    LabeledTextField(
+                        label = "Enter SIM card number",
+                        value = simNumber,
+                        onValueChange = onSimNumberChange,
+                        placeholder = "Eg. 01234567891",
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Call,
+                                contentDescription = null
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Phone
+                        ),
+                        modifier = Modifier.weight(0.7f)
                     )
-                )
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier.weight(0.3f)
+                    ) {
+                        Text(
+                            text = currentPassword,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = "Current Password",
+                            textAlign = TextAlign.Center,
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
 
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     LabeledTextField(
                         label = "Programming password",
@@ -119,18 +145,10 @@ fun SimNumberAndPasswordSection(
                         )
                     )
 
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(4.dp),
-                        modifier = Modifier.align(Alignment.Bottom)
-                    ) {
-                        Button(
-                            onClick = onUpdateClick,
-                            modifier = Modifier,
-                            shape = RoundedCornerShape(12.dp)
-                        ) {
-                            Text(text = "Update")
-                        }
-                    }
+                    ButtonWithLoadingIndicator(
+                        onClick = { onUpdateClick() },
+                        isLoading = isLoading
+                    )
                 }
             }
         }
@@ -146,6 +164,7 @@ private fun SimNumberAndPasswordSectionPreview() {
                 simNumber = "",
                 onSimNumberChange = { },
                 password = "",
+                currentPassword = "1234",
                 onPasswordChange = { },
                 onUpdateClick = { },
                 error = "Password field must contain 4 digits",
