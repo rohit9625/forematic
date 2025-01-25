@@ -40,9 +40,20 @@ data class OutputRelay(
     val name: String = "",
     val text: OutputRelayText = OutputRelayText.OPEN_CLOSE,
     val relayTime: String = "",
+    val relayTimeRange: IntRange = 0..99,
     @DrawableRes val icon: Int = R.drawable.ic_rounded_image_24,
-    val error: String? = null
-)
+    val relayTimeError: String? = null,
+    val outputNameError: String? = null,
+    val otherError: String? = null
+) {
+    fun isRelayTimeInRange(): Boolean {
+        val time = relayTime.toIntOrNull() ?: return false // Handle parsing errors
+        return time in relayTimeRange
+    }
+    fun isAnyInputEmpty(): Boolean {
+        return name.isBlank() || relayTime.isBlank() || icon == R.drawable.ic_rounded_image_24
+    }
+}
 
 data class KeypadCodeForOutput(
     val code: String = "",

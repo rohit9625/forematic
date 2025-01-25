@@ -181,13 +181,31 @@ class SetupDeviceViewModel(
     private fun onOutputRelayEvent(e: SetupDeviceEvent.OutputRelayEvent) {
         when(e) {
             is SetupDeviceEvent.OutputRelayEvent.OnRelay1NameChange -> {
-                _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(name = e.name)) }
+                val error = when(val result = inputValidator.validateName(e.name)) {
+                    is Result.Failure -> when(result.error) {
+                        InputError.NameError.EMPTY -> "Enter a name for relay"
+                        InputError.NameError.TOO_SHORT -> "Name is too short"
+                        InputError.NameError.TOO_LONG -> "Name is too long"
+                        InputError.NameError.INVALID_FORMAT -> "Invalid name format"
+                    }
+                    is Result.Success -> null
+                }
+                _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(
+                    name = e.name, outputNameError = error))
+                }
             }
             is SetupDeviceEvent.OutputRelayEvent.OnRelay1TextChange -> {
                 _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(text = e.text)) }
             }
             is SetupDeviceEvent.OutputRelayEvent.OnRelay1TimeChange -> {
-                _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(relayTime = e.relayTime)) }
+                _uiState.update {
+                    val updatedRelay = it.outputRelay1.copy(relayTime = e.relayTime)
+                    val error = if (updatedRelay.isRelayTimeInRange()) null
+                    else "Relay time must be between ${updatedRelay.relayTimeRange.first}" +
+                            "-${updatedRelay.relayTimeRange.last}"
+
+                    it.copy(outputRelay1 = updatedRelay.copy(relayTimeError = error))
+                }
             }
             is SetupDeviceEvent.OutputRelayEvent.OnRelay1IconChange -> {
                 _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(icon = e.icon)) }
@@ -198,13 +216,31 @@ class SetupDeviceViewModel(
 
             // For Intercoms with two output relays
             is SetupDeviceEvent.OutputRelayEvent.OnRelay2NameChange -> {
-                _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(name = e.name)) }
+                val error = when(val result = inputValidator.validateName(e.name)) {
+                    is Result.Failure -> when(result.error) {
+                        InputError.NameError.EMPTY -> "Enter a name for the relay"
+                        InputError.NameError.TOO_SHORT -> "Output Name is too short"
+                        InputError.NameError.TOO_LONG -> "Output Name is too long"
+                        InputError.NameError.INVALID_FORMAT -> "Invalid output name format"
+                    }
+                    is Result.Success -> null
+                }
+                _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(
+                    name = e.name, outputNameError = error))
+                }
             }
             is SetupDeviceEvent.OutputRelayEvent.OnRelay2TextChange -> {
                 _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(text = e.text)) }
             }
             is SetupDeviceEvent.OutputRelayEvent.OnRelay2TimeChange -> {
-                _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(relayTime = e.relayTime)) }
+                _uiState.update {
+                    val updatedRelay = it.outputRelay2!!.copy(relayTime = e.relayTime)
+                    val error = if (updatedRelay.isRelayTimeInRange()) null
+                    else "Relay time must be between ${updatedRelay.relayTimeRange.first}" +
+                            "-${updatedRelay.relayTimeRange.last}"
+
+                    it.copy(outputRelay2 = updatedRelay.copy(relayTimeError = error))
+                }
             }
             is SetupDeviceEvent.OutputRelayEvent.OnRelay2IconChange -> {
                 _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(icon = e.icon)) }
@@ -214,7 +250,15 @@ class SetupDeviceViewModel(
             }
 
             SetupDeviceEvent.OutputRelayEvent.OnUpdateClick -> {
-                /*TODO("Update the information on target device")*/
+                _uiState.update {
+                    val relay1Error = if(it.outputRelay1.isAnyInputEmpty())
+                        "Please configure relay completely" else null
+                    val relay2Error = if(it.outputRelay2!!.isAnyInputEmpty())
+                        "Please configure relay completely" else null
+
+                    it.copy(outputRelay1 = it.outputRelay1.copy(otherError = relay1Error),
+                        outputRelay2 = it.outputRelay2.copy(otherError = relay2Error))
+                }
             }
         }
     }

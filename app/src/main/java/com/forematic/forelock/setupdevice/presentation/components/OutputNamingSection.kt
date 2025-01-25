@@ -22,6 +22,7 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,6 +48,12 @@ fun OutputNamingSection(
     modifier: Modifier = Modifier,
     outputRelay2: OutputRelay? = null,
 ) {
+    val canUpdateDetails by remember(outputRelay1, outputRelay2) {
+        derivedStateOf { outputRelay1.relayTimeError == null && outputRelay1.outputNameError == null
+                && outputRelay2!!.relayTimeError == null && outputRelay2.outputNameError == null
+        }
+    }
+
     Column(
         modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -82,12 +89,15 @@ fun OutputNamingSection(
                         onEvent(SetupDeviceEvent.OutputRelayEvent.OnRelay1IconChange(it))
                     },
                     label = "Output Naming 1",
+                    relayTimError = outputRelay1.relayTimeError,
+                    outputNameError = outputRelay1.outputNameError,
                     modifier = Modifier.fillMaxWidth()
                 )
 
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     Text(
-                        text = outputRelay1.error ?: "",
+                        text = outputRelay1.outputNameError ?: outputRelay1.relayTimeError
+                        ?: outputRelay1.otherError ?: "",
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.align(Alignment.End)
@@ -117,11 +127,14 @@ fun OutputNamingSection(
                             onEvent(SetupDeviceEvent.OutputRelayEvent.OnRelay2IconChange(it))
                         },
                         label = "Output Naming 2",
+                        relayTimError = outputRelay2.relayTimeError,
+                        outputNameError = outputRelay2.outputNameError,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                         Text(
-                            text = outputRelay2.error ?: "",
+                            text = outputRelay2.outputNameError ?: outputRelay2.relayTimeError
+                             ?: outputRelay2.otherError ?: "",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.error,
                             modifier = Modifier.align(Alignment.End)
@@ -130,13 +143,12 @@ fun OutputNamingSection(
                     }
                 }
 
-                Button(
+                ButtonWithLoadingIndicator(
                     onClick = { onEvent(SetupDeviceEvent.OutputRelayEvent.OnUpdateClick) },
-                    shape = MaterialTheme.shapes.medium,
+                    text = "Update",
+                    isEnabled = canUpdateDetails,
                     modifier = Modifier.align(Alignment.End)
-                ) {
-                    Text(text = "Update")
-                }
+                )
             }
         }
     }
@@ -154,6 +166,8 @@ private fun OutputNaming(
     onGetOutputName: () -> Unit,
     onSelectIcon: (icon: Int) -> Unit,
     modifier: Modifier = Modifier,
+    relayTimError: String? = null,
+    outputNameError: String? = null,
     label: String = "Output Relay"
 ) {
     var isNameToolTipVisible by remember { mutableStateOf(false) }
@@ -198,6 +212,7 @@ private fun OutputNaming(
                             infoText = "This is a sample text."
                         )
                     },
+                    isError = outputNameError != null,
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.Words,
                         keyboardType = KeyboardType.Text
@@ -269,6 +284,7 @@ private fun OutputNaming(
                             style = MaterialTheme.typography.labelMedium
                         )
                     },
+                    isError = relayTimError != null,
                     placeholder = "0-99",
                     modifier = Modifier.widthIn(max = 116.dp).weight(1f, false)
                 )
