@@ -38,12 +38,12 @@ class MessageSender(
         val sentPendingIntent = PendingIntent.getBroadcast(
             context, requestCode,
             Intent(SMS_SENT_ACTION).apply { putExtra(REQUEST_CODE_EXTRA, requestCode) },
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
         val deliveredPendingIntent = PendingIntent.getBroadcast(
             context, requestCode,
             Intent(SMS_DELIVERED_ACTION).apply { putExtra(REQUEST_CODE_EXTRA, requestCode) },
-            PendingIntent.FLAG_IMMUTABLE
+            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
         smsManager.sendTextMessage(recipientNumber, null,
