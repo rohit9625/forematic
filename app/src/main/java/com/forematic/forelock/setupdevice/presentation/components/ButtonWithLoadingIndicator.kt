@@ -21,11 +21,14 @@ import com.forematic.forelock.ui.theme.ForeLockTheme
 @Composable
 fun ButtonWithLoadingIndicator(
     onClick: () -> Unit,
+    text: String,
     modifier: Modifier = Modifier,
+    isEnabled: Boolean = true,
     isLoading: Boolean = false
 ) {
     Button(
         onClick = onClick,
+        enabled = isEnabled,
         modifier = modifier.widthIn(min = 108.dp),
         shape = MaterialTheme.shapes.medium
     ) {
@@ -36,7 +39,7 @@ fun ButtonWithLoadingIndicator(
                 color = MaterialTheme.colorScheme.onPrimary
             )
         } else {
-            Text(text = "Update".uppercase())
+            Text(text = text.uppercase())
         }
     }
 }
@@ -50,6 +53,7 @@ private fun ButtonWithLoadingIndicatorPreview() {
         Surface {
             ButtonWithLoadingIndicator(
                 onClick = { isLoading = !isLoading },
+                text = "Update",
                 isLoading = isLoading,
                 modifier = Modifier.padding(16.dp)
             )

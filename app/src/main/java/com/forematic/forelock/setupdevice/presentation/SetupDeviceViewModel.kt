@@ -84,14 +84,14 @@ class SetupDeviceViewModel(
                 is MessageUpdate.Sent -> currentState.copy(
                     simAndPasswordState = currentState.simAndPasswordState.copy(
                         isLoading = true,
-                        error = null
+                        simNumberError = null
                     )
                 )
 
                 is MessageUpdate.Delivered -> currentState.copy(
                     simAndPasswordState = currentState.simAndPasswordState.copy(
                         isLoading = false,
-                        error = null
+                        simNumberError = null
                     ),
                     currentProgrammingPassword = uiState.value.simAndPasswordState.programmingPassword
                 )
@@ -99,7 +99,7 @@ class SetupDeviceViewModel(
                 is MessageUpdate.Error -> currentState.copy(
                     simAndPasswordState = currentState.simAndPasswordState.copy(
                         isLoading = false,
-                        error = messageUpdate.error.toString()
+                        simNumberError = messageUpdate.error.toString()
                     )
                 )
             }
@@ -109,22 +109,30 @@ class SetupDeviceViewModel(
     private fun onSimAndPasswordEvent(e: SetupDeviceEvent.SimAndPasswordEvent) {
         when(e) {
             is SetupDeviceEvent.SimAndPasswordEvent.OnSimNumberChange -> {
+                val error = when(val result = inputValidator.validateUkPhoneNumber(e.number)) {
+                    is Result.Failure -> when(result.error) {
+                        InputError.PhoneNumberError.INVALID_NUMBER -> "Invalid SIM Number"
+                    }
+                    is Result.Success -> null
+                }
                 _uiState.update {
-                    it.copy(simAndPasswordState = it.simAndPasswordState.copy(simNumber = e.number))
+                    it.copy(simAndPasswordState = it.simAndPasswordState.copy(
+                        simNumber = e.number, simNumberError = error)
+                    )
                 }
             }
 
             is SetupDeviceEvent.SimAndPasswordEvent.OnPasswordChange -> {
                 val error = when(val result = inputValidator.validateProgrammingPassword(e.password)) {
                     is Result.Failure -> when(result.error) {
-                        InputError.PasswordError.INVALID_LENGTH -> "Programming password must be 4 characters"
-                        InputError.PasswordError.INVALID_CHARS -> ""
+                        InputError.PasswordError.INVALID_LENGTH -> "Password must contain 4 characters"
+                        InputError.PasswordError.INVALID_CHARS -> "Password should have numbers and letters"
                     }
                     is Result.Success -> null
                 }
                 _uiState.update {
                     it.copy(simAndPasswordState = it.simAndPasswordState
-                        .copy(programmingPassword = e.password, error = error))
+                        .copy(programmingPassword = e.password, passwordError = error))
                 }
             }
 

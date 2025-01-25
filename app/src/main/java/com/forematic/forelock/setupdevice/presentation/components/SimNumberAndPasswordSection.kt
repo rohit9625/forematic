@@ -20,6 +20,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,21 +35,24 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.forematic.forelock.R
+import com.forematic.forelock.setupdevice.presentation.NewDeviceUiState
+import com.forematic.forelock.setupdevice.presentation.SetupDeviceEvent
+import com.forematic.forelock.setupdevice.presentation.SimAndPasswordState
 import com.forematic.forelock.ui.theme.ForeLockTheme
 
 @Composable
 fun SimNumberAndPasswordSection(
-    simNumber: String,
-    onSimNumberChange: (String) -> Unit,
-    currentPassword: String,
-    password: String,
-    onPasswordChange: (String) -> Unit,
-    onUpdateClick: () -> Unit,
-    modifier: Modifier = Modifier,
-    isLoading: Boolean = false,
-    error: String? = null
+    simAndPasswordState: SimAndPasswordState,
+    currentProgrammingPassword: String,
+    onEvent: (SetupDeviceEvent.SimAndPasswordEvent) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     var canEditPassword by remember { mutableStateOf(false) }
+    val canUpdate by remember {
+        derivedStateOf { simAndPasswordState.simNumberError == null
+                && simAndPasswordState.passwordError == null
+        }
+    }
     val focusRequester = remember { FocusRequester() }
 
     LaunchedEffect(canEditPassword) {
@@ -67,10 +71,12 @@ fun SimNumberAndPasswordSection(
 
         Card {
             Text(
-                text = error ?: "",
+                text = simAndPasswordState.simNumberError ?: simAndPasswordState.passwordError ?: "",
                 style = MaterialTheme.typography.labelSmall,
                 color = MaterialTheme.colorScheme.error,
-                modifier = Modifier.padding(top = 8.dp, end = 16.dp).align(Alignment.End)
+                modifier = Modifier
+                    .padding(vertical = 8.dp, horizontal = 16.dp)
+                    .align(Alignment.End)
             )
             Column(
                 modifier = Modifier.padding(start = 16.dp, bottom = 24.dp, end = 16.dp),
@@ -83,8 +89,10 @@ fun SimNumberAndPasswordSection(
                 ) {
                     LabeledTextField(
                         label = "Enter SIM card number",
-                        value = simNumber,
-                        onValueChange = onSimNumberChange,
+                        value = simAndPasswordState.simNumber,
+                        onValueChange = {
+                            onEvent(SetupDeviceEvent.SimAndPasswordEvent.OnSimNumberChange(it))
+                        },
                         placeholder = "Eg. 01234567891",
                         trailingIcon = {
                             Icon(
@@ -96,6 +104,7 @@ fun SimNumberAndPasswordSection(
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Phone
                         ),
+                        isError = simAndPasswordState.simNumberError != null,
                         modifier = Modifier.weight(0.7f)
                     )
                     Column(
@@ -103,7 +112,7 @@ fun SimNumberAndPasswordSection(
                         modifier = Modifier.weight(0.3f)
                     ) {
                         Text(
-                            text = currentPassword,
+                            text = currentProgrammingPassword,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -123,8 +132,10 @@ fun SimNumberAndPasswordSection(
                 ) {
                     LabeledTextField(
                         label = "Programming password",
-                        value = password,
-                        onValueChange = onPasswordChange,
+                        value = simAndPasswordState.programmingPassword,
+                        onValueChange = {
+                            onEvent(SetupDeviceEvent.SimAndPasswordEvent.OnPasswordChange(it))
+                        },
                         modifier = Modifier.width(164.dp),
                         trailingIcon = {
                             FilledIconButton(
@@ -140,6 +151,7 @@ fun SimNumberAndPasswordSection(
                                 )
                             }
                         },
+                        isError = simAndPasswordState.passwordError != null,
                         isEnabled = canEditPassword,
                         focusRequester = focusRequester,
                         keyboardOptions = KeyboardOptions(
@@ -148,8 +160,10 @@ fun SimNumberAndPasswordSection(
                     )
 
                     ButtonWithLoadingIndicator(
-                        onClick = { onUpdateClick() },
-                        isLoading = isLoading
+                        onClick = { onEvent(SetupDeviceEvent.SimAndPasswordEvent.OnUpdateClick) },
+                        text = "Update",
+                        isLoading = simAndPasswordState.isLoading,
+                        isEnabled = canUpdate
                     )
                 }
             }
@@ -163,13 +177,9 @@ private fun SimNumberAndPasswordSectionPreview() {
     ForeLockTheme {
         Surface {
             SimNumberAndPasswordSection(
-                simNumber = "",
-                onSimNumberChange = { },
-                password = "",
-                currentPassword = "1234",
-                onPasswordChange = { },
-                onUpdateClick = { },
-                error = "Password field must contain 4 digits",
+                simAndPasswordState = SimAndPasswordState(),
+                currentProgrammingPassword = "1234",
+                onEvent = { },
                 modifier = Modifier
                     .padding(16.dp)
                     .fillMaxWidth()

@@ -33,6 +33,7 @@ fun LabeledTextField(
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     secondaryLabel: String? = null,
+    isError: Boolean = false,
     isEnabled: Boolean = true,
     placeholder: String? = null,
     trailingIcon: @Composable (() -> Unit)? = null,
@@ -80,6 +81,7 @@ fun LabeledTextField(
                     )
                 }
             },
+            isError = isError,
             visualTransformation = visualTransformation,
             textStyle = textStyle,
             shape = shape,

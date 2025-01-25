@@ -27,7 +27,8 @@ data class SimAndPasswordState(
     val simNumber: String = "",
     val programmingPassword: String = "",
     val isLoading: Boolean = false,
-    val error: String? = null
+    val simNumberError: String? = null,
+    val passwordError: String? = null
 )
 
 data class CallOutNumber(
