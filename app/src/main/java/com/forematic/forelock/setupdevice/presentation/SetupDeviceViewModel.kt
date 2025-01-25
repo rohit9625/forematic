@@ -29,6 +29,9 @@ class SetupDeviceViewModel(
         Constants.UPDATE_PASSWORD_REQUEST to { messageUpdate: MessageUpdate ->
             updateSimAndPasswordState(messageUpdate)
         },
+        Constants.UPDATE_TIMEZONE_REQUEST to { messageUpdate: MessageUpdate ->
+            updateTimezoneMode(messageUpdate)
+        }
         // Add more request codes and update functions here...
     )
 
@@ -50,13 +53,7 @@ class SetupDeviceViewModel(
                 _uiState.update { it.copy(deviceType = e.deviceType) }
             }
 
-            is SetupDeviceEvent.TimezoneModeChanged -> {
-                _uiState.update { it.copy(timezoneMode = e.timezoneMode) }
-            }
-
-            is SetupDeviceEvent.OnTimezoneModeUpdate -> {
-                /*Send SMS to target device to update timezone mode*/
-            }
+            is SetupDeviceEvent.TimezoneModeEvent -> onTimezoneModeEvent(e)
 
             is SetupDeviceEvent.OutputRelayEvent -> onOutputRelayEvent(e)
 
@@ -102,6 +99,37 @@ class SetupDeviceViewModel(
                         simNumberError = messageUpdate.error.toString()
                     )
                 )
+            }
+        }
+    }
+
+    private fun onTimezoneModeEvent(e: SetupDeviceEvent.TimezoneModeEvent) {
+        when(e) {
+            is SetupDeviceEvent.TimezoneModeEvent.OnTimezoneModeChange -> {
+                _uiState.update { it.copy(timezoneMode = e.timezoneMode) }
+            }
+            SetupDeviceEvent.TimezoneModeEvent.OnUpdateClick -> {
+                deviceRepository.setTimezoneMode(
+                    uiState.value.simAndPasswordState.simNumber,
+                    uiState.value.currentProgrammingPassword,
+                    uiState.value.timezoneMode.name
+                )
+            }
+        }
+    }
+
+    private fun updateTimezoneMode(messageUpdate: MessageUpdate) {
+        _uiState.update { currentState ->
+            when(messageUpdate) {
+                is MessageUpdate.Sent -> {
+                    currentState.copy(isUpdatingTimezone = true)
+                }
+                is MessageUpdate.Delivered -> {
+                    currentState.copy(isUpdatingTimezone = false)
+                }
+                is MessageUpdate.Error -> {
+                    currentState.copy(isUpdatingTimezone = false)
+                }
             }
         }
     }

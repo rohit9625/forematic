@@ -28,7 +28,8 @@ fun TimezoneModeSection(
     selectedMode: TimezoneMode?,
     onModeSelection: (TimezoneMode) -> Unit,
     onUpdateClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isUpdatingTimzone: Boolean = false
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -60,14 +61,11 @@ fun TimezoneModeSection(
                         modifier = Modifier.width(IntrinsicSize.Max)
                     )
                 }
-                Button(
+                ButtonWithLoadingIndicator(
                     onClick = onUpdateClick,
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Text(
-                        text = "Update"
-                    )
-                }
+                    text = "Update",
+                    isLoading = isUpdatingTimzone
+                )
             }
         }
     }

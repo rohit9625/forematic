@@ -14,10 +14,16 @@ class DeviceRepositoryImpl(
     }
 
     override fun setNewPassword(simNumber: String, oldPassword: String, newPassword: String) {
-
         messageSender.sendMessage(simNumber,
             "$oldPassword#PWD#$newPassword#",
             Constants.UPDATE_PASSWORD_REQUEST
+        )
+    }
+
+    override fun setTimezoneMode(simNumber: String, password: String, timezoneMode: String) {
+        messageSender.sendMessage(simNumber,
+            "$password#$timezoneMode#",
+            Constants.UPDATE_TIMEZONE_REQUEST
         )
     }
 }

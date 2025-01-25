@@ -5,5 +5,8 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface DeviceRepository {
     val messageUpdates: StateFlow<MessageUpdate?>
+
     fun setNewPassword(simNumber: String, oldPassword: String, newPassword: String)
+
+    fun setTimezoneMode(simNumber: String, password: String, timezoneMode: String)
 }

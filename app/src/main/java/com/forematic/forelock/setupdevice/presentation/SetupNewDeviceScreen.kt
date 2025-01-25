@@ -83,8 +83,9 @@ fun SetupNewDeviceScreen(
 
             TimezoneModeSection(
                 selectedMode = uiState.timezoneMode,
-                onModeSelection = { onEvent(SetupDeviceEvent.TimezoneModeChanged(it)) },
-                onUpdateClick = { onEvent(SetupDeviceEvent.OnTimezoneModeUpdate) },
+                isUpdatingTimzone = uiState.isUpdatingTimezone,
+                onModeSelection = { onEvent(SetupDeviceEvent.TimezoneModeEvent.OnTimezoneModeChange(it)) },
+                onUpdateClick = { onEvent(SetupDeviceEvent.TimezoneModeEvent.OnUpdateClick) },
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 
