@@ -32,7 +32,7 @@ fun PermissionRationale(
     Dialog(onDismissRequest = onDismiss) {
         Card(modifier = modifier) {
             Column(
-                modifier = Modifier.padding(16.dp),
+                modifier = Modifier.padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 Text(
@@ -87,13 +87,14 @@ interface PermissionTextProvider {
     fun getDescription(isPermanentlyDeclined: Boolean): String
 }
 
-class MessagePermissionText: PermissionTextProvider {
+class SmsPermissionText: PermissionTextProvider {
     override fun getDescription(isPermanentlyDeclined: Boolean): String {
-        return if(isPermanentlyDeclined) {
-            "It seems you permanently declined SEND SMS permission." +
-                    "Please grant the permission in the app settings."
+        return if (isPermanentlyDeclined) {
+            "You have permanently declined the SEND_SMS permission. " +
+                    "To operate the gate, please enable the permission in your app settings."
         } else {
-            "This app needs access to send SMS messages to open the gate."
+            "The app requires SEND_SMS permission to send codes for operating the gate. " +
+                    "Please grant this permission to continue."
         }
     }
 }
@@ -104,7 +105,7 @@ private fun PermissionDialogPreview() {
     ForeLockTheme {
         Surface(tonalElevation = 5.dp) {
             PermissionRationale(
-                permissionTextProvider = MessagePermissionText(),
+                permissionTextProvider = SmsPermissionText(),
                 isPermanentlyDeclined = true,
                 onConfirm = {},
                 onDismiss = {},
