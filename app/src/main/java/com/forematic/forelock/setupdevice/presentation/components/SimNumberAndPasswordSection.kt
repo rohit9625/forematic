@@ -48,7 +48,7 @@ fun SimNumberAndPasswordSection(
     modifier: Modifier = Modifier
 ) {
     var canEditPassword by remember { mutableStateOf(false) }
-    val canUpdate by remember {
+    val canUpdate by remember(simAndPasswordState) {
         derivedStateOf { simAndPasswordState.simNumberError == null
                 && simAndPasswordState.passwordError == null
         }
