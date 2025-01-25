@@ -15,7 +15,7 @@ class DeviceRepositoryImpl(
 
     override fun setNewPassword(simNumber: String, oldPassword: String, newPassword: String) {
 
-        messageSender.sendSms(simNumber,
+        messageSender.sendMessage(simNumber,
             "$oldPassword#PWD#$newPassword#",
             Constants.UPDATE_PASSWORD_REQUEST
         )

@@ -22,32 +22,36 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.forematic.forelock.core.domain.model.PermissionHandler
 import com.forematic.forelock.core.utils.MessageSender
 import com.forematic.forelock.home.presentation.HomeScreen
 import com.forematic.forelock.home.presentation.HomeViewModel
 import com.forematic.forelock.setupdevice.data.DeviceRepositoryImpl
 import com.forematic.forelock.setupdevice.presentation.SetupDeviceViewModel
 import com.forematic.forelock.setupdevice.presentation.SetupNewDeviceScreen
-import com.forematic.forelock.ui.components.MessagePermissionText
+import com.forematic.forelock.ui.components.SmsPermissionText
 import com.forematic.forelock.ui.components.PermissionRationale
 import com.forematic.forelock.ui.theme.ForeLockTheme
 import kotlinx.serialization.Serializable
 
-class MainActivity : ComponentActivity() {
+class MainActivity : ComponentActivity(), PermissionHandler {
+
     private var showPermissionRationale by mutableStateOf(false)
 
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted->
         showPermissionRationale = !isGranted
+        messageSender.onPermissionResult(isGranted)
     }
-    private lateinit var smsHelper: MessageSender
+
+    private lateinit var messageSender: MessageSender
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        smsHelper = MyApplication.appModule.smsHelper
-        smsHelper.registerBroadcastReceivers(this)
+        messageSender = MessageSender(this, MyApplication.appModule.smsManager, this)
+        messageSender.registerBroadcastReceivers(this)
 
         enableEdgeToEdge()
         setContent {
@@ -100,7 +104,7 @@ class MainActivity : ComponentActivity() {
                         }
                     ) {
                         val viewModel = viewModel { SetupDeviceViewModel(
-                            deviceRepository = DeviceRepositoryImpl(smsHelper),
+                            deviceRepository = DeviceRepositoryImpl(messageSender),
                             inputValidator = MyApplication.appModule.inputValidator
                         ) }
                         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -115,7 +119,7 @@ class MainActivity : ComponentActivity() {
 
                 if (showPermissionRationale) {
                     PermissionRationale(
-                        permissionTextProvider = MessagePermissionText(),
+                        permissionTextProvider = SmsPermissionText(),
                         isPermanentlyDeclined = !shouldShowRequestPermissionRationale(
                             Manifest.permission.SEND_SMS),
                         onConfirm = {
@@ -130,12 +134,6 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private fun hasPermission(permission: String): Boolean {
-        return ContextCompat.checkSelfPermission(
-            this, permission
-        ) == PackageManager.PERMISSION_GRANTED
-    }
-
     private fun openAppSettings() {
         Intent(
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
@@ -143,9 +141,19 @@ class MainActivity : ComponentActivity() {
         ).also { startActivity(it) }
     }
 
+    override fun requestPermission(permission: String) {
+        requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
+    }
+
+    override fun hasPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this, permission
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
     override fun onDestroy() {
         super.onDestroy()
-        smsHelper.unregisterReceivers()
+        messageSender.unregisterReceivers()
     }
 }
 

@@ -1,5 +1,6 @@
 package com.forematic.forelock.core.utils
 
+import android.Manifest
 import android.app.Activity
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
@@ -8,9 +9,11 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.telephony.SmsManager
 import android.util.Log
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.forematic.forelock.core.domain.model.MessageError
 import com.forematic.forelock.core.domain.model.MessageUpdate
+import com.forematic.forelock.core.domain.model.PermissionHandler
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,13 +21,25 @@ import kotlinx.coroutines.flow.update
 
 class MessageSender(
     private val context: Context,
-    private val smsManager: SmsManager
+    private val smsManager: SmsManager,
+    private val permissionHandler: PermissionHandler
 ) {
     private var sentStatusReceiver: BroadcastReceiver? = null
     private var deliveryStatusReceiver: BroadcastReceiver? = null
 
     private val _messageUpdates = MutableStateFlow<MessageUpdate?>(null)
     val messageUpdates: StateFlow<MessageUpdate?> = _messageUpdates.asStateFlow()
+
+    private var pendingMessage: PendingMessage? = null
+
+    fun sendMessage(recipientNumber: String, messageContent: String, requestCode: Int) {
+        if(permissionHandler.hasPermission(Manifest.permission.SEND_SMS)) {
+            sendMessageWithIntent(recipientNumber, messageContent, requestCode)
+        } else {
+            pendingMessage = PendingMessage(recipientNumber, messageContent, requestCode)
+            permissionHandler.requestPermission(Manifest.permission.SEND_SMS)
+        }
+    }
 
     /**
     * Sends an SMS message to the specified recipient.
@@ -34,7 +49,7 @@ class MessageSender(
     * @param requestCode A unique integer request code to identify this specific SMS message.
     *                    This code will be used to match the sent/delivered status to this message.
     */
-    fun sendSms(recipientNumber: String, messageContent: String, requestCode: Int) {
+    private fun sendMessageWithIntent(recipientNumber: String, messageContent: String, requestCode: Int) {
         val sentPendingIntent = PendingIntent.getBroadcast(
             context, requestCode,
             Intent(SMS_SENT_ACTION).apply { putExtra(REQUEST_CODE_EXTRA, requestCode) },
@@ -131,6 +146,23 @@ class MessageSender(
             deliveryStatusReceiver = null
         }
     }
+
+    fun onPermissionResult(isGranted: Boolean) {
+        if (isGranted) {
+            pendingMessage?.let {
+                sendMessageWithIntent(it.recipientNumber, it.messageContent, it.requestCode)
+                pendingMessage = null
+            }
+        } else {
+            Toast.makeText(context, "SMS permission denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    private data class PendingMessage(
+        val recipientNumber: String,
+        val messageContent: String,
+        val requestCode: Int
+    )
 
     companion object {
         private const val SMS_SENT_ACTION = "com.forematic.forelock.SMS_SENT"
