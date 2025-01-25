@@ -7,7 +7,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.telephony.SmsManager
-import android.widget.Toast
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.forematic.forelock.core.domain.model.MessageError
 import com.forematic.forelock.core.domain.model.MessageUpdate
@@ -46,9 +46,16 @@ class MessageSender(
             PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
         )
 
-        smsManager.sendTextMessage(recipientNumber, null,
-            messageContent, sentPendingIntent, deliveredPendingIntent
-        )
+        try {
+            smsManager.sendTextMessage(recipientNumber, null,
+                messageContent, sentPendingIntent, deliveredPendingIntent
+            )
+        } catch (e: Exception) {
+            Log.e("MessageSender", "Error while sending SMS", e)
+            if(e is IllegalArgumentException) {
+                _messageUpdates.update { MessageUpdate.Error(requestCode, MessageError.GENERIC_FAILURE) }
+            }
+        }
     }
 
     /**
@@ -64,23 +71,18 @@ class MessageSender(
                 when (resultCode) {
                     Activity.RESULT_OK -> {
                         _messageUpdates.update { MessageUpdate.Sent(requestCode) }
-                        Toast.makeText(context, "SMS Sent Successfully", Toast.LENGTH_SHORT).show()
                     }
                     SmsManager.RESULT_ERROR_GENERIC_FAILURE -> {
                         _messageUpdates.update { MessageUpdate.Error(requestCode, MessageError.GENERIC_FAILURE) }
-                        Toast.makeText(context, "Generic Failure", Toast.LENGTH_SHORT).show()
                     }
                     SmsManager.RESULT_ERROR_NO_SERVICE -> {
                         _messageUpdates.update { MessageUpdate.Error(requestCode, MessageError.NO_SERVICE) }
-                        Toast.makeText(context, "No Service", Toast.LENGTH_SHORT).show()
                     }
                     SmsManager.RESULT_ERROR_NULL_PDU -> {
                         _messageUpdates.update { MessageUpdate.Error(requestCode, MessageError.NULL_PDU) }
-                        Toast.makeText(context, "Null PDU", Toast.LENGTH_SHORT).show()
                     }
                     SmsManager.RESULT_ERROR_RADIO_OFF -> {
                         _messageUpdates.update { MessageUpdate.Error(requestCode, MessageError.RADIO_OFF) }
-                        Toast.makeText(context, "Radio Off", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -93,11 +95,9 @@ class MessageSender(
                 when (resultCode) {
                     Activity.RESULT_OK -> {
                         _messageUpdates.update { MessageUpdate.Delivered(requestCode) }
-                        Toast.makeText(context, "SMS Delivered Successfully", Toast.LENGTH_SHORT).show()
                     }
                     Activity.RESULT_CANCELED -> {
                         _messageUpdates.update { MessageUpdate.Error(requestCode, MessageError.GENERIC_FAILURE) }
-                        Toast.makeText(context, "SMS Delivery Failed", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
