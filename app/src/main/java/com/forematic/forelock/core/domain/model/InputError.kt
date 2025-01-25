@@ -5,4 +5,13 @@ sealed interface InputError: Error {
         INVALID_LENGTH,
         INVALID_CHARS
     }
+    enum class PhoneNumberError: InputError {
+        INVALID_NUMBER
+    }
+    enum class NameError: InputError {
+        EMPTY,
+        TOO_SHORT,
+        TOO_LONG,
+        INVALID_FORMAT
+    }
 }
