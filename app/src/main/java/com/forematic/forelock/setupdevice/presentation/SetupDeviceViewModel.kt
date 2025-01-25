@@ -137,6 +137,17 @@ class SetupDeviceViewModel(
             }
 
             SetupDeviceEvent.SimAndPasswordEvent.OnUpdateClick -> {
+                val numberError = if(uiState.value.simAndPasswordState.simNumber.isBlank())
+                    "SIM number cannot be empty" else null
+                val passwordError = if(uiState.value.currentProgrammingPassword
+                == uiState.value.simAndPasswordState.programmingPassword) "Password is same as current password"
+                else null
+
+                _uiState.update { it.copy(simAndPasswordState = it.simAndPasswordState.copy(
+                    simNumberError = numberError, passwordError = passwordError)) }
+
+                if(numberError != null || passwordError != null) return
+
                 deviceRepository.setNewPassword(
                     uiState.value.simAndPasswordState.simNumber,
                     uiState.value.currentProgrammingPassword,

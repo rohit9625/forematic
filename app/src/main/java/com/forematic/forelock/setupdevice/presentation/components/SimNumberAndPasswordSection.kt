@@ -35,7 +35,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.forematic.forelock.R
-import com.forematic.forelock.setupdevice.presentation.NewDeviceUiState
 import com.forematic.forelock.setupdevice.presentation.SetupDeviceEvent
 import com.forematic.forelock.setupdevice.presentation.SimAndPasswordState
 import com.forematic.forelock.ui.theme.ForeLockTheme
@@ -151,7 +150,6 @@ fun SimNumberAndPasswordSection(
                                 )
                             }
                         },
-                        isError = simAndPasswordState.passwordError != null,
                         isEnabled = canEditPassword,
                         focusRequester = focusRequester,
                         keyboardOptions = KeyboardOptions(
@@ -160,7 +158,10 @@ fun SimNumberAndPasswordSection(
                     )
 
                     ButtonWithLoadingIndicator(
-                        onClick = { onEvent(SetupDeviceEvent.SimAndPasswordEvent.OnUpdateClick) },
+                        onClick = {
+                            onEvent(SetupDeviceEvent.SimAndPasswordEvent.OnUpdateClick)
+                            canEditPassword = false
+                        },
                         text = "Update",
                         isLoading = simAndPasswordState.isLoading,
                         isEnabled = canUpdate
