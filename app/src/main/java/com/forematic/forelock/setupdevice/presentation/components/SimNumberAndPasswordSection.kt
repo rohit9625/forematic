@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material3.Card
 import androidx.compose.material3.FilledIconButton
@@ -28,11 +27,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.forematic.forelock.R
 import com.forematic.forelock.ui.theme.ForeLockTheme
 
 @Composable
@@ -87,8 +88,9 @@ fun SimNumberAndPasswordSection(
                         placeholder = "Eg. 01234567891",
                         trailingIcon = {
                             Icon(
-                                imageVector = Icons.Rounded.Call,
-                                contentDescription = null
+                                painter = painterResource(R.drawable.ic_dialer_sim_24),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
                             )
                         },
                         keyboardOptions = KeyboardOptions(
