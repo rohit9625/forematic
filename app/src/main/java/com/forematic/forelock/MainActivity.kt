@@ -22,8 +22,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.forematic.forelock.core.utils.MessageSender
 import com.forematic.forelock.home.presentation.HomeScreen
 import com.forematic.forelock.home.presentation.HomeViewModel
+import com.forematic.forelock.setupdevice.data.DeviceRepositoryImpl
 import com.forematic.forelock.setupdevice.presentation.SetupDeviceViewModel
 import com.forematic.forelock.setupdevice.presentation.SetupNewDeviceScreen
 import com.forematic.forelock.ui.components.MessagePermissionText
@@ -39,9 +41,13 @@ class MainActivity : ComponentActivity() {
     ) { isGranted->
         showPermissionRationale = !isGranted
     }
+    private lateinit var smsHelper: MessageSender
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        smsHelper = MyApplication.appModule.smsHelper
+        smsHelper.registerBroadcastReceivers(this)
 
         enableEdgeToEdge()
         setContent {
@@ -93,7 +99,10 @@ class MainActivity : ComponentActivity() {
                             )
                         }
                     ) {
-                        val viewModel = viewModel { SetupDeviceViewModel(MyApplication.appModule.inputValidator) }
+                        val viewModel = viewModel { SetupDeviceViewModel(
+                            deviceRepository = DeviceRepositoryImpl(smsHelper),
+                            inputValidator = MyApplication.appModule.inputValidator
+                        ) }
                         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
                         SetupNewDeviceScreen(
@@ -132,6 +141,11 @@ class MainActivity : ComponentActivity() {
             Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
             Uri.fromParts("package", packageName, null)
         ).also { startActivity(it) }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        smsHelper.unregisterReceivers()
     }
 }
 

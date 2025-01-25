@@ -1,13 +1,17 @@
 package com.forematic.forelock.setupdevice.presentation
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.forematic.forelock.core.domain.InputValidator
 import com.forematic.forelock.core.domain.model.InputError
+import com.forematic.forelock.core.domain.model.MessageUpdate
 import com.forematic.forelock.core.domain.model.Result
+import com.forematic.forelock.core.utils.Constants
 import com.forematic.forelock.setupdevice.domain.DeviceRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class SetupDeviceViewModel(
     private val deviceRepository: DeviceRepository,
@@ -20,6 +24,23 @@ class SetupDeviceViewModel(
         outputRelay2 = OutputRelay(),
     ))
     val uiState = _uiState.asStateFlow()
+
+    private val stateUpdateMap: Map<Int, (MessageUpdate) -> Unit> = mapOf(
+        Constants.UPDATE_PASSWORD_REQUEST to { messageUpdate: MessageUpdate ->
+            updateSimAndPasswordState(messageUpdate)
+        },
+        // Add more request codes and update functions here...
+    )
+
+    init {
+        viewModelScope.launch {
+            deviceRepository.messageUpdates.collect {
+                it?.let {
+                    stateUpdateMap[it.requestCode]?.invoke(it)
+                }
+            }
+        }
+    }
 
     fun onEvent(e: SetupDeviceEvent) {
         when(e) {
@@ -57,6 +78,34 @@ class SetupDeviceViewModel(
         }
     }
 
+    private fun updateSimAndPasswordState(messageUpdate: MessageUpdate) {
+        _uiState.update { currentState ->
+            when (messageUpdate) {
+                is MessageUpdate.Sent -> currentState.copy(
+                    simAndPasswordState = currentState.simAndPasswordState.copy(
+                        isLoading = true,
+                        error = null
+                    )
+                )
+
+                is MessageUpdate.Delivered -> currentState.copy(
+                    simAndPasswordState = currentState.simAndPasswordState.copy(
+                        isLoading = false,
+                        error = null
+                    ),
+                    currentProgrammingPassword = uiState.value.simAndPasswordState.programmingPassword
+                )
+
+                is MessageUpdate.Error -> currentState.copy(
+                    simAndPasswordState = currentState.simAndPasswordState.copy(
+                        isLoading = false,
+                        error = messageUpdate.error.toString()
+                    )
+                )
+            }
+        }
+    }
+
     private fun onSimAndPasswordEvent(e: SetupDeviceEvent.SimAndPasswordEvent) {
         when(e) {
             is SetupDeviceEvent.SimAndPasswordEvent.OnSimNumberChange -> {
@@ -64,6 +113,7 @@ class SetupDeviceViewModel(
                     it.copy(simAndPasswordState = it.simAndPasswordState.copy(simNumber = e.number))
                 }
             }
+
             is SetupDeviceEvent.SimAndPasswordEvent.OnPasswordChange -> {
                 val error = when(val result = inputValidator.validateProgrammingPassword(e.password)) {
                     is Result.Failure -> when(result.error) {
@@ -77,9 +127,13 @@ class SetupDeviceViewModel(
                         .copy(programmingPassword = e.password, error = error))
                 }
             }
+
             SetupDeviceEvent.SimAndPasswordEvent.OnUpdateClick -> {
-                
-                TODO("Update the Sim and Password to device")
+                deviceRepository.setNewPassword(
+                    uiState.value.simAndPasswordState.simNumber,
+                    uiState.value.currentProgrammingPassword,
+                    uiState.value.simAndPasswordState.programmingPassword
+                )
             }
         }
     }
