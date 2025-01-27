@@ -15,7 +15,6 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
@@ -50,7 +49,7 @@ fun OutputNamingSection(
 ) {
     val canUpdateDetails by remember(outputRelay1, outputRelay2) {
         derivedStateOf { outputRelay1.relayTimeError == null && outputRelay1.outputNameError == null
-                && outputRelay2!!.relayTimeError == null && outputRelay2.outputNameError == null
+                && outputRelay2?.relayTimeError == null && outputRelay2?.outputNameError == null
         }
     }
 
@@ -94,16 +93,10 @@ fun OutputNamingSection(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(
-                        text = outputRelay1.outputNameError ?: outputRelay1.relayTimeError
-                        ?: outputRelay1.otherError ?: "",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.error,
-                        modifier = Modifier.align(Alignment.End)
-                    )
-                    HorizontalDivider()
-                }
+                ErrorTextWithDivider(
+                    text = outputRelay1.outputNameError ?: outputRelay1.relayTimeError
+                    ?: outputRelay1.otherError ?: ""
+                )
 
                 outputRelay2?.let { relay ->
                     OutputNaming(
@@ -131,16 +124,10 @@ fun OutputNamingSection(
                         outputNameError = outputRelay2.outputNameError,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text(
-                            text = outputRelay2.outputNameError ?: outputRelay2.relayTimeError
-                             ?: outputRelay2.otherError ?: "",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = MaterialTheme.colorScheme.error,
-                            modifier = Modifier.align(Alignment.End)
-                        )
-                        HorizontalDivider()
-                    }
+                    ErrorTextWithDivider(
+                        text = outputRelay2.outputNameError ?: outputRelay2.relayTimeError
+                        ?: outputRelay2.otherError ?: ""
+                    )
                 }
 
                 ButtonWithLoadingIndicator(

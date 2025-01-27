@@ -69,12 +69,9 @@ fun SimNumberAndPasswordSection(
         )
 
         Card {
-            Text(
+            ErrorText(
                 text = simAndPasswordState.simNumberError ?: simAndPasswordState.passwordError ?: "",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.error,
-                modifier = Modifier
-                    .padding(vertical = 8.dp, horizontal = 16.dp)
+                modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                     .align(Alignment.End)
             )
             Column(
