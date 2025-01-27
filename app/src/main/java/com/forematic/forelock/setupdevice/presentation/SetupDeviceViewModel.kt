@@ -115,7 +115,7 @@ class SetupDeviceViewModel(
                 deviceRepository.setTimezoneMode(
                     uiState.value.simAndPasswordState.simNumber,
                     uiState.value.currentProgrammingPassword,
-                    uiState.value.timezoneMode.name
+                    uiState.value.timezoneMode.code
                 )
             }
         }

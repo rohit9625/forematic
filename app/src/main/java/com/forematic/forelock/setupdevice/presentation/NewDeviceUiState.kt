@@ -9,7 +9,7 @@ data class NewDeviceUiState(
     val simAndPasswordState: SimAndPasswordState = SimAndPasswordState(programmingPassword = currentProgrammingPassword),
     val outputRelay1: OutputRelay = OutputRelay(),
     val outputRelay2: OutputRelay? = null,
-    val timezoneMode: TimezoneMode = TimezoneMode.FREE,
+    val timezoneMode: TimezoneMode = TimezoneMode.TRADE,
     val isUpdatingTimezone: Boolean = false,
     val keypadCode1: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "001-100"),
     val keypadCode2: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "101-149"),
@@ -83,11 +83,11 @@ enum class OutputRelayText(val displayName: String) {
     SET_UNSET("Set/Unset")
 }
 
-enum class TimezoneMode(val displayName: String, @DrawableRes val icon: Int) {
-    FREE("Free", R.drawable.ic_outline_free_24),
-    DAY("Day", R.drawable.ic_rounded_day_24),
-    NIGHT("Night", R.drawable.ic_outline_night_24),
-//    NOTIFY("Notify", R.drawable.ic_outline_notifications_24)
+enum class TimezoneMode(val displayName: String, val code: String, @DrawableRes val icon: Int) {
+    TRADE("Trade", "FREE", R.drawable.ic_trade_24),
+    DAY("Day", "DAY", R.drawable.ic_rounded_day_24),
+    NIGHT("Night", "NIGHT", R.drawable.ic_outline_night_24),
+    HOLIDAY("Holiday", "HOLS", R.drawable.ic_block_24)
 }
 
 enum class DeviceType(val displayName: String) {

@@ -4,17 +4,16 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Button
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,7 +28,7 @@ fun TimezoneModeSection(
     onModeSelection: (TimezoneMode) -> Unit,
     onUpdateClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isUpdatingTimzone: Boolean = false
+    isUpdatingTimezone: Boolean = false
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -41,30 +40,37 @@ fun TimezoneModeSection(
             modifier = Modifier.padding(start = 8.dp)
         )
         Card {
-            FlowRow(
-                modifier = Modifier.padding(vertical = 16.dp, horizontal = 24.dp).fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(16.dp)
             ) {
-                TimezoneMode.entries.forEach { mode ->
-                    FilterChipWithToolTip(
-                        isSelected = mode == selectedMode,
-                        onClick = { onModeSelection(mode) },
-                        label = mode.displayName,
-                        leadingIcon = {
-                            Icon(
-                                painter = painterResource(mode.icon),
-                                contentDescription = null
-                            )
-                        },
-                        toolTipText = mode.displayName,
-                        modifier = Modifier.width(IntrinsicSize.Max)
-                    )
+                FlowRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    TimezoneMode.entries.forEach { mode ->
+                        FilterChipWithToolTip(
+                            isSelected = mode == selectedMode,
+                            onClick = { onModeSelection(mode) },
+                            label = mode.displayName,
+                            leadingIcon = {
+                                Icon(
+                                    painter = painterResource(mode.icon),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            },
+                            toolTipText = mode.displayName,
+                            modifier = Modifier
+                        )
+                    }
                 }
                 ButtonWithLoadingIndicator(
                     onClick = onUpdateClick,
                     text = "Update",
-                    isLoading = isUpdatingTimzone
+                    isLoading = isUpdatingTimezone,
+                    modifier = Modifier.align(Alignment.End)
                 )
             }
         }
