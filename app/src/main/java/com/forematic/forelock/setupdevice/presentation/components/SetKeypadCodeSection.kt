@@ -1,12 +1,10 @@
 package com.forematic.forelock.setupdevice.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,9 +14,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,11 +56,10 @@ fun SetKeypadCodeSection(
                 modifier = Modifier.padding(16.dp)
             ) {
                 KeypadCodeWithLocation(
-                    code = keypadCode1.code,
+                    keypadCode = keypadCode1,
                     onCodeChange = {
                         onEvent(SetupDeviceEvent.KeypadCodeEvent.OnKeypadCode1Change(it))
                     },
-                    location = keypadCode1.location,
                     onLocationChange = {
                         onEvent(SetupDeviceEvent.KeypadCodeEvent.OnCodeLocation1Change(it))
                     },
@@ -72,18 +67,14 @@ fun SetKeypadCodeSection(
                         onEvent(SetupDeviceEvent.KeypadCodeEvent.OnFindKeypadCode1Location)
                     },
                     label = "Output 1 Code",
-                    locationRange = keypadCode1.locationRange,
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                HorizontalDivider()
-
                 KeypadCodeWithLocation(
-                    code = keypadCode2.code,
+                    keypadCode = keypadCode2,
                     onCodeChange = {
                         onEvent(SetupDeviceEvent.KeypadCodeEvent.OnKeypadCode2Change(it))
                     },
-                    location = keypadCode2.location,
                     onLocationChange = {
                         onEvent(SetupDeviceEvent.KeypadCodeEvent.OnCodeLocation2Change(it))
                     },
@@ -91,18 +82,14 @@ fun SetKeypadCodeSection(
                         onEvent(SetupDeviceEvent.KeypadCodeEvent.OnFindKeypadCode2Location)
                     },
                     label = "Output 2 Code",
-                    locationRange = keypadCode2.locationRange,
                     modifier = Modifier.fillMaxWidth()
                 )
-
-                HorizontalDivider()
                 
                 KeypadCodeWithLocation(
-                    code = deliveryCode.code,
+                    keypadCode = deliveryCode,
                     onCodeChange = {
                         onEvent(SetupDeviceEvent.KeypadCodeEvent.OnDeliveryCodeChange(it))
                     },
-                    location = deliveryCode.location,
                     onLocationChange = {
                         onEvent(SetupDeviceEvent.KeypadCodeEvent.OnDeliveryCodeLocationChange(it))
                     },
@@ -110,11 +97,8 @@ fun SetKeypadCodeSection(
                         onEvent(SetupDeviceEvent.KeypadCodeEvent.OnFindDeliveryCodeLocation)
                     },
                     label = "Setup Delivery Code",
-                    locationRange = deliveryCode.locationRange,
                     modifier = Modifier.fillMaxWidth()
                 )
-
-                HorizontalDivider()
 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -139,13 +123,11 @@ fun SetKeypadCodeSection(
 
 @Composable
 fun KeypadCodeWithLocation(
-    code: String,
+    keypadCode: KeypadCodeForOutput,
     onCodeChange: (String) -> Unit,
-    location: String,
     onLocationChange: (String) -> Unit,
     onFindAction: () -> Unit,
     label: String,
-    locationRange: String,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -164,10 +146,10 @@ fun KeypadCodeWithLocation(
             modifier = Modifier.fillMaxWidth()
         ) {
             LabeledTextField(
-                value = location,
+                value = keypadCode.location,
                 onValueChange = onLocationChange,
                 label = "Location",
-                secondaryLabel = locationRange,
+                secondaryLabel = keypadCode.locationRange,
                 modifier = Modifier.widthIn(max = 156.dp),
                 shape = RoundedCornerShape(12.dp),
                 trailingIcon = {
@@ -190,7 +172,7 @@ fun KeypadCodeWithLocation(
             )
 
             LabeledTextField(
-                value = code,
+                value = keypadCode.code,
                 onValueChange = onCodeChange,
                 label = "Keypad Code",
                 modifier = Modifier.widthIn(max = 128.dp),
@@ -201,6 +183,8 @@ fun KeypadCodeWithLocation(
                 )
             )
         }
+
+        ErrorTextWithDivider(text = keypadCode.locationError ?: keypadCode.codeError ?: "")
     }
 }
 
@@ -209,24 +193,15 @@ fun KeypadCodeWithLocation(
 private fun SetKeypadCodeSectionPreview() {
     ForeLockTheme {
         Surface {
-            Scaffold { innerPadding ->
-                Box(
-                    modifier = Modifier
-                        .padding(innerPadding)
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    SetKeypadCodeSection(
-                        keypadCode1 = KeypadCodeForOutput(),
-                        keypadCode2 = KeypadCodeForOutput(),
-                        deliveryCode = KeypadCodeForOutput(),
-                        onEvent = { },
-                        modifier = Modifier
-                            .padding(8.dp)
-                            .fillMaxWidth()
-                    )
-                }
-            }
+            SetKeypadCodeSection(
+                keypadCode1 = KeypadCodeForOutput(),
+                keypadCode2 = KeypadCodeForOutput(),
+                deliveryCode = KeypadCodeForOutput(),
+                onEvent = { },
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            )
         }
     }
 }

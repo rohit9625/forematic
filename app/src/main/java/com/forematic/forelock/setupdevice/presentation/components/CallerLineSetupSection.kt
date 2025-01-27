@@ -13,7 +13,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -80,11 +79,10 @@ fun CallerLineSetupSection(
                 }
 
                 CallerLineIdWithLocation(
-                    number = callerLineId.number,
+                    callerLineId = callerLineId,
                     onNumberChange = {
                         onEvent(SetupDeviceEvent.CallerLineIdEvent.OnNumberChange(it))
                     },
-                    location = callerLineId.location,
                     onLocationChange = {
                         onEvent(SetupDeviceEvent.CallerLineIdEvent.OnLocationChange(it))
                     },
@@ -92,11 +90,8 @@ fun CallerLineSetupSection(
                         onEvent(SetupDeviceEvent.CallerLineIdEvent.OnFindLocation)
                     },
                     label = "Setup Authorized Call-In Number",
-                    locationRange = callerLineId.locationRange,
                     isEnabled = callerLineId.userMode == UserMode.AUTHORIZED
                 )
-
-                HorizontalDivider()
 
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -125,13 +120,11 @@ fun CallerLineSetupSection(
 
 @Composable
 fun CallerLineIdWithLocation(
-    number: String,
+    callerLineId: CallerLineIdentification,
     onNumberChange: (String) -> Unit,
-    location: String,
     onLocationChange: (String) -> Unit,
     onFindAction: () -> Unit,
     label: String,
-    locationRange: String,
     modifier: Modifier = Modifier,
     isEnabled: Boolean = true
 ) {
@@ -151,10 +144,10 @@ fun CallerLineIdWithLocation(
             modifier = Modifier.fillMaxWidth()
         ) {
             LabeledTextField(
-                value = location,
+                value = callerLineId.location,
                 onValueChange = onLocationChange,
                 label = "Location",
-                secondaryLabel = locationRange,
+                secondaryLabel = callerLineId.locationRange,
                 modifier = Modifier.widthIn(max = 148.dp),
                 shape = RoundedCornerShape(12.dp),
                 trailingIcon = {
@@ -179,7 +172,7 @@ fun CallerLineIdWithLocation(
             )
 
             LabeledTextField(
-                value = number,
+                value = callerLineId.number,
                 onValueChange = onNumberChange,
                 label = "Caller Number",
                 modifier = Modifier.widthIn(max = 172.dp),
@@ -191,6 +184,9 @@ fun CallerLineIdWithLocation(
                 )
             )
         }
+        ErrorTextWithDivider(
+            text = callerLineId.locationError ?: callerLineId.numberError ?: ""
+        )
     }
 }
 

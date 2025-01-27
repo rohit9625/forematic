@@ -60,14 +60,18 @@ data class OutputRelay(
 data class KeypadCodeForOutput(
     val code: String = "",
     val location: String = "",
-    val locationRange: String = ""
+    val locationRange: String = "",
+    val codeError: String? = null,
+    val locationError: String? = null
 )
 
 data class CallerLineIdentification(
     val userMode: UserMode = UserMode.ANY,
     val number: String = "",
     val location: String = "",
-    val locationRange: String = ""
+    val locationRange: String = "",
+    val locationError: String? = null,
+    val numberError: String? = null
 )
 
 enum class UserMode {
