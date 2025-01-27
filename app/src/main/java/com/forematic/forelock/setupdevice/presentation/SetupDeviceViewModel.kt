@@ -31,6 +31,9 @@ class SetupDeviceViewModel(
         },
         Constants.UPDATE_TIMEZONE_REQUEST to { messageUpdate: MessageUpdate ->
             updateTimezoneMode(messageUpdate)
+        },
+        Constants.UPDATE_KEYPAD_CODES_REQUEST to { messageUpdate: MessageUpdate ->
+            updateKeypadCodes(messageUpdate)
         }
         // Add more request codes and update functions here...
     )
@@ -129,6 +132,22 @@ class SetupDeviceViewModel(
                 }
                 is MessageUpdate.Error -> {
                     currentState.copy(isUpdatingTimezone = false)
+                }
+            }
+        }
+    }
+
+    private fun updateKeypadCodes(messageUpdate: MessageUpdate) {
+        _uiState.update { currentState ->
+            when(messageUpdate) {
+                is MessageUpdate.Sent -> {
+                    currentState.copy(isUpdatingKeypadCodes = true)
+                }
+                is MessageUpdate.Delivered -> {
+                    currentState.copy(isUpdatingKeypadCodes = false)
+                }
+                is MessageUpdate.Error -> {
+                    currentState.copy(isUpdatingKeypadCodes = false)
                 }
             }
         }
@@ -335,7 +354,13 @@ class SetupDeviceViewModel(
             }
 
             SetupDeviceEvent.KeypadCodeEvent.OnUpdateClick -> {
-                /*TODO("Save keypad codes to the target device")*/
+                deviceRepository.setKeypadCodes(
+                    simNumber = uiState.value.simAndPasswordState.simNumber,
+                    password = uiState.value.currentProgrammingPassword,
+                    keypadCode1 = uiState.value.keypadCode1,
+                    keypadCode2 = uiState.value.keypadCode2,
+                    deliveryCode = uiState.value.deliveryCode
+                )
             }
         }
 

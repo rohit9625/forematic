@@ -38,7 +38,8 @@ fun SetKeypadCodeSection(
     keypadCode2: KeypadCodeForOutput,
     deliveryCode: KeypadCodeForOutput,
     onEvent: (SetupDeviceEvent.KeypadCodeEvent) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isUpdatingKeypadCodes: Boolean = false
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -125,14 +126,11 @@ fun SetKeypadCodeSection(
                         color = MaterialTheme.colorScheme.tertiary,
                         modifier = Modifier.widthIn(max = 200.dp)
                     )
-                    Button(
-                        onClick = {
-                            onEvent(SetupDeviceEvent.KeypadCodeEvent.OnUpdateClick)
-                        },
-                        shape = MaterialTheme.shapes.medium
-                    ) {
-                        Text(text = "Update")
-                    }
+                    ButtonWithLoadingIndicator(
+                        onClick = { onEvent(SetupDeviceEvent.KeypadCodeEvent.OnUpdateClick) },
+                        text = "Update",
+                        isLoading = isUpdatingKeypadCodes
+                    )
                 }
             }
         }
@@ -199,7 +197,7 @@ fun KeypadCodeWithLocation(
                 shape = RoundedCornerShape(12.dp),
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.NumberPassword,
-                    imeAction = ImeAction.Next
+                    imeAction = ImeAction.Done
                 )
             )
         }

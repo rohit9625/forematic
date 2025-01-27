@@ -4,6 +4,7 @@ import com.forematic.forelock.core.domain.model.MessageUpdate
 import com.forematic.forelock.core.utils.Constants
 import com.forematic.forelock.core.utils.MessageSender
 import com.forematic.forelock.setupdevice.domain.DeviceRepository
+import com.forematic.forelock.setupdevice.presentation.KeypadCodeForOutput
 import kotlinx.coroutines.flow.StateFlow
 
 class DeviceRepositoryImpl(
@@ -24,6 +25,21 @@ class DeviceRepositoryImpl(
         messageSender.sendMessage(simNumber,
             "$password#$timezoneMode#",
             Constants.UPDATE_TIMEZONE_REQUEST
+        )
+    }
+
+    override fun setKeypadCodes(
+        simNumber: String,
+        password: String,
+        keypadCode1: KeypadCodeForOutput,
+        keypadCode2: KeypadCodeForOutput,
+        deliveryCode: KeypadCodeForOutput
+    ) {
+        messageSender.sendMessage(simNumber,
+            "$password#11*#${keypadCode1.location}#${keypadCode1.code}#" +
+                    "11*#${keypadCode2.location}#${keypadCode2.code}#" +
+                    "11*#${deliveryCode.location}#${deliveryCode.code}",
+            Constants.UPDATE_KEYPAD_CODES_REQUEST
         )
     }
 }

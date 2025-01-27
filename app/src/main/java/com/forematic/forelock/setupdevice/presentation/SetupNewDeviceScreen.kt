@@ -94,6 +94,7 @@ fun SetupNewDeviceScreen(
                 keypadCode2 = uiState.keypadCode2,
                 deliveryCode = uiState.deliveryCode,
                 onEvent = onEvent,
+                isUpdatingKeypadCodes = uiState.isUpdatingKeypadCodes,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 
