@@ -1,21 +1,21 @@
 package com.forematic.forelock.setupdevice.presentation.components
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Call
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material3.Card
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,8 +40,7 @@ import com.forematic.forelock.ui.theme.ForeLockTheme
 fun CallOutNumberSection(
     callOutNumbers: List<CallOutNumber>,
     onEvent: (SetupDeviceEvent.CallOutNumberEvent) -> Unit,
-    modifier: Modifier = Modifier,
-    canAddMoreNumbers: Boolean = true
+    modifier: Modifier = Modifier
 ) {
     var isToolTipVisible by remember { mutableStateOf(false) }
 
@@ -55,7 +54,10 @@ fun CallOutNumberSection(
             modifier = Modifier.padding(start = 8.dp)
         )
         Card {
-            Column {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 4.dp, bottom = 16.dp)
+            ) {
                 Row(
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically,
@@ -64,8 +66,7 @@ fun CallOutNumberSection(
                     Text(
                         text = "Last 6 digits will be used for identification",
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.tertiary,
-                        modifier = Modifier.padding(start = 16.dp)
+                        color = MaterialTheme.colorScheme.tertiary
                     )
                     ToolTipWithIcon(
                         showToolTip = isToolTipVisible,
@@ -76,106 +77,150 @@ fun CallOutNumberSection(
                     )
                 }
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier
-                        .padding(start = 16.dp, bottom = 8.dp, end = 16.dp)
-                        .fillMaxWidth()
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    modifier = Modifier.fillMaxWidth()
                 ) {
-                    callOutNumbers.forEachIndexed { index, item->
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "${index + 1}.",
-                                style = MaterialTheme.typography.labelLarge,
-                                modifier = Modifier.weight(0.05f)
-                            )
-                            LabeledTextField(
-                                label = if(index == 0) "Admin Number" else "Call-out Number",
-                                value = item.number,
-                                onValueChange = {
-                                    onEvent(
-                                        SetupDeviceEvent.CallOutNumberEvent.UpdateNumber(index, it)
-                                    )
-                                },
-                                trailingIcon = {
-                                    Icon(
-                                        painter = if(index == 0) painterResource(R.drawable.ic_phone_person_24)
-                                        else painterResource(R.drawable.ic_call_24),
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Phone,
-                                    imeAction = ImeAction.Next
-                                ),
-                                modifier = Modifier.weight(0.5f)
-                            )
+                    CallOutNumberWithName(
+                        name = "",
+                        onNameChange = { },
+                        number = "",
+                        onNumberChange = { },
+                        label = "1st Call-Out Number",
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-                            LabeledTextField(
-                                label = "Name",
-                                value = item.name,
-                                onValueChange = {
-                                    onEvent(
-                                        SetupDeviceEvent.CallOutNumberEvent.UpdateName(
-                                            index,
-                                            it
-                                        )
-                                    )
-                                },
-                                trailingIcon = {
-                                    Icon(
-                                        painter = if(index == 0) painterResource(R.drawable.ic_supervisor_account_24)
-                                        else painterResource(R.drawable.ic_person_24),
-                                        contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    capitalization = KeyboardCapitalization.Words,
-                                    keyboardType = KeyboardType.Text,
-                                    imeAction = ImeAction.Done
-                                ),
-                                modifier = Modifier.weight(0.5f)
-                            )
-                        }
-                    }
+                    CallOutNumberWithName(
+                        name = "",
+                        onNameChange = { },
+                        number = "",
+                        onNumberChange = { },
+                        label = "2nd Call-Out Number",
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    CallOutNumberWithName(
+                        name = "",
+                        onNameChange = { },
+                        number = "",
+                        onNumberChange = { },
+                        label = "3rd Call-Out Number",
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
                     Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                    ) {
-                        AssistChip(
-                            onClick = { onEvent(SetupDeviceEvent.CallOutNumberEvent.AddMoreNumber) },
-                            label = { Text(text = "More") },
-                            enabled = canAddMoreNumbers,
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Rounded.Add,
-                                    contentDescription = null
-                                )
-                            },
-                            modifier = Modifier
-                        )
-                        Button(
-                            onClick = {
-                                onEvent(SetupDeviceEvent.CallOutNumberEvent.OnUpdateClick)
-                            },
-                            shape = MaterialTheme.shapes.medium
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ){
+                        OutlinedButton(
+                            onClick = { },
+                            contentPadding = PaddingValues(horizontal = 12.dp)
                         ) {
-                            Text(text = "Update")
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.padding(end = 4.dp)
+                            )
+                            Text(text = "From Contacts")
                         }
+
+                        ButtonWithLoadingIndicator(
+                            onClick = { /*TODO("Update call-out numbers to target device")*/ },
+                            text = "Update"
+                        )
                     }
+                }
+                HorizontalDivider(thickness = 1.5.dp, modifier = Modifier.padding(vertical = 8.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.Bottom,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    LabeledTextField(
+                        label = "Change Admin Number",
+                        value = "",
+                        onValueChange = {
+                            onEvent(
+                                SetupDeviceEvent.CallOutNumberEvent.UpdateNumber(0, it)
+                            )
+                        },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.ic_phone_person_24),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        },
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Phone,
+                            imeAction = ImeAction.Next
+                        ),
+                        modifier = Modifier.widthIn(max = 200.dp)
+                    )
+
+                    ButtonWithLoadingIndicator(
+                        onClick = { /*TODO("Update admin number to target device")*/ },
+                        text = "Change"
+                    )
                 }
             }
         }
+    }
+}
+
+@Composable
+fun CallOutNumberWithName(
+    number: String,
+    onNumberChange: (String) -> Unit,
+    name: String,
+    onNameChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String = "Call-Out Number"
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        verticalAlignment = Alignment.Bottom
+    ) {
+        LabeledTextField(
+            label = label,
+            value = number,
+            onValueChange = onNumberChange,
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_call_24),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(24.dp)
+                )
+            },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Phone,
+                imeAction = ImeAction.Next
+            ),
+            modifier = Modifier.weight(0.55f)
+        )
+
+        LabeledTextField(
+            label = "Name",
+            value = name,
+            onValueChange = onNameChange,
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(R.drawable.ic_person_24),
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            },
+            keyboardOptions = KeyboardOptions(
+                capitalization = KeyboardCapitalization.Words,
+                keyboardType = KeyboardType.Text,
+                imeAction = ImeAction.Done
+            ),
+            modifier = Modifier.weight(0.45f)
+        )
     }
 }
 
