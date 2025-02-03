@@ -12,8 +12,10 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -42,7 +44,8 @@ fun LabeledTextField(
     textStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     shape: Shape = MaterialTheme.shapes.medium,
     visualTransformation: VisualTransformation = VisualTransformation.None,
-    focusRequester: FocusRequester = FocusRequester()
+    focusRequester: FocusRequester = FocusRequester(),
+    colors: TextFieldColors = OutlinedTextFieldDefaults.colors()
 ) {
     Column(
         modifier = modifier.width(IntrinsicSize.Max),
@@ -89,7 +92,8 @@ fun LabeledTextField(
             singleLine = true,
             trailingIcon = trailingIcon,
             keyboardActions = keyboardActions,
-            keyboardOptions = keyboardOptions
+            keyboardOptions = keyboardOptions,
+            colors = colors
         )
     }
 }
