@@ -206,7 +206,7 @@ class SetupDeviceViewModel(
 
     private fun onCallOutNumberEvent(e: SetupDeviceEvent.CallOutNumberEvent) {
         when(e) {
-            is SetupDeviceEvent.CallOutNumberEvent.UpdateName -> {
+            is SetupDeviceEvent.CallOutNumberEvent.OnNameChange -> {
                 _uiState.update {
                     it.copy(
                         callOutNumbers = it.callOutNumbers.mapIndexed { index, callOutNumber ->
@@ -216,7 +216,7 @@ class SetupDeviceViewModel(
                 }
             }
 
-            is SetupDeviceEvent.CallOutNumberEvent.UpdateNumber -> {
+            is SetupDeviceEvent.CallOutNumberEvent.OnNumberChange -> {
                 _uiState.update {
                     it.copy(
                         callOutNumbers = it.callOutNumbers.mapIndexed { index, callOutNumber ->
@@ -226,12 +226,15 @@ class SetupDeviceViewModel(
                 }
             }
 
-            SetupDeviceEvent.CallOutNumberEvent.AddMoreNumber -> {
-                _uiState.update { it.copy(callOutNumbers = it.callOutNumbers + CallOutNumber()) }
-            }
-
             SetupDeviceEvent.CallOutNumberEvent.OnUpdateClick -> {
                 /*TODO("Update all call-out numbers in single-shot")*/
+            }
+
+            is SetupDeviceEvent.CallOutNumberEvent.OnAdminNumberChange -> {
+                _uiState.update { it.copy(adminNumber = e.number) }
+            }
+            SetupDeviceEvent.CallOutNumberEvent.OnChangeClick -> {
+                /*TODO("Update admin number to the target device")*/
             }
         }
     }

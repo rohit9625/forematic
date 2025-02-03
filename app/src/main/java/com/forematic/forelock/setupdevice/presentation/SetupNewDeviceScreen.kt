@@ -106,9 +106,9 @@ fun SetupNewDeviceScreen(
 
             CallOutNumberSection(
                 callOutNumbers = uiState.callOutNumbers,
+                adminNumber = uiState.adminNumber,
                 onEvent = { event -> onEvent(event) },
-                modifier = Modifier.padding(horizontal = 8.dp),
-                canAddMoreNumbers = uiState.canAddMoreCallOutNumbers
+                modifier = Modifier.padding(horizontal = 8.dp)
             )
 
             AudioAdjustmentSection(

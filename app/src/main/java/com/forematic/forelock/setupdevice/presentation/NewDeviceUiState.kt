@@ -16,14 +16,12 @@ data class NewDeviceUiState(
     val deliveryCode: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "150-199"),
     val isUpdatingKeypadCodes: Boolean = false,
     val callerLineId: CallerLineIdentification = CallerLineIdentification(locationRange = "200-250"),
-    val callOutNumbers: List<CallOutNumber> = listOf(CallOutNumber()),
+    val callOutNumbers: List<CallOutNumber> = listOf(CallOutNumber(), CallOutNumber(), CallOutNumber()),
+    val adminNumber: String = "",
     val speakerVolume: Float = 0f,
     val micVolume: Float = 0f,
     val signalStrength: Int = 20
-) {
-    val canAddMoreCallOutNumbers: Boolean
-        get() = callOutNumbers.size < 4
-}
+)
 
 data class SimAndPasswordState(
     val simNumber: String = "",

@@ -39,6 +39,7 @@ import com.forematic.forelock.ui.theme.ForeLockTheme
 @Composable
 fun CallOutNumberSection(
     callOutNumbers: List<CallOutNumber>,
+    adminNumber: String,
     onEvent: (SetupDeviceEvent.CallOutNumberEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -80,32 +81,20 @@ fun CallOutNumberSection(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    CallOutNumberWithName(
-                        name = "",
-                        onNameChange = { },
-                        number = "",
-                        onNumberChange = { },
-                        label = "1st Call-Out Number",
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    CallOutNumberWithName(
-                        name = "",
-                        onNameChange = { },
-                        number = "",
-                        onNumberChange = { },
-                        label = "2nd Call-Out Number",
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    CallOutNumberWithName(
-                        name = "",
-                        onNameChange = { },
-                        number = "",
-                        onNumberChange = { },
-                        label = "3rd Call-Out Number",
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    callOutNumbers.forEachIndexed { index, callOutNumber ->
+                        CallOutNumberWithName(
+                            name = callOutNumber.name,
+                            onNameChange = {
+                                onEvent(SetupDeviceEvent.CallOutNumberEvent.OnNameChange(index, callOutNumber.name))
+                            },
+                            number = callOutNumber.number,
+                            onNumberChange = {
+                                onEvent(SetupDeviceEvent.CallOutNumberEvent.OnNumberChange(index, callOutNumber.number))
+                            },
+                            label = "${index+1}. Call-Out Number",
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),
@@ -125,7 +114,7 @@ fun CallOutNumberSection(
                         }
 
                         ButtonWithLoadingIndicator(
-                            onClick = { /*TODO("Update call-out numbers to target device")*/ },
+                            onClick = { onEvent(SetupDeviceEvent.CallOutNumberEvent.OnUpdateClick) },
                             text = "Update"
                         )
                     }
@@ -139,11 +128,9 @@ fun CallOutNumberSection(
                 ) {
                     LabeledTextField(
                         label = "Change Admin Number",
-                        value = "",
+                        value = adminNumber,
                         onValueChange = {
-                            onEvent(
-                                SetupDeviceEvent.CallOutNumberEvent.UpdateNumber(0, it)
-                            )
+                            onEvent(SetupDeviceEvent.CallOutNumberEvent.OnAdminNumberChange(it))
                         },
                         trailingIcon = {
                             Icon(
@@ -161,7 +148,7 @@ fun CallOutNumberSection(
                     )
 
                     ButtonWithLoadingIndicator(
-                        onClick = { /*TODO("Update admin number to target device")*/ },
+                        onClick = { onEvent(SetupDeviceEvent.CallOutNumberEvent.OnChangeClick) },
                         text = "Change"
                     )
                 }
@@ -230,7 +217,8 @@ private fun CallOutNumberSectionPreview() {
     ForeLockTheme {
         Surface {
             CallOutNumberSection(
-                callOutNumbers = listOf(CallOutNumber(number = "1234567890", name = "Test")),
+                callOutNumbers = listOf(CallOutNumber(), CallOutNumber(), CallOutNumber()),
+                adminNumber = "",
                 onEvent = { },
                 modifier = Modifier.padding(8.dp)
             )
