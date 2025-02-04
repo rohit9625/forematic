@@ -32,7 +32,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.forematic.forelock.R
-import com.forematic.forelock.setupdevice.presentation.CallOutNumber
+import com.forematic.forelock.setupdevice.domain.model.CallOutNumber
 import com.forematic.forelock.setupdevice.presentation.SetupDeviceEvent
 import com.forematic.forelock.ui.theme.ForeLockTheme
 

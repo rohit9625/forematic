@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.forematic.forelock.setupdevice.presentation.CallerLineIdentification
 import com.forematic.forelock.setupdevice.presentation.SetupDeviceEvent
-import com.forematic.forelock.setupdevice.presentation.UserMode
+import com.forematic.forelock.setupdevice.presentation.CallerLineMode
 import com.forematic.forelock.ui.theme.ForeLockTheme
 
 @Composable
@@ -61,17 +61,17 @@ fun CallerLineSetupSection(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         FilterChipWithToolTip(
-                            isSelected = callerLineId.userMode == UserMode.ANY,
+                            isSelected = callerLineId.userMode == CallerLineMode.ANY,
                             onClick = {
-                                onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange(UserMode.ANY))
+                                onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange(CallerLineMode.ANY))
                             },
                             label = "Any"
                         )
 
                         FilterChipWithToolTip(
-                            isSelected = callerLineId.userMode == UserMode.AUTHORIZED,
+                            isSelected = callerLineId.userMode == CallerLineMode.AUTHORIZED,
                             onClick = {
-                                onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange(UserMode.AUTHORIZED))
+                                onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange(CallerLineMode.AUTHORIZED))
                             },
                             label = "Authorized"
                         )
@@ -90,7 +90,7 @@ fun CallerLineSetupSection(
                         onEvent(SetupDeviceEvent.CallerLineIdEvent.OnFindLocation)
                     },
                     label = "Setup Authorized Call-In Number",
-                    isEnabled = callerLineId.userMode == UserMode.AUTHORIZED
+                    isEnabled = callerLineId.userMode == CallerLineMode.AUTHORIZED
                 )
 
                 Row(

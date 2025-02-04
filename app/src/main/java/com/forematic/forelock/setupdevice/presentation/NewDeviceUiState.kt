@@ -2,6 +2,7 @@ package com.forematic.forelock.setupdevice.presentation
 
 import androidx.annotation.DrawableRes
 import com.forematic.forelock.R
+import com.forematic.forelock.setupdevice.domain.model.CallOutNumber
 
 data class NewDeviceUiState(
     val deviceType: DeviceType = DeviceType.G24_INTERCOM,
@@ -9,7 +10,7 @@ data class NewDeviceUiState(
     val simAndPasswordState: SimAndPasswordState = SimAndPasswordState(programmingPassword = currentProgrammingPassword),
     val outputRelay1: OutputRelay = OutputRelay(),
     val outputRelay2: OutputRelay? = null,
-    val timezoneMode: TimezoneMode = TimezoneMode.TRADE,
+    val timezoneMode: TimezoneMode = TimezoneMode.FREE,
     val isUpdatingTimezone: Boolean = false,
     val keypadCode1: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "001-100"),
     val keypadCode2: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "101-149"),
@@ -29,11 +30,6 @@ data class SimAndPasswordState(
     val isLoading: Boolean = false,
     val simNumberError: String? = null,
     val passwordError: String? = null
-)
-
-data class CallOutNumber(
-    val number: String = "",
-    val name: String = ""
 )
 
 data class OutputRelay(
@@ -64,7 +60,7 @@ data class KeypadCodeForOutput(
 )
 
 data class CallerLineIdentification(
-    val userMode: UserMode = UserMode.ANY,
+    val userMode: CallerLineMode = CallerLineMode.ANY,
     val number: String = "",
     val location: String = "",
     val locationRange: String = "",
@@ -72,7 +68,7 @@ data class CallerLineIdentification(
     val numberError: String? = null
 )
 
-enum class UserMode {
+enum class CallerLineMode {
     ANY,
     AUTHORIZED
 }
@@ -86,7 +82,7 @@ enum class OutputRelayText(val displayName: String) {
 }
 
 enum class TimezoneMode(val displayName: String, val code: String, @DrawableRes val icon: Int) {
-    TRADE("Trade", "FREE", R.drawable.ic_trade_24),
+    FREE("Trade", "FREE", R.drawable.ic_trade_24),
     DAY("Day", "DAY", R.drawable.ic_rounded_day_24),
     NIGHT("Night", "NIGHT", R.drawable.ic_outline_night_24),
     HOLIDAY("Holiday", "HOLS", R.drawable.ic_block_24)
