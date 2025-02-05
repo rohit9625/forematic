@@ -24,7 +24,7 @@ import com.forematic.forelock.ui.theme.ForeLockTheme
 fun AudioAdjustmentSection(
     speakerVolume: Float,
     micVolume: Float,
-    signalStrength: Int,
+    signalStrength: Int?,
     onSpeakerVolumeChange: (Float) -> Unit,
     onMicVolumeChange: (Float) -> Unit,
     onCheckSignalStrength: () -> Unit,

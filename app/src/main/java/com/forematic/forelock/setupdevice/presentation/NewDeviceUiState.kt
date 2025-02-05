@@ -21,7 +21,7 @@ data class NewDeviceUiState(
     val adminNumber: String = "",
     val speakerVolume: Float = 0f,
     val micVolume: Float = 0f,
-    val signalStrength: Int = 20
+    val signalStrength: Int? = null
 )
 
 data class SimAndPasswordState(
