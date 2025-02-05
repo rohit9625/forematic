@@ -9,6 +9,10 @@ interface DeviceRepository {
 
     fun setNewPassword(simNumber: String, oldPassword: String, newPassword: String)
 
+    fun getSignalStrength(simNumber: String, password: String): Int
+
+    fun getOutputName(simNumber: String, password: String): String
+
     fun setTimezoneMode(simNumber: String, password: String, timezoneMode: String)
 
     fun setKeypadCodes(
