@@ -102,6 +102,8 @@ class SetupDeviceViewModel(
                         simNumberError = messageUpdate.error.toString()
                     )
                 )
+
+                is MessageUpdate.Received -> TODO()
             }
         }
     }
@@ -133,6 +135,8 @@ class SetupDeviceViewModel(
                 is MessageUpdate.Error -> {
                     currentState.copy(isUpdatingTimezone = false)
                 }
+
+                is MessageUpdate.Received -> TODO()
             }
         }
     }
@@ -149,6 +153,8 @@ class SetupDeviceViewModel(
                 is MessageUpdate.Error -> {
                     currentState.copy(isUpdatingKeypadCodes = false)
                 }
+
+                is MessageUpdate.Received -> TODO()
             }
         }
     }
