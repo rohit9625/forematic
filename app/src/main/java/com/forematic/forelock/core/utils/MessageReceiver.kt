@@ -5,25 +5,24 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.telephony.SmsMessage
-import com.forematic.forelock.core.domain.model.MessageListener
 
 class MessageReceiver(
-    private val messageListener: MessageListener
+    private val onMessageReceived: ((senderAddress: String?, receivedMessage: String?) -> Unit)? = null
 ): BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        val bundle: Bundle? = intent?.extras
+        if(intent?.action == SMS_RECEIVED_ACTION) {
+            val bundle: Bundle? = intent.extras
 
-        bundle?.let {
-            val pdus = it.get("pdus") as Array<*>
+            bundle?.let {
+                val pdus = it.get("pdus") as Array<*>
 
-            for(pdu in pdus) {
-                val smsFormat = it.getString("format")
-                val sms = SmsMessage.createFromPdu(pdu as ByteArray, smsFormat)
-                val senderAddress = sms.originatingAddress
-                val messageBody = sms.messageBody
+                for(pdu in pdus) {
+                    val smsFormat = it.getString("format")
+                    val sms = SmsMessage.createFromPdu(pdu as ByteArray, smsFormat)
+                    val senderAddress = sms.originatingAddress
+                    val messageBody = sms.messageBody
 
-                senderAddress?.let {
-                    messageListener.onMessageReceived(senderAddress, messageBody)
+                    onMessageReceived?.invoke(senderAddress, messageBody)
                 }
             }
         }
