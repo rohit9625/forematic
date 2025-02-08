@@ -21,15 +21,6 @@ class DeviceRepositoryImpl(
         )
     }
 
-    override fun getSignalStrength(simNumber: String, password: String): Int {
-//        messageSender.sendMessage(simNumber, "$password#RSSI?#", Constants.GET_SIGNAL_STRENGTH_REQUEST)
-        TODO("Configure message receiver to receive signal strength")
-    }
-
-    override fun getOutputName(simNumber: String, password: String): String {
-        TODO("Listen for message received from this SIM number and extract output name")
-    }
-
     override fun setTimezoneMode(simNumber: String, password: String, timezoneMode: String) {
         messageSender.sendMessage(simNumber,
             "$password#$timezoneMode#",
