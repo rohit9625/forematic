@@ -124,6 +124,7 @@ fun SetupNewDeviceScreen(
                 onCheckSignalStrength = {
                     onEvent(SetupDeviceEvent.OnCheckSignalStrength)
                 },
+                isRefreshingSignal = uiState.isRefreshingSignal,
                 modifier = Modifier.padding(horizontal = 8.dp)
             )
 

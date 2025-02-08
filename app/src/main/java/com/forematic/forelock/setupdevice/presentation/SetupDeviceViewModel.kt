@@ -75,6 +75,7 @@ class SetupDeviceViewModel(
                 _uiState.update { it.copy(micVolume = e.volume) }
             }
             SetupDeviceEvent.OnCheckSignalStrength -> {
+                _uiState.update { it.copy(isRefreshingSignal = true) }
                 viewModelScope.launch {
                     val signal = getSignalStrength.invoke(
                         simNumber = uiState.value.simAndPasswordState.simNumber,
@@ -82,7 +83,7 @@ class SetupDeviceViewModel(
                         requestCode = Constants.GET_SIGNAL_STRENGTH_REQUEST
                     )
 
-                    _uiState.update { it.copy(signalStrength = signal) }
+                    _uiState.update { it.copy(signalStrength = signal, isRefreshingSignal = false) }
                 }
             }
         }

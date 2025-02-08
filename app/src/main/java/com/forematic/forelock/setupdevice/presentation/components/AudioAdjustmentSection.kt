@@ -28,7 +28,8 @@ fun AudioAdjustmentSection(
     onSpeakerVolumeChange: (Float) -> Unit,
     onMicVolumeChange: (Float) -> Unit,
     onCheckSignalStrength: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isRefreshingSignal: Boolean = false
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -87,26 +88,22 @@ fun AudioAdjustmentSection(
                 ) {
                     Column {
                         Text(
-                            text = "Strength: $signalStrength",
+                            text = "Signal Strength: $signalStrength",
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary
                         )
                         Text(
-                            text = "(1-31)",
+                            text = "(1-5)",
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    Button(
+
+                    ButtonWithLoadingIndicator(
                         onClick = onCheckSignalStrength,
-                        shape = RoundedCornerShape(12.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        Text(
-                            text = "Check Signal Strength",
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
+                        text = "Refresh",
+                        isLoading = isRefreshingSignal
+                    )
                 }
             }
         }
@@ -121,7 +118,7 @@ private fun AudioAdjustmentSectionPreview() {
             AudioAdjustmentSection(
                 speakerVolume = 3f,
                 micVolume = 6f,
-                signalStrength = 24,
+                signalStrength = 5,
                 onSpeakerVolumeChange = { },
                 onMicVolumeChange = { },
                 onCheckSignalStrength = { },
