@@ -6,6 +6,7 @@ import android.content.IntentFilter
 import android.util.Log
 import com.forematic.forelock.core.utils.MessageReceiver
 import com.forematic.forelock.core.utils.MessageSender
+import com.forematic.forelock.core.utils.PhoneNumberUtils
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
@@ -24,7 +25,7 @@ class SendSmsAndGetResponse(
             Log.d(TAG, "Message received from $senderAddress: $receivedMessage")
             checkReceivedMessage(continuation, simNumber, senderAddress, receivedMessage)
         }
-        Log.e(TAG, "Registering message receiver")
+
         context.registerReceiver(messageReceiver, IntentFilter("android.provider.Telephony.SMS_RECEIVED"))
 
         try {
@@ -46,9 +47,10 @@ class SendSmsAndGetResponse(
         senderAddress: String?,
         receivedMessage: String?
     ) {
-        /*TODO("Implement a check to ensure the message is from the target sim number")*/
-        continuation.resume(receivedMessage)
-        context.unregisterReceiver(messageReceiver)
+        if(PhoneNumberUtils.arePhoneNumbersEqual(targetSimNumber, senderAddress ?: "")) {
+            continuation.resume(receivedMessage)
+            context.unregisterReceiver(messageReceiver)
+        }
     }
 
     companion object {
