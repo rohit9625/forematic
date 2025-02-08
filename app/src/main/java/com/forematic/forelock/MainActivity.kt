@@ -23,10 +23,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.forematic.forelock.core.domain.model.PermissionHandler
+import com.forematic.forelock.core.domain.use_case.SendSmsAndGetResponse
 import com.forematic.forelock.core.utils.MessageSender
 import com.forematic.forelock.home.presentation.HomeScreen
 import com.forematic.forelock.home.presentation.HomeViewModel
 import com.forematic.forelock.setupdevice.data.DeviceRepositoryImpl
+import com.forematic.forelock.setupdevice.domain.use_case.GetSignalStrength
 import com.forematic.forelock.setupdevice.presentation.SetupDeviceViewModel
 import com.forematic.forelock.setupdevice.presentation.SetupNewDeviceScreen
 import com.forematic.forelock.ui.components.SmsPermissionText
@@ -39,19 +41,23 @@ class MainActivity : ComponentActivity(), PermissionHandler {
     private var showPermissionRationale by mutableStateOf(false)
 
     private val requestPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted->
-        showPermissionRationale = !isGranted
-        messageSender.onPermissionResult(isGranted)
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val isAllGranted = permissions[Manifest.permission.SEND_SMS] == true
+                && permissions[Manifest.permission.RECEIVE_SMS] == true
+        showPermissionRationale = !isAllGranted
+        messageSender.onPermissionResult(isAllGranted)
     }
 
     private lateinit var messageSender: MessageSender
+    private lateinit var sendSmsAndGetResponseUseCase: SendSmsAndGetResponse
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         messageSender = MessageSender(this, MyApplication.appModule.smsManager, this)
         messageSender.registerBroadcastReceivers(this)
+        sendSmsAndGetResponseUseCase = SendSmsAndGetResponse(this.applicationContext, messageSender)
 
         enableEdgeToEdge()
         setContent {
@@ -70,9 +76,7 @@ class MainActivity : ComponentActivity(), PermissionHandler {
                             uiState = uiState,
                             onEvent = viewModel::onEvent,
                             hasPermission = { hasPermission(Manifest.permission.SEND_SMS) },
-                            requestPermission = {
-                                requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
-                            },
+                            requestPermission = ::requestSmsPermissions,
                             navController = navController
                         )
                     }
@@ -103,10 +107,13 @@ class MainActivity : ComponentActivity(), PermissionHandler {
                             )
                         }
                     ) {
-                        val viewModel = viewModel { SetupDeviceViewModel(
-                            deviceRepository = DeviceRepositoryImpl(messageSender),
-                            inputValidator = MyApplication.appModule.inputValidator
-                        ) }
+                        val viewModel = viewModel {
+                            SetupDeviceViewModel(
+                                deviceRepository = DeviceRepositoryImpl(messageSender),
+                                inputValidator = MyApplication.appModule.inputValidator,
+                                getSignalStrength = GetSignalStrength(sendSmsAndGetResponseUseCase)
+                            )
+                        }
                         val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
                         SetupNewDeviceScreen(
@@ -124,7 +131,7 @@ class MainActivity : ComponentActivity(), PermissionHandler {
                             Manifest.permission.SEND_SMS),
                         onConfirm = {
                             showPermissionRationale = false
-                            requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
+                            requestSmsPermissions()
                         },
                         onDismiss = { showPermissionRationale = false },
                         onGoToAppSettings = this::openAppSettings
@@ -141,8 +148,10 @@ class MainActivity : ComponentActivity(), PermissionHandler {
         ).also { startActivity(it) }
     }
 
-    override fun requestPermission(permission: String) {
-        requestPermissionLauncher.launch(Manifest.permission.SEND_SMS)
+    override fun requestSmsPermissions() {
+        requestPermissionLauncher.launch(
+            arrayOf(Manifest.permission.SEND_SMS, Manifest.permission.RECEIVE_SMS)
+        )
     }
 
     override fun hasPermission(permission: String): Boolean {

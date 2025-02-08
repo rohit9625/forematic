@@ -37,7 +37,7 @@ class MessageSender(
             sendMessageWithIntent(recipientNumber, messageContent, requestCode)
         } else {
             pendingMessage = PendingMessage(recipientNumber, messageContent, requestCode)
-            permissionHandler.requestPermission(Manifest.permission.SEND_SMS)
+            permissionHandler.requestSmsPermissions()
         }
     }
 

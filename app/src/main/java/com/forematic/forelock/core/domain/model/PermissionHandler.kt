@@ -1,7 +1,7 @@
 package com.forematic.forelock.core.domain.model
 
 interface PermissionHandler {
-    fun requestPermission(permission: String)
+    fun requestSmsPermissions()
 
     fun hasPermission(permission: String): Boolean
 }
