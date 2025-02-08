@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -70,7 +71,7 @@ fun TimezoneModeSection(
                     onClick = onUpdateClick,
                     text = "Update",
                     isLoading = isUpdatingTimezone,
-                    modifier = Modifier.align(Alignment.End)
+                    modifier = Modifier.widthIn(min = 108.dp).align(Alignment.End)
                 )
             }
         }

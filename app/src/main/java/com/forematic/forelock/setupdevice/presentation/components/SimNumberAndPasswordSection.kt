@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -166,7 +167,8 @@ fun SimNumberAndPasswordSection(
                         },
                         text = "Update",
                         isLoading = simAndPasswordState.isLoading,
-                        isEnabled = canUpdate
+                        isEnabled = canUpdate,
+                        modifier = Modifier.widthIn(min = 108.dp)
                     )
                 }
             }

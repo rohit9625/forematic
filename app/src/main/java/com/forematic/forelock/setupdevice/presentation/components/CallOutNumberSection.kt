@@ -115,7 +115,8 @@ fun CallOutNumberSection(
 
                         ButtonWithLoadingIndicator(
                             onClick = { onEvent(SetupDeviceEvent.CallOutNumberEvent.OnUpdateClick) },
-                            text = "Update"
+                            text = "Update",
+                            modifier = Modifier.widthIn(min = 108.dp)
                         )
                     }
                 }
@@ -149,7 +150,8 @@ fun CallOutNumberSection(
 
                     ButtonWithLoadingIndicator(
                         onClick = { onEvent(SetupDeviceEvent.CallOutNumberEvent.OnChangeClick) },
-                        text = "Change"
+                        text = "Change",
+                        modifier = Modifier.widthIn(min = 108.dp)
                     )
                 }
             }

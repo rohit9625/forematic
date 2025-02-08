@@ -113,7 +113,8 @@ fun SetKeypadCodeSection(
                     ButtonWithLoadingIndicator(
                         onClick = { onEvent(SetupDeviceEvent.KeypadCodeEvent.OnUpdateClick) },
                         text = "Update",
-                        isLoading = isUpdatingKeypadCodes
+                        isLoading = isUpdatingKeypadCodes,
+                        modifier = Modifier.widthIn(min = 108.dp)
                     )
                 }
             }
