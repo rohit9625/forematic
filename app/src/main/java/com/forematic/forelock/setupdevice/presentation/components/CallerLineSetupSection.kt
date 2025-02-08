@@ -24,8 +24,8 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.forematic.forelock.setupdevice.presentation.CallerLineIdentification
-import com.forematic.forelock.setupdevice.presentation.SetupDeviceEvent
 import com.forematic.forelock.setupdevice.presentation.CallerLineMode
+import com.forematic.forelock.setupdevice.presentation.SetupDeviceEvent
 import com.forematic.forelock.ui.theme.ForeLockTheme
 
 @Composable
@@ -151,18 +151,16 @@ fun CallerLineIdWithLocation(
                 modifier = Modifier.widthIn(max = 148.dp),
                 shape = RoundedCornerShape(12.dp),
                 trailingIcon = {
-                    Button(
+                    ButtonWithLoadingIndicator(
                         onClick = onFindAction,
-                        shape = RoundedCornerShape(topEnd = 12.dp, bottomEnd = 12.dp),
+                        text = "Find\nNext",
+                        textStyle = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.height(IntrinsicSize.Max),
+                        isEnabled = isEnabled,
+                        isLoading = callerLineId.isFetchingLocation,
                         contentPadding = PaddingValues(),
-                        enabled = isEnabled,
-                        modifier = Modifier.height(IntrinsicSize.Max)
-                    ) {
-                        Text(
-                            text = "Find\nNext",
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
+                        shape = RoundedCornerShape(topEnd = 12.dp, bottomEnd = 12.dp)
+                    )
                 },
                 isEnabled = isEnabled,
                 keyboardOptions = KeyboardOptions(

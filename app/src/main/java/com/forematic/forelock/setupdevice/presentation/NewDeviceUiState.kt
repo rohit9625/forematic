@@ -66,6 +66,7 @@ data class CallerLineIdentification(
     val location: String = "",
     val locationRange: String = "",
     val locationError: String? = null,
+    val isFetchingLocation: Boolean = false,
     val numberError: String? = null
 )
 
