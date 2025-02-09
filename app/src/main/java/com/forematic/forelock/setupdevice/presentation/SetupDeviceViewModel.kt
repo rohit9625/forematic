@@ -144,12 +144,16 @@ class SetupDeviceViewModel(
 
             SetupDeviceEvent.TimezoneModeEvent.OnUpdateClick -> {
                 executeIfValidSimNumber {
-                    _uiState.update { it.copy(isUpdatingTimezone = true) }
-                    deviceRepository.setTimezoneMode(
-                        uiState.value.simAndPasswordState.simNumber,
-                        uiState.value.currentProgrammingPassword,
-                        uiState.value.timezoneMode.code
-                    )
+                    if(uiState.value.timezoneMode == uiState.value.currentTimezoneMode) {
+                        _uiState.update { it.copy(timezoneError = "Please select a different mode") }
+                    } else {
+                        _uiState.update { it.copy(isUpdatingTimezone = true, timezoneError = null) }
+                        deviceRepository.setTimezoneMode(
+                            uiState.value.simAndPasswordState.simNumber,
+                            uiState.value.currentProgrammingPassword,
+                            uiState.value.timezoneMode.code
+                        )
+                    }
                 }
             }
         }

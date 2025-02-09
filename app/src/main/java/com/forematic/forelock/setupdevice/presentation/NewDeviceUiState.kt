@@ -13,6 +13,7 @@ data class NewDeviceUiState(
     val outputRelay2: OutputRelay? = null,
     val timezoneMode: TimezoneMode = TimezoneMode.FREE,
     val currentTimezoneMode: TimezoneMode = TimezoneMode.FREE,
+    val timezoneError: String? = null,
     val isUpdatingTimezone: Boolean = false,
     val keypadCode1: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = 1..100),
     val keypadCode2: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = 101..150),

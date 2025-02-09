@@ -31,7 +31,8 @@ fun TimezoneModeSection(
     onModeSelection: (TimezoneMode) -> Unit,
     onUpdateClick: () -> Unit,
     modifier: Modifier = Modifier,
-    isUpdatingTimezone: Boolean = false
+    isUpdatingTimezone: Boolean = false,
+    error: String? = null,
 ) {
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -69,10 +70,13 @@ fun TimezoneModeSection(
                         )
                     }
                 }
+                ErrorTextWithDivider(
+                    text = error ?: "",
+                    modifier = Modifier.align(Alignment.End)
+                )
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column {
                         Text(
@@ -104,7 +108,7 @@ private fun TimezoneModeSectionPreview() {
     ForeLockTheme {
         Surface {
             TimezoneModeSection(
-                selectedMode = TimezoneMode.DAY,
+                selectedMode = TimezoneMode.HOLIDAY,
                 currentMode = TimezoneMode.HOLIDAY,
                 onModeSelection = { },
                 onUpdateClick = { },
