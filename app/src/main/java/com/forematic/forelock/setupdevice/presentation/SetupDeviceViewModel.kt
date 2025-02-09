@@ -8,6 +8,7 @@ import com.forematic.forelock.core.domain.model.MessageUpdate
 import com.forematic.forelock.core.domain.model.Result
 import com.forematic.forelock.core.utils.Constants
 import com.forematic.forelock.setupdevice.domain.DeviceRepository
+import com.forematic.forelock.setupdevice.domain.use_case.FindNextLocation
 import com.forematic.forelock.setupdevice.domain.use_case.GetSignalStrength
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,7 +18,8 @@ import kotlinx.coroutines.launch
 class SetupDeviceViewModel(
     private val deviceRepository: DeviceRepository,
     private val inputValidator: InputValidator,
-    private val getSignalStrength: GetSignalStrength
+    private val getSignalStrength: GetSignalStrength,
+    private val findNextLocation: FindNextLocation
 ): ViewModel() {
     private val _uiState = MutableStateFlow(NewDeviceUiState(
         deviceType = DeviceType.G24_INTERCOM,
@@ -398,7 +400,19 @@ class SetupDeviceViewModel(
                 _uiState.update { it.copy(callerLineId = it.callerLineId.copy(location = e.location)) }
             }
             SetupDeviceEvent.CallerLineIdEvent.OnFindLocation -> {
-                /*TODO()*/
+                _uiState.update { it.copy(callerLineId = it.callerLineId.copy(isFetchingLocation = true)) }
+                viewModelScope.launch {
+                    val location = findNextLocation.invoke(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        requestCode = Constants.FIND_CLI_LOCATION_REQUEST
+                    )
+                    _uiState.update {
+                        it.copy(callerLineId = it.callerLineId.copy(
+                            location = location ?: "", isFetchingLocation = false)
+                        )
+                    }
+                }
             }
 
             SetupDeviceEvent.CallerLineIdEvent.OnUpdateClick -> {

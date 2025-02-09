@@ -28,6 +28,7 @@ import com.forematic.forelock.core.utils.MessageSender
 import com.forematic.forelock.home.presentation.HomeScreen
 import com.forematic.forelock.home.presentation.HomeViewModel
 import com.forematic.forelock.setupdevice.data.DeviceRepositoryImpl
+import com.forematic.forelock.setupdevice.domain.use_case.FindNextLocation
 import com.forematic.forelock.setupdevice.domain.use_case.GetSignalStrength
 import com.forematic.forelock.setupdevice.presentation.SetupDeviceViewModel
 import com.forematic.forelock.setupdevice.presentation.SetupNewDeviceScreen
@@ -111,7 +112,8 @@ class MainActivity : ComponentActivity(), PermissionHandler {
                             SetupDeviceViewModel(
                                 deviceRepository = DeviceRepositoryImpl(messageSender),
                                 inputValidator = MyApplication.appModule.inputValidator,
-                                getSignalStrength = GetSignalStrength(sendSmsAndGetResponseUseCase)
+                                getSignalStrength = GetSignalStrength(sendSmsAndGetResponseUseCase),
+                                findNextLocation = FindNextLocation(sendSmsAndGetResponseUseCase)
                             )
                         }
                         val uiState by viewModel.uiState.collectAsStateWithLifecycle()

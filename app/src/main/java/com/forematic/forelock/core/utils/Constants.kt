@@ -6,4 +6,8 @@ object Constants {
     const val UPDATE_KEYPAD_CODES_REQUEST = 2
     const val GET_SIGNAL_STRENGTH_REQUEST = 3
     const val GET_OUTPUT_NAME_REQUEST = 4
+    const val FIND_CLI_LOCATION_REQUEST = 5
+    const val FIND_R1_LOCATION_REQUEST = 6
+    const val FIND_R2_LOCATION_REQUEST = 7
+    const val FIND_SU_CODE_LOCATION_REQ = 8 // Single use code or Delivery code location request
 }
