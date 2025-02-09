@@ -3,6 +3,7 @@ package com.forematic.forelock.setupdevice.presentation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -16,12 +17,21 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.forematic.forelock.core.utils.ObserveAsEvents
+import com.forematic.forelock.core.utils.SnackbarController
 import com.forematic.forelock.setupdevice.presentation.components.AudioAdjustmentSection
 import com.forematic.forelock.setupdevice.presentation.components.CallOutNumberSection
 import com.forematic.forelock.setupdevice.presentation.components.CallerLineSetupSection
@@ -30,6 +40,7 @@ import com.forematic.forelock.setupdevice.presentation.components.SetKeypadCodeS
 import com.forematic.forelock.setupdevice.presentation.components.SimNumberAndPasswordSection
 import com.forematic.forelock.setupdevice.presentation.components.TimezoneModeSection
 import com.forematic.forelock.ui.theme.ForeLockTheme
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -39,6 +50,24 @@ fun SetupNewDeviceScreen(
     onNavigateBack: () -> Unit
 ) {
     val scrollState = rememberScrollState()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val scope = rememberCoroutineScope()
+
+    // For receiving snackbar events from SetupDeviceViewModel
+    ObserveAsEvents(flow = SnackbarController.events) { event ->
+        scope.launch {
+            snackbarHostState.currentSnackbarData?.dismiss()
+            snackbarHostState.showSnackbar(
+                event.message,
+                actionLabel = event.action?.name,
+                duration = SnackbarDuration.Short
+            ).also {
+                if(it == SnackbarResult.ActionPerformed) {
+                    event.action?.action?.invoke()
+                }
+            }
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -58,7 +87,10 @@ fun SetupNewDeviceScreen(
                     }
                 }
             )
-        }
+            SnackbarHost(snackbarHostState, modifier = Modifier.absoluteOffset(y = 64.dp)) {
+                Snackbar(snackbarData = it, shape = MaterialTheme.shapes.medium)
+            }
+        },
     ) { innerPadding ->
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
