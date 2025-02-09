@@ -115,6 +115,7 @@ fun SetupNewDeviceScreen(
 
             TimezoneModeSection(
                 selectedMode = uiState.timezoneMode,
+                currentMode = uiState.currentTimezoneMode,
                 isUpdatingTimezone = uiState.isUpdatingTimezone,
                 onModeSelection = { onEvent(SetupDeviceEvent.TimezoneModeEvent.OnTimezoneModeChange(it)) },
                 onUpdateClick = { onEvent(SetupDeviceEvent.TimezoneModeEvent.OnUpdateClick) },

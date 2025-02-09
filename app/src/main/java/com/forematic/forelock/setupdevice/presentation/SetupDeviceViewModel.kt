@@ -7,6 +7,8 @@ import com.forematic.forelock.core.domain.model.InputError
 import com.forematic.forelock.core.domain.model.MessageUpdate
 import com.forematic.forelock.core.domain.model.Result
 import com.forematic.forelock.core.utils.Constants
+import com.forematic.forelock.core.utils.SnackbarController
+import com.forematic.forelock.core.utils.SnackbarEvent
 import com.forematic.forelock.setupdevice.domain.DeviceRepository
 import com.forematic.forelock.setupdevice.domain.use_case.FindNextLocation
 import com.forematic.forelock.setupdevice.domain.use_case.GetOutputName
@@ -129,11 +131,19 @@ class SetupDeviceViewModel(
                 _uiState.update { it.copy(timezoneMode = e.timezoneMode) }
             }
             SetupDeviceEvent.TimezoneModeEvent.OnUpdateClick -> {
-                deviceRepository.setTimezoneMode(
-                    uiState.value.simAndPasswordState.simNumber,
-                    uiState.value.currentProgrammingPassword,
-                    uiState.value.timezoneMode.code
-                )
+                if(uiState.value.simAndPasswordState.simNumber.isBlank()) {
+                    viewModelScope.launch {
+                        SnackbarController.sendEvent(
+                            SnackbarEvent(message = "Please enter SIM number first")
+                        )
+                    }
+                } else {
+                    deviceRepository.setTimezoneMode(
+                        uiState.value.simAndPasswordState.simNumber,
+                        uiState.value.currentProgrammingPassword,
+                        uiState.value.timezoneMode.code
+                    )
+                }
             }
         }
     }
@@ -145,7 +155,10 @@ class SetupDeviceViewModel(
                     currentState.copy(isUpdatingTimezone = true)
                 }
                 is MessageUpdate.Delivered -> {
-                    currentState.copy(isUpdatingTimezone = false)
+                    currentState.copy(
+                        isUpdatingTimezone = false,
+                        currentTimezoneMode = uiState.value.timezoneMode
+                    )
                 }
                 is MessageUpdate.Error -> {
                     currentState.copy(isUpdatingTimezone = false)

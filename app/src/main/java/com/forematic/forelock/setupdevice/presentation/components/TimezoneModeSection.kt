@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,7 +26,8 @@ import com.forematic.forelock.ui.theme.ForeLockTheme
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TimezoneModeSection(
-    selectedMode: TimezoneMode?,
+    selectedMode: TimezoneMode,
+    currentMode: TimezoneMode,
     onModeSelection: (TimezoneMode) -> Unit,
     onUpdateClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -67,12 +69,30 @@ fun TimezoneModeSection(
                         )
                     }
                 }
-                ButtonWithLoadingIndicator(
-                    onClick = onUpdateClick,
-                    text = "Update",
-                    isLoading = isUpdatingTimezone,
-                    modifier = Modifier.widthIn(min = 108.dp).align(Alignment.End)
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Text(
+                            text = "Current Timezone",
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            style = MaterialTheme.typography.labelSmall
+                        )
+                        Text(
+                            text = currentMode.displayName,
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    ButtonWithLoadingIndicator(
+                        onClick = onUpdateClick,
+                        text = "Update",
+                        isLoading = isUpdatingTimezone,
+                        modifier = Modifier.widthIn(min = 108.dp)
+                    )
+                }
             }
         }
     }
@@ -84,7 +104,8 @@ private fun TimezoneModeSectionPreview() {
     ForeLockTheme {
         Surface {
             TimezoneModeSection(
-                selectedMode = null,
+                selectedMode = TimezoneMode.DAY,
+                currentMode = TimezoneMode.HOLIDAY,
                 onModeSelection = { },
                 onUpdateClick = { },
                 modifier = Modifier.padding(8.dp)
