@@ -56,6 +56,7 @@ data class KeypadCodeForOutput(
     val code: String = "",
     val location: String = "",
     val locationRange: String = "",
+    val isFetchingLocation: Boolean = false,
     val codeError: String? = null,
     val locationError: String? = null
 )

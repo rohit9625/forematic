@@ -154,17 +154,15 @@ fun KeypadCodeWithLocation(
                 modifier = Modifier.widthIn(max = 156.dp),
                 shape = RoundedCornerShape(12.dp),
                 trailingIcon = {
-                    Button(
+                    ButtonWithLoadingIndicator(
                         onClick = onFindAction,
-                        shape = RoundedCornerShape(topEnd = 12.dp, bottomEnd = 12.dp),
+                        text = "Find\nNext",
+                        textStyle = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier.height(IntrinsicSize.Max),
+                        isLoading = keypadCode.isFetchingLocation,
                         contentPadding = PaddingValues(),
-                        modifier = Modifier.height(IntrinsicSize.Max)
-                    ) {
-                        Text(
-                            text = "Find\nNext",
-                            style = MaterialTheme.typography.labelMedium
-                        )
-                    }
+                        shape = RoundedCornerShape(topEnd = 12.dp, bottomEnd = 12.dp)
+                    )
                 },
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.NumberPassword,

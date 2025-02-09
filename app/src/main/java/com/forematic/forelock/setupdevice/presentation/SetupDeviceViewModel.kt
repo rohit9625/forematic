@@ -352,7 +352,20 @@ class SetupDeviceViewModel(
                 _uiState.update { it.copy(keypadCode1 = it.keypadCode1.copy(location = e.location)) }
             }
             SetupDeviceEvent.KeypadCodeEvent.OnFindKeypadCode1Location -> {
-                /*TODO("Query Intercom to receive next available location")*/
+                _uiState.update { it.copy(keypadCode1 = it.keypadCode1.copy(isFetchingLocation = true)) }
+                viewModelScope.launch {
+                    val location = findNextLocation.invoke(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        requestCode = Constants.FIND_R1_LOCATION_REQUEST
+                    )
+                    _uiState.update {
+                        it.copy(keypadCode1 = it.keypadCode1.copy(
+                                isFetchingLocation = false, location = location ?: ""
+                            )
+                        )
+                    }
+                }
             }
 
             is SetupDeviceEvent.KeypadCodeEvent.OnKeypadCode2Change -> {
@@ -362,7 +375,19 @@ class SetupDeviceViewModel(
                 _uiState.update { it.copy(keypadCode2 = it.keypadCode2.copy(location = e.location)) }
             }
             SetupDeviceEvent.KeypadCodeEvent.OnFindKeypadCode2Location -> {
-                /*TODO("Query Intercom to receive next available location")*/
+                _uiState.update { it.copy(keypadCode2 = it.keypadCode2.copy(isFetchingLocation = true)) }
+                viewModelScope.launch {
+                    val location = findNextLocation.invoke(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        requestCode = Constants.FIND_R2_LOCATION_REQUEST
+                    )
+                    _uiState.update {it.copy(
+                        keypadCode2 = it.keypadCode2.copy(
+                            isFetchingLocation = false, location = location ?: ""
+                        )
+                    ) }
+                }
             }
 
             is SetupDeviceEvent.KeypadCodeEvent.OnDeliveryCodeChange -> {
@@ -372,7 +397,19 @@ class SetupDeviceViewModel(
                 _uiState.update { it.copy(deliveryCode = it.deliveryCode.copy(location = e.location)) }
             }
             SetupDeviceEvent.KeypadCodeEvent.OnFindDeliveryCodeLocation -> {
-                /*TODO("Query Intercom to receive next available location")*/
+                _uiState.update { it.copy(deliveryCode = it.deliveryCode.copy(isFetchingLocation = true)) }
+                viewModelScope.launch {
+                    val location = findNextLocation.invoke(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        requestCode = Constants.FIND_SU_CODE_LOCATION_REQ
+                    )
+                    _uiState.update { it.copy(
+                        deliveryCode = it.deliveryCode.copy(
+                            isFetchingLocation = false, location = location ?: ""
+                        )
+                    ) }
+                }
             }
 
             SetupDeviceEvent.KeypadCodeEvent.OnUpdateClick -> {
