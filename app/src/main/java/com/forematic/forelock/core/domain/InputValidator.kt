@@ -6,7 +6,9 @@ import com.forematic.forelock.core.domain.model.Result
 class InputValidator {
     fun validateUkPhoneNumber(phoneNumber: String): Result<Unit, InputError.PhoneNumberError> {
         val regex = Regex("^\\+44\\d{10,11}\$|^0\\d{10,11}\$")
-        return if(!regex.matches(phoneNumber)) {
+        return if(phoneNumber.isBlank()) {
+            Result.Failure(InputError.PhoneNumberError.EMPTY)
+        } else if(!regex.matches(phoneNumber)) {
             Result.Failure(InputError.PhoneNumberError.INVALID_NUMBER)
         } else {
             Result.Success(Unit)

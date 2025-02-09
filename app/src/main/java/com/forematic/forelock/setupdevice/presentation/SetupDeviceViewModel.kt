@@ -24,13 +24,15 @@ class SetupDeviceViewModel(
     private val getSignalStrength: GetSignalStrength,
     private val findNextLocation: FindNextLocation,
     private val getOutputName: GetOutputName
-): ViewModel() {
-    private val _uiState = MutableStateFlow(NewDeviceUiState(
-        deviceType = DeviceType.G24_INTERCOM,
-        currentProgrammingPassword = "1234",
-        outputRelay1 = OutputRelay(),
-        outputRelay2 = OutputRelay(),
-    ))
+) : ViewModel() {
+    private val _uiState = MutableStateFlow(
+        NewDeviceUiState(
+            deviceType = DeviceType.G24_INTERCOM,
+            currentProgrammingPassword = "1234",
+            outputRelay1 = OutputRelay(),
+            outputRelay2 = OutputRelay(),
+        )
+    )
     val uiState = _uiState.asStateFlow()
 
     private val stateUpdateMap: Map<Int, (MessageUpdate) -> Unit> = mapOf(
@@ -57,7 +59,7 @@ class SetupDeviceViewModel(
     }
 
     fun onEvent(e: SetupDeviceEvent) {
-        when(e) {
+        when (e) {
             is SetupDeviceEvent.SimAndPasswordEvent -> onSimAndPasswordEvent(e)
 
             is SetupDeviceEvent.DeviceTypeChanged -> {
@@ -77,19 +79,28 @@ class SetupDeviceViewModel(
             is SetupDeviceEvent.OnSpeakerVolumeChange -> {
                 _uiState.update { it.copy(speakerVolume = e.volume) }
             }
+
             is SetupDeviceEvent.OnMicVolumeChange -> {
                 _uiState.update { it.copy(micVolume = e.volume) }
             }
-            SetupDeviceEvent.OnCheckSignalStrength -> {
-                _uiState.update { it.copy(isRefreshingSignal = true) }
-                viewModelScope.launch {
-                    val signal = getSignalStrength.invoke(
-                        simNumber = uiState.value.simAndPasswordState.simNumber,
-                        password = uiState.value.currentProgrammingPassword,
-                        requestCode = Constants.GET_SIGNAL_STRENGTH_REQUEST
-                    )
 
-                    _uiState.update { it.copy(signalStrength = signal, isRefreshingSignal = false) }
+            SetupDeviceEvent.OnCheckSignalStrength -> {
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(isRefreshingSignal = true) }
+                    viewModelScope.launch {
+                        val signal = getSignalStrength.invoke(
+                            simNumber = uiState.value.simAndPasswordState.simNumber,
+                            password = uiState.value.currentProgrammingPassword,
+                            requestCode = Constants.GET_SIGNAL_STRENGTH_REQUEST
+                        )
+
+                        _uiState.update {
+                            it.copy(
+                                signalStrength = signal,
+                                isRefreshingSignal = false
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -126,18 +137,14 @@ class SetupDeviceViewModel(
     }
 
     private fun onTimezoneModeEvent(e: SetupDeviceEvent.TimezoneModeEvent) {
-        when(e) {
+        when (e) {
             is SetupDeviceEvent.TimezoneModeEvent.OnTimezoneModeChange -> {
                 _uiState.update { it.copy(timezoneMode = e.timezoneMode) }
             }
+
             SetupDeviceEvent.TimezoneModeEvent.OnUpdateClick -> {
-                if(uiState.value.simAndPasswordState.simNumber.isBlank()) {
-                    viewModelScope.launch {
-                        SnackbarController.sendEvent(
-                            SnackbarEvent(message = "Please enter SIM number first")
-                        )
-                    }
-                } else {
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(isUpdatingTimezone = true) }
                     deviceRepository.setTimezoneMode(
                         uiState.value.simAndPasswordState.simNumber,
                         uiState.value.currentProgrammingPassword,
@@ -150,16 +157,18 @@ class SetupDeviceViewModel(
 
     private fun updateTimezoneMode(messageUpdate: MessageUpdate) {
         _uiState.update { currentState ->
-            when(messageUpdate) {
+            when (messageUpdate) {
                 is MessageUpdate.Sent -> {
                     currentState.copy(isUpdatingTimezone = true)
                 }
+
                 is MessageUpdate.Delivered -> {
                     currentState.copy(
                         isUpdatingTimezone = false,
                         currentTimezoneMode = uiState.value.timezoneMode
                     )
                 }
+
                 is MessageUpdate.Error -> {
                     currentState.copy(isUpdatingTimezone = false)
                 }
@@ -171,13 +180,15 @@ class SetupDeviceViewModel(
 
     private fun updateKeypadCodes(messageUpdate: MessageUpdate) {
         _uiState.update { currentState ->
-            when(messageUpdate) {
+            when (messageUpdate) {
                 is MessageUpdate.Sent -> {
                     currentState.copy(isUpdatingKeypadCodes = true)
                 }
+
                 is MessageUpdate.Delivered -> {
                     currentState.copy(isUpdatingKeypadCodes = false)
                 }
+
                 is MessageUpdate.Error -> {
                     currentState.copy(isUpdatingKeypadCodes = false)
                 }
@@ -188,46 +199,60 @@ class SetupDeviceViewModel(
     }
 
     private fun onSimAndPasswordEvent(e: SetupDeviceEvent.SimAndPasswordEvent) {
-        when(e) {
+        when (e) {
             is SetupDeviceEvent.SimAndPasswordEvent.OnSimNumberChange -> {
-                val error = when(val result = inputValidator.validateUkPhoneNumber(e.number)) {
-                    is Result.Failure -> when(result.error) {
+                val error = when (val result = inputValidator.validateUkPhoneNumber(e.number)) {
+                    is Result.Failure -> when (result.error) {
                         InputError.PhoneNumberError.INVALID_NUMBER -> "Invalid SIM Number"
+                        InputError.PhoneNumberError.EMPTY -> "SIM number cannot be empty"
                     }
+
                     is Result.Success -> null
                 }
                 _uiState.update {
-                    it.copy(simAndPasswordState = it.simAndPasswordState.copy(
-                        simNumber = e.number, simNumberError = error)
+                    it.copy(
+                        simAndPasswordState = it.simAndPasswordState.copy(
+                            simNumber = e.number, simNumberError = error
+                        )
                     )
                 }
             }
 
             is SetupDeviceEvent.SimAndPasswordEvent.OnPasswordChange -> {
-                val error = when(val result = inputValidator.validateProgrammingPassword(e.password)) {
-                    is Result.Failure -> when(result.error) {
-                        InputError.PasswordError.INVALID_LENGTH -> "Password must contain 4 characters"
-                        InputError.PasswordError.INVALID_CHARS -> "Password should have numbers and letters"
+                val error =
+                    when (val result = inputValidator.validateProgrammingPassword(e.password)) {
+                        is Result.Failure -> when (result.error) {
+                            InputError.PasswordError.INVALID_LENGTH -> "Password must contain 4 characters"
+                            InputError.PasswordError.INVALID_CHARS -> "Password should have numbers and letters"
+                        }
+
+                        is Result.Success -> null
                     }
-                    is Result.Success -> null
-                }
                 _uiState.update {
-                    it.copy(simAndPasswordState = it.simAndPasswordState
-                        .copy(programmingPassword = e.password, passwordError = error))
+                    it.copy(
+                        simAndPasswordState = it.simAndPasswordState
+                            .copy(programmingPassword = e.password, passwordError = error)
+                    )
                 }
             }
 
             SetupDeviceEvent.SimAndPasswordEvent.OnUpdateClick -> {
-                val numberError = if(uiState.value.simAndPasswordState.simNumber.isBlank())
+                val numberError = if (uiState.value.simAndPasswordState.simNumber.isBlank())
                     "SIM number cannot be empty" else null
-                val passwordError = if(uiState.value.currentProgrammingPassword
-                == uiState.value.simAndPasswordState.programmingPassword) "Password is same as current password"
+                val passwordError = if (uiState.value.currentProgrammingPassword
+                    == uiState.value.simAndPasswordState.programmingPassword
+                ) "Password is same as current password"
                 else null
 
-                _uiState.update { it.copy(simAndPasswordState = it.simAndPasswordState.copy(
-                    simNumberError = numberError, passwordError = passwordError)) }
+                _uiState.update {
+                    it.copy(
+                        simAndPasswordState = it.simAndPasswordState.copy(
+                            simNumberError = numberError, passwordError = passwordError
+                        )
+                    )
+                }
 
-                if(numberError != null || passwordError != null) return
+                if (numberError != null || passwordError != null) return
 
                 deviceRepository.setNewPassword(
                     uiState.value.simAndPasswordState.simNumber,
@@ -238,8 +263,26 @@ class SetupDeviceViewModel(
         }
     }
 
+    private fun executeIfValidSimNumber(action: () -> Unit) {
+        when (val result =
+            inputValidator.validateUkPhoneNumber(uiState.value.simAndPasswordState.simNumber)) {
+            is Result.Failure -> when (result.error) {
+                InputError.PhoneNumberError.EMPTY -> showSnackbar("SIM number cannot be empty")
+                InputError.PhoneNumberError.INVALID_NUMBER -> showSnackbar("Invalid SIM number")
+            }
+
+            is Result.Success -> action()
+        }
+    }
+
+    private fun showSnackbar(message: String) {
+        viewModelScope.launch {
+            SnackbarController.sendEvent(SnackbarEvent(message = message))
+        }
+    }
+
     private fun onCallOutNumberEvent(e: SetupDeviceEvent.CallOutNumberEvent) {
-        when(e) {
+        when (e) {
             is SetupDeviceEvent.CallOutNumberEvent.OnNameChange -> {
                 _uiState.update {
                     it.copy(
@@ -267,6 +310,7 @@ class SetupDeviceViewModel(
             is SetupDeviceEvent.CallOutNumberEvent.OnAdminNumberChange -> {
                 _uiState.update { it.copy(adminNumber = e.number) }
             }
+
             SetupDeviceEvent.CallOutNumberEvent.OnChangeClick -> {
                 /*TODO("Update admin number to the target device")*/
             }
@@ -274,24 +318,31 @@ class SetupDeviceViewModel(
     }
 
     private fun onOutputRelayEvent(e: SetupDeviceEvent.OutputRelayEvent) {
-        when(e) {
+        when (e) {
             is SetupDeviceEvent.OutputRelayEvent.OnRelay1NameChange -> {
-                val error = when(val result = inputValidator.validateName(e.name)) {
-                    is Result.Failure -> when(result.error) {
+                val error = when (val result = inputValidator.validateName(e.name)) {
+                    is Result.Failure -> when (result.error) {
                         InputError.NameError.EMPTY -> "Enter a name for relay"
                         InputError.NameError.TOO_SHORT -> "Name is too short"
                         InputError.NameError.TOO_LONG -> "Name is too long"
                         InputError.NameError.INVALID_FORMAT -> "Invalid name format"
                     }
+
                     is Result.Success -> null
                 }
-                _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(
-                    name = e.name, outputNameError = error))
+                _uiState.update {
+                    it.copy(
+                        outputRelay1 = it.outputRelay1.copy(
+                            name = e.name, outputNameError = error
+                        )
+                    )
                 }
             }
+
             is SetupDeviceEvent.OutputRelayEvent.OnRelay1TextChange -> {
                 _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(text = e.text)) }
             }
+
             is SetupDeviceEvent.OutputRelayEvent.OnRelay1TimeChange -> {
                 _uiState.update {
                     val updatedRelay = it.outputRelay1.copy(relayTime = e.relayTime)
@@ -302,9 +353,11 @@ class SetupDeviceViewModel(
                     it.copy(outputRelay1 = updatedRelay.copy(relayTimeError = error))
                 }
             }
+
             is SetupDeviceEvent.OutputRelayEvent.OnRelay1IconChange -> {
                 _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(icon = e.icon)) }
             }
+
             SetupDeviceEvent.OutputRelayEvent.OnGetNameForRelay1 -> {
                 _uiState.update {
                     it.copy(outputRelay1 = it.outputRelay1.copy(isFetchingOutputName = true))
@@ -316,31 +369,40 @@ class SetupDeviceViewModel(
                         requestCode = Constants.GET_R1_OUTPUT_NAME_REQUEST
                     )
                     _uiState.update {
-                        it.copy(outputRelay1 = it.outputRelay1.copy(
-                            isFetchingOutputName = false, name = outputName ?: ""
-                        ))
+                        it.copy(
+                            outputRelay1 = it.outputRelay1.copy(
+                                isFetchingOutputName = false, name = outputName ?: ""
+                            )
+                        )
                     }
                 }
             }
 
             // For Intercoms with two output relays
             is SetupDeviceEvent.OutputRelayEvent.OnRelay2NameChange -> {
-                val error = when(val result = inputValidator.validateName(e.name)) {
-                    is Result.Failure -> when(result.error) {
+                val error = when (val result = inputValidator.validateName(e.name)) {
+                    is Result.Failure -> when (result.error) {
                         InputError.NameError.EMPTY -> "Enter a name for the relay"
                         InputError.NameError.TOO_SHORT -> "Output Name is too short"
                         InputError.NameError.TOO_LONG -> "Output Name is too long"
                         InputError.NameError.INVALID_FORMAT -> "Invalid output name format"
                     }
+
                     is Result.Success -> null
                 }
-                _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(
-                    name = e.name, outputNameError = error))
+                _uiState.update {
+                    it.copy(
+                        outputRelay2 = it.outputRelay2?.copy(
+                            name = e.name, outputNameError = error
+                        )
+                    )
                 }
             }
+
             is SetupDeviceEvent.OutputRelayEvent.OnRelay2TextChange -> {
                 _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(text = e.text)) }
             }
+
             is SetupDeviceEvent.OutputRelayEvent.OnRelay2TimeChange -> {
                 _uiState.update {
                     val updatedRelay = it.outputRelay2!!.copy(relayTime = e.relayTime)
@@ -351,9 +413,11 @@ class SetupDeviceViewModel(
                     it.copy(outputRelay2 = updatedRelay.copy(relayTimeError = error))
                 }
             }
+
             is SetupDeviceEvent.OutputRelayEvent.OnRelay2IconChange -> {
                 _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(icon = e.icon)) }
             }
+
             SetupDeviceEvent.OutputRelayEvent.OnGetNameForRelay2 -> {
                 _uiState.update {
                     it.copy(outputRelay2 = it.outputRelay2?.copy(isFetchingOutputName = true))
@@ -365,48 +429,53 @@ class SetupDeviceViewModel(
                         requestCode = Constants.GET_R2_OUTPUT_NAME_REQUEST
                     )
                     _uiState.update {
-                        it.copy(outputRelay2 = it.outputRelay2?.copy(
-                            isFetchingOutputName = false, name = outputName ?: ""
-                        ))
+                        it.copy(
+                            outputRelay2 = it.outputRelay2?.copy(
+                                isFetchingOutputName = false, name = outputName ?: ""
+                            )
+                        )
                     }
                 }
             }
 
             SetupDeviceEvent.OutputRelayEvent.OnUpdateClick -> {
                 _uiState.update {
-                    val relay1Error = if(it.outputRelay1.isAnyInputEmpty())
+                    val relay1Error = if (it.outputRelay1.isAnyInputEmpty())
                         "Please configure relay completely" else null
-                    val relay2Error = if(it.outputRelay2!!.isAnyInputEmpty())
+                    val relay2Error = if (it.outputRelay2!!.isAnyInputEmpty())
                         "Please configure relay completely" else null
 
-                    it.copy(outputRelay1 = it.outputRelay1.copy(otherError = relay1Error),
-                        outputRelay2 = it.outputRelay2.copy(otherError = relay2Error))
+                    it.copy(
+                        outputRelay1 = it.outputRelay1.copy(otherError = relay1Error),
+                        outputRelay2 = it.outputRelay2.copy(otherError = relay2Error)
+                    )
                 }
             }
         }
     }
 
     private fun onKeypadCodeEvent(e: SetupDeviceEvent.KeypadCodeEvent) {
-        when(e) {
+        when (e) {
             is SetupDeviceEvent.KeypadCodeEvent.OnKeypadCode1Change -> {
                 _uiState.update { it.copy(keypadCode1 = it.keypadCode1.copy(code = e.code)) }
             }
+
             is SetupDeviceEvent.KeypadCodeEvent.OnCodeLocation1Change -> {
                 _uiState.update { it.copy(keypadCode1 = it.keypadCode1.copy(location = e.location)) }
             }
+
             SetupDeviceEvent.KeypadCodeEvent.OnFindKeypadCode1Location -> {
-                _uiState.update { it.copy(keypadCode1 = it.keypadCode1.copy(isFetchingLocation = true)) }
-                viewModelScope.launch {
-                    val location = findNextLocation.invoke(
-                        simNumber = uiState.value.simAndPasswordState.simNumber,
-                        password = uiState.value.currentProgrammingPassword,
-                        requestCode = Constants.FIND_R1_LOCATION_REQUEST
-                    )
-                    _uiState.update {
-                        it.copy(keypadCode1 = it.keypadCode1.copy(
-                                isFetchingLocation = false, location = location ?: ""
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(keypadCode1 = it.keypadCode1.copy(isFetchingLocation = true)) }
+                    viewModelScope.launch {
+                        val location = requestNextLocation(Constants.FIND_R1_LOCATION_REQUEST)
+                        _uiState.update {
+                            it.copy(
+                                keypadCode1 = it.keypadCode1.copy(
+                                    isFetchingLocation = false, location = location ?: ""
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -414,71 +483,88 @@ class SetupDeviceViewModel(
             is SetupDeviceEvent.KeypadCodeEvent.OnKeypadCode2Change -> {
                 _uiState.update { it.copy(keypadCode2 = it.keypadCode2.copy(code = e.code)) }
             }
+
             is SetupDeviceEvent.KeypadCodeEvent.OnCodeLocation2Change -> {
                 _uiState.update { it.copy(keypadCode2 = it.keypadCode2.copy(location = e.location)) }
             }
+
             SetupDeviceEvent.KeypadCodeEvent.OnFindKeypadCode2Location -> {
-                _uiState.update { it.copy(keypadCode2 = it.keypadCode2.copy(isFetchingLocation = true)) }
-                viewModelScope.launch {
-                    val location = findNextLocation.invoke(
-                        simNumber = uiState.value.simAndPasswordState.simNumber,
-                        password = uiState.value.currentProgrammingPassword,
-                        requestCode = Constants.FIND_R2_LOCATION_REQUEST
-                    )
-                    _uiState.update {it.copy(
-                        keypadCode2 = it.keypadCode2.copy(
-                            isFetchingLocation = false, location = location ?: ""
-                        )
-                    ) }
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(keypadCode2 = it.keypadCode2.copy(isFetchingLocation = true)) }
+                    viewModelScope.launch {
+                        val location = requestNextLocation(Constants.FIND_R2_LOCATION_REQUEST)
+                        _uiState.update {
+                            it.copy(
+                                keypadCode2 = it.keypadCode2.copy(
+                                    location = location ?: "", isFetchingLocation = false
+                                )
+                            )
+                        }
+                    }
                 }
             }
 
             is SetupDeviceEvent.KeypadCodeEvent.OnDeliveryCodeChange -> {
                 _uiState.update { it.copy(deliveryCode = it.deliveryCode.copy(code = e.code)) }
             }
+
             is SetupDeviceEvent.KeypadCodeEvent.OnDeliveryCodeLocationChange -> {
                 _uiState.update { it.copy(deliveryCode = it.deliveryCode.copy(location = e.location)) }
             }
+
             SetupDeviceEvent.KeypadCodeEvent.OnFindDeliveryCodeLocation -> {
-                _uiState.update { it.copy(deliveryCode = it.deliveryCode.copy(isFetchingLocation = true)) }
-                viewModelScope.launch {
-                    val location = findNextLocation.invoke(
-                        simNumber = uiState.value.simAndPasswordState.simNumber,
-                        password = uiState.value.currentProgrammingPassword,
-                        requestCode = Constants.FIND_SU_CODE_LOCATION_REQ
-                    )
-                    _uiState.update { it.copy(
-                        deliveryCode = it.deliveryCode.copy(
-                            isFetchingLocation = false, location = location ?: ""
-                        )
-                    ) }
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(deliveryCode = it.deliveryCode.copy(isFetchingLocation = true)) }
+                    viewModelScope.launch {
+                        val location = requestNextLocation(Constants.FIND_SU_CODE_LOCATION_REQ)
+                        _uiState.update {
+                            it.copy(
+                                deliveryCode = it.deliveryCode.copy(
+                                    isFetchingLocation = false, location = location ?: ""
+                                )
+                            )
+                        }
+                    }
                 }
             }
 
             SetupDeviceEvent.KeypadCodeEvent.OnUpdateClick -> {
-                deviceRepository.setKeypadCodes(
-                    simNumber = uiState.value.simAndPasswordState.simNumber,
-                    password = uiState.value.currentProgrammingPassword,
-                    keypadCode1 = uiState.value.keypadCode1,
-                    keypadCode2 = uiState.value.keypadCode2,
-                    deliveryCode = uiState.value.deliveryCode
-                )
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(isUpdatingKeypadCodes = true) }
+                    deviceRepository.setKeypadCodes(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        keypadCode1 = uiState.value.keypadCode1,
+                        keypadCode2 = uiState.value.keypadCode2,
+                        deliveryCode = uiState.value.deliveryCode
+                    )
+                }
             }
         }
+    }
 
+    private suspend fun requestNextLocation(requestCode: Int): String? {
+        return findNextLocation.invoke(
+            simNumber = uiState.value.simAndPasswordState.simNumber,
+            password = uiState.value.currentProgrammingPassword,
+            requestCode = requestCode
+        )
     }
 
     private fun onCallerLineIdEvent(e: SetupDeviceEvent.CallerLineIdEvent) {
-        when(e) {
+        when (e) {
             is SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange -> {
                 _uiState.update { it.copy(callerLineId = it.callerLineId.copy(userMode = e.userMode)) }
             }
+
             is SetupDeviceEvent.CallerLineIdEvent.OnNumberChange -> {
                 _uiState.update { it.copy(callerLineId = it.callerLineId.copy(number = e.number)) }
             }
+
             is SetupDeviceEvent.CallerLineIdEvent.OnLocationChange -> {
                 _uiState.update { it.copy(callerLineId = it.callerLineId.copy(location = e.location)) }
             }
+
             SetupDeviceEvent.CallerLineIdEvent.OnFindLocation -> {
                 _uiState.update { it.copy(callerLineId = it.callerLineId.copy(isFetchingLocation = true)) }
                 viewModelScope.launch {
@@ -488,8 +574,10 @@ class SetupDeviceViewModel(
                         requestCode = Constants.FIND_CLI_LOCATION_REQUEST
                     )
                     _uiState.update {
-                        it.copy(callerLineId = it.callerLineId.copy(
-                            location = location ?: "", isFetchingLocation = false)
+                        it.copy(
+                            callerLineId = it.callerLineId.copy(
+                                location = location ?: "", isFetchingLocation = false
+                            )
                         )
                     }
                 }

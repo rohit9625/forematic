@@ -6,6 +6,7 @@ sealed interface InputError: Error {
         INVALID_CHARS
     }
     enum class PhoneNumberError: InputError {
+        EMPTY,
         INVALID_NUMBER
     }
     enum class NameError: InputError {
