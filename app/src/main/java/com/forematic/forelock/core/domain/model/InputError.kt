@@ -15,4 +15,14 @@ sealed interface InputError: Error {
         TOO_LONG,
         INVALID_FORMAT
     }
+    enum class KeypadCodeError: InputError {
+        EMPTY,
+        INVALID_LENGTH,
+        INVALID_FORMAT
+    }
+    enum class LocationError: InputError {
+        EMPTY,
+        OUT_OF_RANGE,
+        INVALID_FORMAT
+    }
 }

@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -150,7 +149,7 @@ fun KeypadCodeWithLocation(
                 value = keypadCode.location,
                 onValueChange = onLocationChange,
                 label = "Location",
-                secondaryLabel = keypadCode.locationRange,
+                secondaryLabel = keypadCode.formatedLocationRange(),
                 modifier = Modifier.widthIn(max = 156.dp),
                 shape = RoundedCornerShape(12.dp),
                 trailingIcon = {
@@ -176,6 +175,7 @@ fun KeypadCodeWithLocation(
                 label = "Keypad Code",
                 modifier = Modifier.widthIn(max = 128.dp),
                 shape = RoundedCornerShape(12.dp),
+                isError = keypadCode.codeError != null,
                 keyboardOptions = KeyboardOptions(
                     keyboardType = KeyboardType.NumberPassword,
                     imeAction = ImeAction.Done
@@ -193,9 +193,9 @@ private fun SetKeypadCodeSectionPreview() {
     ForeLockTheme {
         Surface {
             SetKeypadCodeSection(
-                keypadCode1 = KeypadCodeForOutput(),
-                keypadCode2 = KeypadCodeForOutput(),
-                deliveryCode = KeypadCodeForOutput(),
+                keypadCode1 = KeypadCodeForOutput(locationRange = 1..100),
+                keypadCode2 = KeypadCodeForOutput(locationRange = 101..150),
+                deliveryCode = KeypadCodeForOutput(locationRange = 151..200),
                 onEvent = { },
                 modifier = Modifier
                     .padding(8.dp)

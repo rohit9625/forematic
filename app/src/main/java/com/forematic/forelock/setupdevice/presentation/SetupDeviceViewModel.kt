@@ -457,11 +457,41 @@ class SetupDeviceViewModel(
     private fun onKeypadCodeEvent(e: SetupDeviceEvent.KeypadCodeEvent) {
         when (e) {
             is SetupDeviceEvent.KeypadCodeEvent.OnKeypadCode1Change -> {
-                _uiState.update { it.copy(keypadCode1 = it.keypadCode1.copy(code = e.code)) }
+                val error = when (val result = inputValidator.validateKeypadCode(e.code)) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.KeypadCodeError.EMPTY -> "Keypad code cannot be empty"
+                        InputError.KeypadCodeError.INVALID_LENGTH -> "Keypad code must 2-8 digits long"
+                        InputError.KeypadCodeError.INVALID_FORMAT -> "Keypad code must be numbers only"
+                    }
+
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(keypadCode1 = it.keypadCode1.copy(code = e.code, codeError = error))
+                }
             }
 
             is SetupDeviceEvent.KeypadCodeEvent.OnCodeLocation1Change -> {
-                _uiState.update { it.copy(keypadCode1 = it.keypadCode1.copy(location = e.location)) }
+                val error = when (val result = inputValidator.validateLocationInRange(
+                    e.location,
+                    uiState.value.keypadCode1.locationRange
+                )) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.LocationError.EMPTY -> "Location cannot be empty"
+                        InputError.LocationError.OUT_OF_RANGE -> "Location must be between ${uiState.value.keypadCode1.formatedLocationRange()}"
+                        InputError.LocationError.INVALID_FORMAT -> "Invalid location format"
+                    }
+
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(
+                        keypadCode1 = it.keypadCode1.copy(
+                            location = e.location,
+                            locationError = error
+                        )
+                    )
+                }
             }
 
             SetupDeviceEvent.KeypadCodeEvent.OnFindKeypadCode1Location -> {
@@ -481,11 +511,41 @@ class SetupDeviceViewModel(
             }
 
             is SetupDeviceEvent.KeypadCodeEvent.OnKeypadCode2Change -> {
-                _uiState.update { it.copy(keypadCode2 = it.keypadCode2.copy(code = e.code)) }
+                val error = when (val result = inputValidator.validateKeypadCode(e.code)) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.KeypadCodeError.EMPTY -> "Keypad code cannot be empty"
+                        InputError.KeypadCodeError.INVALID_LENGTH -> "Keypad code must 2-8 digits long"
+                        InputError.KeypadCodeError.INVALID_FORMAT -> "Keypad code must be numbers only"
+                    }
+
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(keypadCode2 = it.keypadCode2.copy(code = e.code, codeError = error))
+                }
             }
 
             is SetupDeviceEvent.KeypadCodeEvent.OnCodeLocation2Change -> {
-                _uiState.update { it.copy(keypadCode2 = it.keypadCode2.copy(location = e.location)) }
+                val error = when (val result = inputValidator.validateLocationInRange(
+                    e.location,
+                    uiState.value.keypadCode2.locationRange
+                )) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.LocationError.EMPTY -> "Location cannot be empty"
+                        InputError.LocationError.OUT_OF_RANGE -> "Location must be between ${uiState.value.keypadCode2.formatedLocationRange()}"
+                        InputError.LocationError.INVALID_FORMAT -> "Invalid location format"
+                    }
+
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(
+                        keypadCode2 = it.keypadCode2.copy(
+                            location = e.location,
+                            locationError = error
+                        )
+                    )
+                }
             }
 
             SetupDeviceEvent.KeypadCodeEvent.OnFindKeypadCode2Location -> {
@@ -505,11 +565,41 @@ class SetupDeviceViewModel(
             }
 
             is SetupDeviceEvent.KeypadCodeEvent.OnDeliveryCodeChange -> {
-                _uiState.update { it.copy(deliveryCode = it.deliveryCode.copy(code = e.code)) }
+                val error = when (val result = inputValidator.validateKeypadCode(e.code)) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.KeypadCodeError.EMPTY -> "Keypad code cannot be empty"
+                        InputError.KeypadCodeError.INVALID_LENGTH -> "Keypad code must 2-8 digits long"
+                        InputError.KeypadCodeError.INVALID_FORMAT -> "Keypad code must be numbers only"
+                    }
+
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(deliveryCode = it.deliveryCode.copy(code = e.code, codeError = error))
+                }
             }
 
             is SetupDeviceEvent.KeypadCodeEvent.OnDeliveryCodeLocationChange -> {
-                _uiState.update { it.copy(deliveryCode = it.deliveryCode.copy(location = e.location)) }
+                val error = when (val result = inputValidator.validateLocationInRange(
+                    e.location,
+                    uiState.value.deliveryCode.locationRange
+                )) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.LocationError.EMPTY -> "Location cannot be empty"
+                        InputError.LocationError.OUT_OF_RANGE -> "Location must be between ${uiState.value.deliveryCode.formatedLocationRange()}"
+                        InputError.LocationError.INVALID_FORMAT -> "Invalid location format"
+                    }
+
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(
+                        deliveryCode = it.deliveryCode.copy(
+                            location = e.location,
+                            locationError = error
+                        )
+                    )
+                }
             }
 
             SetupDeviceEvent.KeypadCodeEvent.OnFindDeliveryCodeLocation -> {

@@ -1,5 +1,6 @@
 package com.forematic.forelock.setupdevice.presentation
 
+import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import com.forematic.forelock.R
 import com.forematic.forelock.setupdevice.domain.model.CallOutNumber
@@ -13,11 +14,11 @@ data class NewDeviceUiState(
     val timezoneMode: TimezoneMode = TimezoneMode.FREE,
     val currentTimezoneMode: TimezoneMode = TimezoneMode.FREE,
     val isUpdatingTimezone: Boolean = false,
-    val keypadCode1: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "001-100"),
-    val keypadCode2: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "101-149"),
-    val deliveryCode: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = "150-199"),
+    val keypadCode1: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = 1..100),
+    val keypadCode2: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = 101..150),
+    val deliveryCode: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = 151..200),
     val isUpdatingKeypadCodes: Boolean = false,
-    val callerLineId: CallerLineIdentification = CallerLineIdentification(locationRange = "200-250"),
+    val callerLineId: CallerLineIdentification = CallerLineIdentification(locationRange = "201-250"),
     val callOutNumbers: List<CallOutNumber> = listOf(CallOutNumber(), CallOutNumber(), CallOutNumber()),
     val adminNumber: String = "",
     val speakerVolume: Float = 0f,
@@ -57,11 +58,20 @@ data class OutputRelay(
 data class KeypadCodeForOutput(
     val code: String = "",
     val location: String = "",
-    val locationRange: String = "",
+    val locationRange: IntRange = 0..0,
     val isFetchingLocation: Boolean = false,
     val codeError: String? = null,
     val locationError: String? = null
-)
+) {
+    @SuppressLint("DefaultLocale")
+    fun formatedLocationRange(): String {
+        val start = locationRange.first
+        val end = locationRange.last
+        val formattedStart = String.format("%03d", start)
+        val formattedEnd = String.format("%03d", end)
+        return "$formattedStart-$formattedEnd"
+    }
+}
 
 data class CallerLineIdentification(
     val userMode: CallerLineMode = CallerLineMode.ANY,
