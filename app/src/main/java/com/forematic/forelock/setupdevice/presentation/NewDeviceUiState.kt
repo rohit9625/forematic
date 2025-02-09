@@ -19,7 +19,7 @@ data class NewDeviceUiState(
     val keypadCode2: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = 101..150),
     val deliveryCode: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = 151..200),
     val isUpdatingKeypadCodes: Boolean = false,
-    val callerLineId: CallerLineIdentification = CallerLineIdentification(locationRange = "201-250"),
+    val callerLineId: CallerLineIdentification = CallerLineIdentification(locationRange = 201..250),
     val callOutNumbers: List<CallOutNumber> = listOf(CallOutNumber(), CallOutNumber(), CallOutNumber()),
     val adminNumber: String = "",
     val speakerVolume: Float = 0f,
@@ -76,17 +76,29 @@ data class KeypadCodeForOutput(
 
 data class CallerLineIdentification(
     val userMode: CallerLineMode = CallerLineMode.ANY,
+    val currentUserMode: CallerLineMode = CallerLineMode.ANY,
     val number: String = "",
     val location: String = "",
-    val locationRange: String = "",
+    val locationRange: IntRange = 201..250,
     val locationError: String? = null,
     val isFetchingLocation: Boolean = false,
+    val isUpdatingMode: Boolean = false,
+    val isUpdatingNumber: Boolean = false,
     val numberError: String? = null
-)
+) {
+    @SuppressLint("DefaultLocale")
+    fun formatedLocationRange(): String {
+        val start = locationRange.first
+        val end = locationRange.last
+        val formattedStart = String.format("%03d", start)
+        val formattedEnd = String.format("%03d", end)
+        return "$formattedStart-$formattedEnd"
+    }
+}
 
-enum class CallerLineMode {
-    ANY,
-    AUTHORIZED
+enum class CallerLineMode(val displayName: String) {
+    ANY("Any"),
+    AUTHORIZED("Authorized")
 }
 
 enum class OutputRelayText(val displayName: String) {

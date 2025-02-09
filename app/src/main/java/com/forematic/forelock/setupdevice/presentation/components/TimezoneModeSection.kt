@@ -66,7 +66,7 @@ fun TimezoneModeSection(
                                 )
                             },
                             toolTipText = mode.displayName,
-                            modifier = Modifier
+                            modifier = Modifier.widthIn(min = 148.dp)
                         )
                     }
                 }

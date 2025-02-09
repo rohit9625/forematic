@@ -8,17 +8,26 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Card
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
@@ -34,6 +43,8 @@ fun CallerLineSetupSection(
     onEvent: (SetupDeviceEvent.CallerLineIdEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val canUpdateMode by remember(callerLineId.userMode) { derivedStateOf { callerLineId.currentUserMode != callerLineId.userMode } }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
@@ -45,19 +56,29 @@ fun CallerLineSetupSection(
         )
         Card {
             Column(
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
                 modifier = Modifier.padding(16.dp)
             ) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text(
-                        text = "Choose user mode",
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
                     Row(
-                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = "Choose user mode",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        Text(
+                            text = callerLineId.currentUserMode.name,
+                            style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.SemiBold),
+                            color = MaterialTheme.colorScheme.tertiary
+                        )
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.SpaceBetween,
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         FilterChipWithToolTip(
@@ -65,7 +86,7 @@ fun CallerLineSetupSection(
                             onClick = {
                                 onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange(CallerLineMode.ANY))
                             },
-                            label = "Any"
+                            label = CallerLineMode.ANY.displayName
                         )
 
                         FilterChipWithToolTip(
@@ -73,8 +94,29 @@ fun CallerLineSetupSection(
                             onClick = {
                                 onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange(CallerLineMode.AUTHORIZED))
                             },
-                            label = "Authorized"
+                            label = CallerLineMode.AUTHORIZED.displayName
                         )
+                        FilledIconButton(
+                            onClick = {
+                                if(!callerLineId.isUpdatingMode)
+                                    onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUpdateMode)
+                            },
+                            enabled = canUpdateMode,
+                            shape = MaterialTheme.shapes.medium,
+                        ) {
+                            if(callerLineId.isUpdatingMode) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    strokeWidth = 2.dp,
+                                    color = MaterialTheme.colorScheme.onPrimary
+                                )
+                            } else {
+                                Icon(
+                                    imageVector = Icons.Default.Done,
+                                    contentDescription = "Save"
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -90,7 +132,7 @@ fun CallerLineSetupSection(
                         onEvent(SetupDeviceEvent.CallerLineIdEvent.OnFindLocation)
                     },
                     label = "Setup Authorized Call-In Number",
-                    isEnabled = callerLineId.userMode == CallerLineMode.AUTHORIZED
+                    isEnabled = callerLineId.currentUserMode == CallerLineMode.AUTHORIZED
                 )
 
                 Row(
@@ -104,14 +146,14 @@ fun CallerLineSetupSection(
                         modifier = Modifier.widthIn(max = 200.dp)
                     )
 
-                    Button(
+                    ButtonWithLoadingIndicator(
                         onClick = {
-                            onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUpdateClick)
+                            if(!callerLineId.isUpdatingNumber)
+                                onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUpdateClick)
                         },
-                        shape = MaterialTheme.shapes.medium
-                    ) {
-                        Text(text = "Update")
-                    }
+                        text = "Update",
+                        isLoading = callerLineId.isUpdatingNumber
+                    )
                 }
             }
         }
@@ -147,12 +189,12 @@ fun CallerLineIdWithLocation(
                 value = callerLineId.location,
                 onValueChange = onLocationChange,
                 label = "Location",
-                secondaryLabel = callerLineId.locationRange,
+                secondaryLabel = callerLineId.formatedLocationRange(),
                 modifier = Modifier.widthIn(max = 148.dp),
                 shape = RoundedCornerShape(12.dp),
                 trailingIcon = {
                     ButtonWithLoadingIndicator(
-                        onClick = onFindAction,
+                        onClick = { if(!callerLineId.isFetchingLocation) onFindAction() },
                         text = "Find\nNext",
                         textStyle = MaterialTheme.typography.labelMedium,
                         modifier = Modifier.height(IntrinsicSize.Max),

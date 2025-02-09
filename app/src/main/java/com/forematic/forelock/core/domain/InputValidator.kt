@@ -15,6 +15,17 @@ class InputValidator {
         }
     }
 
+    fun validateCliNumber(number: String): Result<Unit, InputError.PhoneNumberError> {
+        val regex = Regex("^[0-9]{8}\$")
+        return if(number.isBlank()) {
+            Result.Failure(InputError.PhoneNumberError.EMPTY)
+        } else if (!regex.matches(number)) {
+            Result.Failure(InputError.PhoneNumberError.INVALID_NUMBER)
+        } else {
+            Result.Success(Unit)
+        }
+    }
+
     fun validateProgrammingPassword(password: String): Result<Unit, InputError.PasswordError> {
         val regex = Regex("^[A-Z0-9]{4}\$")
         return if (password.length != 4) {

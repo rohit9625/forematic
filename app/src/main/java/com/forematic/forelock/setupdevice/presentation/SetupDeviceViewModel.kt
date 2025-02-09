@@ -144,7 +144,7 @@ class SetupDeviceViewModel(
 
             SetupDeviceEvent.TimezoneModeEvent.OnUpdateClick -> {
                 executeIfValidSimNumber {
-                    if(uiState.value.timezoneMode == uiState.value.currentTimezoneMode) {
+                    if (uiState.value.timezoneMode == uiState.value.currentTimezoneMode) {
                         _uiState.update { it.copy(timezoneError = "Please select a different mode") }
                     } else {
                         _uiState.update { it.copy(isUpdatingTimezone = true, timezoneError = null) }
@@ -652,28 +652,60 @@ class SetupDeviceViewModel(
             }
 
             is SetupDeviceEvent.CallerLineIdEvent.OnNumberChange -> {
-                _uiState.update { it.copy(callerLineId = it.callerLineId.copy(number = e.number)) }
+                val error = when (val result = inputValidator.validateCliNumber(e.number)) {
+                    is Result.Failure -> when(result.error) {
+                        InputError.PhoneNumberError.EMPTY -> "Call-In number cannot be empty"
+                        InputError.PhoneNumberError.INVALID_NUMBER -> "Call-In number must have 8 digits"
+                    }
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(callerLineId = it.callerLineId.copy(number = e.number, numberError = error))
+                }
             }
 
             is SetupDeviceEvent.CallerLineIdEvent.OnLocationChange -> {
-                _uiState.update { it.copy(callerLineId = it.callerLineId.copy(location = e.location)) }
+                val error = when (val result = inputValidator.validateLocationInRange(
+                    e.location,
+                    uiState.value.callerLineId.locationRange
+                )) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.LocationError.EMPTY -> "Location cannot be empty"
+                        InputError.LocationError.OUT_OF_RANGE -> "Location must be between ${uiState.value.callerLineId.formatedLocationRange()}"
+                        InputError.LocationError.INVALID_FORMAT -> "Invalid location format"
+                    }
+
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(
+                        callerLineId = it.callerLineId.copy(
+                            location = e.location,
+                            locationError = error
+                        )
+                    )
+                }
             }
 
             SetupDeviceEvent.CallerLineIdEvent.OnFindLocation -> {
-                _uiState.update { it.copy(callerLineId = it.callerLineId.copy(isFetchingLocation = true)) }
-                viewModelScope.launch {
-                    val location = findNextLocation.invoke(
-                        simNumber = uiState.value.simAndPasswordState.simNumber,
-                        password = uiState.value.currentProgrammingPassword,
-                        requestCode = Constants.FIND_CLI_LOCATION_REQUEST
-                    )
-                    _uiState.update {
-                        it.copy(
-                            callerLineId = it.callerLineId.copy(
-                                location = location ?: "", isFetchingLocation = false
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(callerLineId = it.callerLineId.copy(isFetchingLocation = true)) }
+                    viewModelScope.launch {
+                        val location = requestNextLocation(Constants.FIND_CLI_LOCATION_REQUEST)
+                        _uiState.update {
+                            it.copy(
+                                callerLineId = it.callerLineId.copy(
+                                    location = location ?: "", isFetchingLocation = false
+                                )
                             )
-                        )
+                        }
                     }
+                }
+            }
+
+            SetupDeviceEvent.CallerLineIdEvent.OnUpdateMode -> {
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(callerLineId = it.callerLineId.copy(isUpdatingMode = true)) }
                 }
             }
 

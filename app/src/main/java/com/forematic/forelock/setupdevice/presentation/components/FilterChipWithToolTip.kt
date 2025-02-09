@@ -29,7 +29,7 @@ fun FilterChipWithToolTip(
     onClick: () -> Unit,
     label: String,
     modifier: Modifier = Modifier,
-    leadingIcon: @Composable() (() -> Unit)? = null,
+    leadingIcon: @Composable (() -> Unit)? = null,
     toolTipText: String = "Add a brief explanation"
 ) {
     var isToolTipVisible by remember { mutableStateOf(false) }
@@ -40,7 +40,7 @@ fun FilterChipWithToolTip(
             onClick = onClick,
             label = { Text(text = label, textAlign = TextAlign.Center) },
             leadingIcon = leadingIcon,
-            modifier = Modifier.widthIn(min = 104.dp)
+            modifier = Modifier.weight(1f)
         )
 
         ToolTipWithIcon(
@@ -68,7 +68,7 @@ private fun FilterChipWithToolTipPreview() {
                         modifier = Modifier.size(20.dp)
                     )
                 },
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(16.dp).widthIn(min = 132.dp)
             )
         }
     }
