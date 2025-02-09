@@ -11,4 +11,6 @@ object Constants {
     const val FIND_R1_LOCATION_REQUEST = 7
     const val FIND_R2_LOCATION_REQUEST = 8
     const val FIND_SU_CODE_LOCATION_REQ = 9 // Single use code or Delivery code location request
+    const val SET_CLI_MODE_REQUEST = 10
+    const val SET_CLI_NUMBER_REQUEST = 11
 }

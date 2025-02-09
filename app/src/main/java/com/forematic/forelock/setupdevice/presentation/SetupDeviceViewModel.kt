@@ -44,6 +44,12 @@ class SetupDeviceViewModel(
         },
         Constants.UPDATE_KEYPAD_CODES_REQUEST to { messageUpdate: MessageUpdate ->
             updateKeypadCodes(messageUpdate)
+        },
+        Constants.SET_CLI_MODE_REQUEST to { messageUpdate: MessageUpdate ->
+            updateCallerLineState(messageUpdate)
+        },
+        Constants.SET_CLI_NUMBER_REQUEST to { messageUpdate: MessageUpdate ->
+            updateCallerLineState(messageUpdate)
         }
         // Add more request codes and update functions here...
     )
@@ -645,6 +651,37 @@ class SetupDeviceViewModel(
         )
     }
 
+    private fun updateCallerLineState(messageUpdate: MessageUpdate) {
+        _uiState.update { state ->
+            when(messageUpdate) {
+                is MessageUpdate.Sent -> {
+                    if(messageUpdate.requestCode == Constants.SET_CLI_MODE_REQUEST) {
+                        state.copy(callerLineId = state.callerLineId.copy(isUpdatingMode = false))
+                    } else {
+                        state.copy(callerLineId = state.callerLineId.copy(isUpdatingNumber = false))
+                    }
+                }
+                is MessageUpdate.Delivered -> {
+                    if(messageUpdate.requestCode == Constants.SET_CLI_MODE_REQUEST) {
+                        state.copy(callerLineId = state.callerLineId.copy(
+                            isUpdatingMode = false, currentUserMode = state.callerLineId.userMode
+                        ))
+                    } else {
+                        state.copy(callerLineId = state.callerLineId.copy(isUpdatingNumber = false))
+                    }
+                }
+                is MessageUpdate.Error -> {
+                    showSnackbar("Unable to send command message")
+                    if(messageUpdate.requestCode == Constants.SET_CLI_MODE_REQUEST) {
+                        state.copy(callerLineId = state.callerLineId.copy(isUpdatingMode = false))
+                    } else {
+                        state.copy(callerLineId = state.callerLineId.copy(isUpdatingNumber = false))
+                    }
+                }
+                is MessageUpdate.Received -> TODO()
+            }
+        }
+    }
     private fun onCallerLineIdEvent(e: SetupDeviceEvent.CallerLineIdEvent) {
         when (e) {
             is SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange -> {
@@ -706,11 +743,24 @@ class SetupDeviceViewModel(
             SetupDeviceEvent.CallerLineIdEvent.OnUpdateMode -> {
                 executeIfValidSimNumber {
                     _uiState.update { it.copy(callerLineId = it.callerLineId.copy(isUpdatingMode = true)) }
+                    deviceRepository.setCliMode(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        cliMode = uiState.value.callerLineId.userMode.name
+                    )
                 }
             }
 
             SetupDeviceEvent.CallerLineIdEvent.OnUpdateClick -> {
-                /*TODO("Update information to the target device")*/
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(callerLineId = it.callerLineId.copy(isUpdatingNumber = true)) }
+                    deviceRepository.setCliNumber(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        location = uiState.value.callerLineId.location,
+                        cliNumber = uiState.value.callerLineId.number
+                    )
+                }
             }
         }
     }

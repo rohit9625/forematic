@@ -42,4 +42,25 @@ class DeviceRepositoryImpl(
             Constants.UPDATE_KEYPAD_CODES_REQUEST
         )
     }
+
+    override fun setCliMode(simNumber: String, password: String, cliMode: String) {
+        messageSender.sendMessage(
+            recipientNumber = simNumber,
+            messageContent = "$password#$cliMode#",
+            requestCode = Constants.SET_CLI_MODE_REQUEST
+        )
+    }
+
+    override fun setCliNumber(
+        simNumber: String,
+        password: String,
+        cliNumber: String,
+        location: String
+    ) {
+        messageSender.sendMessage(
+            recipientNumber = simNumber,
+            messageContent = "$password#11#$location#$cliNumber#",
+            requestCode = Constants.SET_CLI_NUMBER_REQUEST
+        )
+    }
 }

@@ -44,6 +44,12 @@ fun CallerLineSetupSection(
     modifier: Modifier = Modifier
 ) {
     val canUpdateMode by remember(callerLineId.userMode) { derivedStateOf { callerLineId.currentUserMode != callerLineId.userMode } }
+    val canUpdateNumber by remember(callerLineId.number, callerLineId.location) {
+        derivedStateOf {
+            callerLineId.number.isNotBlank() && callerLineId.location.isNotBlank() &&
+                    callerLineId.numberError == null && callerLineId.locationError == null
+        }
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -152,7 +158,9 @@ fun CallerLineSetupSection(
                                 onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUpdateClick)
                         },
                         text = "Update",
-                        isLoading = callerLineId.isUpdatingNumber
+                        isEnabled = canUpdateNumber,
+                        isLoading = callerLineId.isUpdatingNumber,
+                        modifier = Modifier.widthIn(min = 96.dp)
                     )
                 }
             }

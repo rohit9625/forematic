@@ -17,4 +17,8 @@ interface DeviceRepository {
         keypadCode2: KeypadCodeForOutput,
         deliveryCode: KeypadCodeForOutput
     )
+
+    fun setCliMode(simNumber: String, password: String, cliMode: String)
+
+    fun setCliNumber(simNumber: String, password: String, cliNumber: String, location: String)
 }
