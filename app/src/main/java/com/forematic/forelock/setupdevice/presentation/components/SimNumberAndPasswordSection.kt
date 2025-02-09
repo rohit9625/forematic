@@ -112,7 +112,7 @@ fun SimNumberAndPasswordSection(
                         Text(
                             text = currentProgrammingPassword,
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.tertiary
                         )
                         Text(
                             text = "Current Password",
@@ -168,7 +168,7 @@ fun SimNumberAndPasswordSection(
                         text = "Update",
                         isLoading = simAndPasswordState.isLoading,
                         isEnabled = canUpdate,
-                        modifier = Modifier.widthIn(min = 108.dp)
+                        modifier = Modifier.widthIn(min = 96.dp)
                     )
                 }
             }

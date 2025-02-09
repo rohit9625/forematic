@@ -87,14 +87,14 @@ fun TimezoneModeSection(
                         Text(
                             text = currentMode.displayName,
                             style = MaterialTheme.typography.titleMedium,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.tertiary
                         )
                     }
                     ButtonWithLoadingIndicator(
                         onClick = onUpdateClick,
                         text = "Update",
                         isLoading = isUpdatingTimezone,
-                        modifier = Modifier.widthIn(min = 108.dp)
+                        modifier = Modifier.widthIn(min = 96.dp)
                     )
                 }
             }

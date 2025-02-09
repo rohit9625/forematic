@@ -136,7 +136,7 @@ fun OutputNamingSection(
                     onClick = { onEvent(SetupDeviceEvent.OutputRelayEvent.OnUpdateClick) },
                     text = "Update",
                     isEnabled = canUpdateDetails,
-                    modifier = Modifier.widthIn(min = 108.dp).align(Alignment.End)
+                    modifier = Modifier.widthIn(min = 96.dp).align(Alignment.End)
                 )
             }
         }

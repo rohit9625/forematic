@@ -120,7 +120,7 @@ fun SetKeypadCodeSection(
                         text = "Update",
                         isLoading = isUpdatingKeypadCodes,
                         isEnabled = canUpdateCodes,
-                        modifier = Modifier.widthIn(min = 108.dp)
+                        modifier = Modifier.widthIn(min = 96.dp)
                     )
                 }
             }

@@ -104,7 +104,7 @@ fun AudioAdjustmentSection(
                         onClick = onCheckSignalStrength,
                         text = "Refresh",
                         isLoading = isRefreshingSignal,
-                        modifier = Modifier.widthIn(min = 108.dp)
+                        modifier = Modifier.widthIn(min = 96.dp)
                     )
                 }
             }
