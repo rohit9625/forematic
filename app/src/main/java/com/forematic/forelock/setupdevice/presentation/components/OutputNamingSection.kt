@@ -4,15 +4,16 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -32,7 +33,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.forematic.forelock.setupdevice.presentation.OutputRelay
@@ -72,6 +72,7 @@ fun OutputNamingSection(
                     relayTime = outputRelay1.relayTime,
                     outputRelayText = outputRelay1.text,
                     icon = outputRelay1.icon,
+                    isFetchingOutputName = outputRelay1.isFetchingOutputName,
                     onOutputNameChange = {
                         onEvent(SetupDeviceEvent.OutputRelayEvent.OnRelay1NameChange(it))
                     },
@@ -104,6 +105,7 @@ fun OutputNamingSection(
                         relayTime = outputRelay2.relayTime,
                         outputRelayText = outputRelay2.text,
                         icon = outputRelay2.icon,
+                        isFetchingOutputName = outputRelay2.isFetchingOutputName,
                         onOutputNameChange = {
                             onEvent(SetupDeviceEvent.OutputRelayEvent.OnRelay2NameChange(it))
                         },
@@ -153,6 +155,7 @@ private fun OutputNaming(
     onGetOutputName: () -> Unit,
     onSelectIcon: (icon: Int) -> Unit,
     modifier: Modifier = Modifier,
+    isFetchingOutputName: Boolean = false,
     relayTimError: String? = null,
     outputNameError: String? = null,
     label: String = "Output Relay"
@@ -208,18 +211,14 @@ private fun OutputNaming(
                 )
 
                 Row {
-                    Button(
+                    ButtonWithLoadingIndicator(
                         onClick = onGetOutputName,
-                        modifier = Modifier.widthIn(max = 96.dp),
-                        shape = MaterialTheme.shapes.medium,
-                        contentPadding = PaddingValues(horizontal = 8.dp, vertical = 8.dp)
-                    ) {
-                        Text(
-                            text = "Get Output Name",
-                            textAlign = TextAlign.Center,
-                            style = MaterialTheme.typography.labelSmall
-                        )
-                    }
+                        text = "Get Output Name",
+                        textStyle = MaterialTheme.typography.labelSmall,
+                        contentPadding = PaddingValues(8.dp),
+                        isLoading = isFetchingOutputName,
+                        modifier = Modifier.width(96.dp).height(IntrinsicSize.Max)
+                    )
 
                     ToolTipWithIcon(
                         showToolTip = isButtonToolTipVisible,

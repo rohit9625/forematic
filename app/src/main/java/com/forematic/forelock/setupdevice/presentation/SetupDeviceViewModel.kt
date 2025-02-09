@@ -9,6 +9,7 @@ import com.forematic.forelock.core.domain.model.Result
 import com.forematic.forelock.core.utils.Constants
 import com.forematic.forelock.setupdevice.domain.DeviceRepository
 import com.forematic.forelock.setupdevice.domain.use_case.FindNextLocation
+import com.forematic.forelock.setupdevice.domain.use_case.GetOutputName
 import com.forematic.forelock.setupdevice.domain.use_case.GetSignalStrength
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,7 +20,8 @@ class SetupDeviceViewModel(
     private val deviceRepository: DeviceRepository,
     private val inputValidator: InputValidator,
     private val getSignalStrength: GetSignalStrength,
-    private val findNextLocation: FindNextLocation
+    private val findNextLocation: FindNextLocation,
+    private val getOutputName: GetOutputName
 ): ViewModel() {
     private val _uiState = MutableStateFlow(NewDeviceUiState(
         deviceType = DeviceType.G24_INTERCOM,
@@ -291,7 +293,21 @@ class SetupDeviceViewModel(
                 _uiState.update { it.copy(outputRelay1 = it.outputRelay1.copy(icon = e.icon)) }
             }
             SetupDeviceEvent.OutputRelayEvent.OnGetNameForRelay1 -> {
-                /*TODO("Send SMS to device to get the output relay name")*/
+                _uiState.update {
+                    it.copy(outputRelay1 = it.outputRelay1.copy(isFetchingOutputName = true))
+                }
+                viewModelScope.launch {
+                    val outputName = getOutputName.invoke(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        requestCode = Constants.GET_R1_OUTPUT_NAME_REQUEST
+                    )
+                    _uiState.update {
+                        it.copy(outputRelay1 = it.outputRelay1.copy(
+                            isFetchingOutputName = false, name = outputName ?: ""
+                        ))
+                    }
+                }
             }
 
             // For Intercoms with two output relays
@@ -326,7 +342,21 @@ class SetupDeviceViewModel(
                 _uiState.update { it.copy(outputRelay2 = it.outputRelay2?.copy(icon = e.icon)) }
             }
             SetupDeviceEvent.OutputRelayEvent.OnGetNameForRelay2 -> {
-                /*TODO("Send SMS to device to get the output relay name")*/
+                _uiState.update {
+                    it.copy(outputRelay2 = it.outputRelay2?.copy(isFetchingOutputName = true))
+                }
+                viewModelScope.launch {
+                    val outputName = getOutputName.invoke(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        requestCode = Constants.GET_R2_OUTPUT_NAME_REQUEST
+                    )
+                    _uiState.update {
+                        it.copy(outputRelay2 = it.outputRelay2?.copy(
+                            isFetchingOutputName = false, name = outputName ?: ""
+                        ))
+                    }
+                }
             }
 
             SetupDeviceEvent.OutputRelayEvent.OnUpdateClick -> {

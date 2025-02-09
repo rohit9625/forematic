@@ -39,6 +39,7 @@ data class OutputRelay(
     val relayTime: String = "",
     val relayTimeRange: IntRange = 0..99,
     @DrawableRes val icon: Int = R.drawable.ic_rounded_image_24,
+    val isFetchingOutputName: Boolean = false,
     val relayTimeError: String? = null,
     val outputNameError: String? = null,
     val otherError: String? = null
