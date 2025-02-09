@@ -72,6 +72,10 @@ data class KeypadCodeForOutput(
         val formattedEnd = String.format("%03d", end)
         return "$formattedStart-$formattedEnd"
     }
+
+    fun hasErrors(): Boolean {
+        return code.isBlank() || location.isBlank() || locationError != null || codeError != null
+    }
 }
 
 data class CallerLineIdentification(

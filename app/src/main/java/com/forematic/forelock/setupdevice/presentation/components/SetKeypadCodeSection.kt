@@ -17,6 +17,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.ImeAction
@@ -36,6 +39,9 @@ fun SetKeypadCodeSection(
     modifier: Modifier = Modifier,
     isUpdatingKeypadCodes: Boolean = false
 ) {
+    val canUpdateCodes by remember(keypadCode1, keypadCode2, deliveryCode) {
+        derivedStateOf { !keypadCode1.hasErrors() && !keypadCode2.hasErrors() && !deliveryCode.hasErrors() }
+    }
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
         modifier = modifier
@@ -113,6 +119,7 @@ fun SetKeypadCodeSection(
                         onClick = { onEvent(SetupDeviceEvent.KeypadCodeEvent.OnUpdateClick) },
                         text = "Update",
                         isLoading = isUpdatingKeypadCodes,
+                        isEnabled = canUpdateCodes,
                         modifier = Modifier.widthIn(min = 108.dp)
                     )
                 }
