@@ -21,4 +21,13 @@ interface DeviceRepository {
     fun setCliMode(simNumber: String, password: String, cliMode: String)
 
     fun setCliNumber(simNumber: String, password: String, cliNumber: String, location: String)
+
+    fun setCallOutNumbers(
+        simNumber: String, password: String,
+        firstCallOutNumber: String,
+        secondCallOutNumber: String,
+        thirdCallOutNumber: String
+    )
+
+    fun setAdminNumber(simNumber: String, password: String, adminNumber: String)
 }

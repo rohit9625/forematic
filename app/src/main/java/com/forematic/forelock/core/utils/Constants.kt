@@ -13,4 +13,6 @@ object Constants {
     const val FIND_SU_CODE_LOCATION_REQ = 9 // Single use code or Delivery code location request
     const val SET_CLI_MODE_REQUEST = 10
     const val SET_CLI_NUMBER_REQUEST = 11
+    const val SET_CALLOUT_NUMBERS = 12
+    const val SET_ADMIN_NUMBER_REQUEST = 13
 }

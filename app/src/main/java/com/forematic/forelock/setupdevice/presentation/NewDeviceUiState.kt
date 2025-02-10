@@ -37,7 +37,11 @@ data class CallOutNumberUiState(
     val name: String = "",
     val numberError: String? = null,
     val nameError: String? = null
-)
+) {
+    fun hasErrors(): Boolean {
+        return number.isBlank() || name.isBlank() || numberError != null || nameError != null
+    }
+}
 
 data class SimAndPasswordState(
     val simNumber: String = "",

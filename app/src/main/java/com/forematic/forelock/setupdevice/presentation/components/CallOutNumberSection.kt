@@ -19,6 +19,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +50,14 @@ fun CallOutNumberSection(
     isUpdatingAdminNumber: Boolean = false
 ) {
     var isToolTipVisible by remember { mutableStateOf(false) }
+    val hasCallOutNumberErrors by remember(firstCallOut, secondCallOut, thirdCallOut) {
+        derivedStateOf {
+            firstCallOut.hasErrors() || secondCallOut.hasErrors() || thirdCallOut.hasErrors()
+        }
+    }
+    val canChangeAdminNumber by remember(adminNumber) {
+        derivedStateOf { adminNumber.isNotBlank() && adminNumberError == null }
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(4.dp),
@@ -152,6 +161,7 @@ fun CallOutNumberSection(
                                 onEvent(SetupDeviceEvent.CallOutNumberEvent.OnUpdateClick)
                         },
                         text = "Update",
+                        isEnabled = !hasCallOutNumberErrors,
                         isLoading = isUpdatingCallOutNumbers,
                         modifier = Modifier.widthIn(min = 96.dp)
                     )
@@ -197,6 +207,7 @@ fun CallOutNumberSection(
                                     onEvent(SetupDeviceEvent.CallOutNumberEvent.OnChangeClick)
                             },
                             text = "Change",
+                            isEnabled = canChangeAdminNumber,
                             isLoading = isUpdatingAdminNumber,
                             modifier = Modifier.widthIn(min = 96.dp)
                         )

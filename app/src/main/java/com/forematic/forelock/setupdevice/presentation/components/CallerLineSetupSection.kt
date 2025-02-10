@@ -43,7 +43,9 @@ fun CallerLineSetupSection(
     onEvent: (SetupDeviceEvent.CallerLineIdEvent) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val canUpdateMode by remember(callerLineId.userMode) { derivedStateOf { callerLineId.currentUserMode != callerLineId.userMode } }
+    val canUpdateMode by remember(callerLineId.userMode, callerLineId.currentUserMode) {
+        derivedStateOf { callerLineId.currentUserMode != callerLineId.userMode }
+    }
     val canUpdateNumber by remember(callerLineId.number, callerLineId.location) {
         derivedStateOf {
             callerLineId.number.isNotBlank() && callerLineId.location.isNotBlank() &&
@@ -90,7 +92,11 @@ fun CallerLineSetupSection(
                         FilterChipWithToolTip(
                             isSelected = callerLineId.userMode == CallerLineMode.ANY,
                             onClick = {
-                                onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange(CallerLineMode.ANY))
+                                onEvent(
+                                    SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange(
+                                        CallerLineMode.ANY
+                                    )
+                                )
                             },
                             label = CallerLineMode.ANY.displayName
                         )
@@ -98,19 +104,23 @@ fun CallerLineSetupSection(
                         FilterChipWithToolTip(
                             isSelected = callerLineId.userMode == CallerLineMode.AUTHORIZED,
                             onClick = {
-                                onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange(CallerLineMode.AUTHORIZED))
+                                onEvent(
+                                    SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange(
+                                        CallerLineMode.AUTHORIZED
+                                    )
+                                )
                             },
                             label = CallerLineMode.AUTHORIZED.displayName
                         )
                         FilledIconButton(
                             onClick = {
-                                if(!callerLineId.isUpdatingMode)
+                                if (!callerLineId.isUpdatingMode)
                                     onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUpdateMode)
                             },
                             enabled = canUpdateMode,
                             shape = MaterialTheme.shapes.medium,
                         ) {
-                            if(callerLineId.isUpdatingMode) {
+                            if (callerLineId.isUpdatingMode) {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(24.dp),
                                     strokeWidth = 2.dp,
@@ -154,7 +164,7 @@ fun CallerLineSetupSection(
 
                     ButtonWithLoadingIndicator(
                         onClick = {
-                            if(!callerLineId.isUpdatingNumber)
+                            if (!callerLineId.isUpdatingNumber)
                                 onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUpdateClick)
                         },
                         text = "Update",
@@ -202,7 +212,7 @@ fun CallerLineIdWithLocation(
                 shape = RoundedCornerShape(12.dp),
                 trailingIcon = {
                     ButtonWithLoadingIndicator(
-                        onClick = { if(!callerLineId.isFetchingLocation) onFindAction() },
+                        onClick = { if (!callerLineId.isFetchingLocation) onFindAction() },
                         text = "Find\nNext",
                         textStyle = MaterialTheme.typography.labelMedium,
                         modifier = Modifier.height(IntrinsicSize.Max),

@@ -15,16 +15,18 @@ class DeviceRepositoryImpl(
     }
 
     override fun setNewPassword(simNumber: String, oldPassword: String, newPassword: String) {
-        messageSender.sendMessage(simNumber,
-            "$oldPassword#PWD#$newPassword#",
-            Constants.UPDATE_PASSWORD_REQUEST
+        messageSender.sendMessage(
+            recipientNumber = simNumber,
+            messageContent = "$oldPassword#PWD#$newPassword#",
+            requestCode = Constants.UPDATE_PASSWORD_REQUEST
         )
     }
 
     override fun setTimezoneMode(simNumber: String, password: String, timezoneMode: String) {
-        messageSender.sendMessage(simNumber,
-            "$password#$timezoneMode#",
-            Constants.UPDATE_TIMEZONE_REQUEST
+        messageSender.sendMessage(
+            recipientNumber = simNumber,
+            messageContent = "$password#$timezoneMode#",
+            requestCode = Constants.UPDATE_TIMEZONE_REQUEST
         )
     }
 
@@ -35,11 +37,12 @@ class DeviceRepositoryImpl(
         keypadCode2: KeypadCodeForOutput,
         deliveryCode: KeypadCodeForOutput
     ) {
-        messageSender.sendMessage(simNumber,
-            "$password#11*#${keypadCode1.location}#${keypadCode1.code}#" +
-                    "11*#${keypadCode2.location}#${keypadCode2.code}#" +
-                    "11*#${deliveryCode.location}#${deliveryCode.code}",
-            Constants.UPDATE_KEYPAD_CODES_REQUEST
+        messageSender.sendMessage(
+            recipientNumber = simNumber,
+            messageContent = "$password#11#${keypadCode1.location}#${keypadCode1.code}#" +
+                    "11#${keypadCode2.location}#${keypadCode2.code}#" +
+                    "11#${deliveryCode.location}#${deliveryCode.code}",
+            requestCode = Constants.UPDATE_KEYPAD_CODES_REQUEST
         )
     }
 
@@ -61,6 +64,29 @@ class DeviceRepositoryImpl(
             recipientNumber = simNumber,
             messageContent = "$password#11#$location#$cliNumber#",
             requestCode = Constants.SET_CLI_NUMBER_REQUEST
+        )
+    }
+
+    override fun setCallOutNumbers(
+        simNumber: String,
+        password: String,
+        firstCallOutNumber: String,
+        secondCallOutNumber: String,
+        thirdCallOutNumber: String
+    ) {
+        messageSender.sendMessage(
+            recipientNumber = simNumber,
+            messageContent = "$password#01#$firstCallOutNumber#" +
+                    "02#$secondCallOutNumber#03#$thirdCallOutNumber",
+            requestCode = Constants.SET_CALLOUT_NUMBERS
+        )
+    }
+
+    override fun setAdminNumber(simNumber: String, password: String, adminNumber: String) {
+        messageSender.sendMessage(
+            recipientNumber = simNumber,
+            messageContent = "$password#00#$adminNumber#",
+            requestCode = Constants.SET_ADMIN_NUMBER_REQUEST
         )
     }
 }

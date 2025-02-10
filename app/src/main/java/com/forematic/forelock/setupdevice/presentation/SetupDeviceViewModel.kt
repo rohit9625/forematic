@@ -50,6 +50,12 @@ class SetupDeviceViewModel(
         },
         Constants.SET_CLI_NUMBER_REQUEST to { messageUpdate: MessageUpdate ->
             updateCallerLineState(messageUpdate)
+        },
+        Constants.SET_CALLOUT_NUMBERS to { messageUpdate: MessageUpdate ->
+            updateCallOutNumberState(messageUpdate)
+        },
+        Constants.SET_ADMIN_NUMBER_REQUEST to { messageUpdate: MessageUpdate ->
+            updateCallOutNumberState(messageUpdate)
         }
         // Add more request codes and update functions here...
     )
@@ -291,6 +297,37 @@ class SetupDeviceViewModel(
         }
     }
 
+    private fun updateCallOutNumberState(update: MessageUpdate) {
+        when (update) {
+            is MessageUpdate.Sent -> {
+                if (update.requestCode == Constants.SET_CALLOUT_NUMBERS) {
+                    _uiState.update { it.copy(isUpdatingCallOutNumbers = true) }
+                } else {
+                    _uiState.update { it.copy(isUpdatingAdminNumber = true) }
+                }
+            }
+
+            is MessageUpdate.Delivered -> {
+                if (update.requestCode == Constants.SET_CALLOUT_NUMBERS) {
+                    _uiState.update { it.copy(isUpdatingCallOutNumbers = false) }
+                } else {
+                    _uiState.update { it.copy(isUpdatingAdminNumber = false) }
+                }
+            }
+
+            is MessageUpdate.Error -> {
+                showSnackbar(message = "Unable to send command message")
+                if (update.requestCode == Constants.SET_CALLOUT_NUMBERS) {
+                    _uiState.update { it.copy(isUpdatingCallOutNumbers = false) }
+                } else {
+                    _uiState.update { it.copy(isUpdatingAdminNumber = false) }
+                }
+            }
+
+            is MessageUpdate.Received -> TODO()
+        }
+    }
+
     private fun onCallOutNumberEvent(e: SetupDeviceEvent.CallOutNumberEvent) {
         when (e) {
             is SetupDeviceEvent.CallOutNumberEvent.OnFirstNameChange -> {
@@ -408,7 +445,16 @@ class SetupDeviceViewModel(
             }
 
             SetupDeviceEvent.CallOutNumberEvent.OnUpdateClick -> {
-                /*TODO("Update all call-out numbers in single-shot")*/
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(isUpdatingCallOutNumbers = true) }
+                    deviceRepository.setCallOutNumbers(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        firstCallOutNumber = uiState.value.firstCallOut.number,
+                        secondCallOutNumber = uiState.value.secondCallOut.number,
+                        thirdCallOutNumber = uiState.value.thirdCallOut.number
+                    )
+                }
             }
 
             is SetupDeviceEvent.CallOutNumberEvent.OnAdminNumberChange -> {
@@ -424,7 +470,14 @@ class SetupDeviceViewModel(
             }
 
             SetupDeviceEvent.CallOutNumberEvent.OnChangeClick -> {
-                /*TODO("Update admin number to the target device")*/
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(isUpdatingAdminNumber = true) }
+                    deviceRepository.setAdminNumber(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        adminNumber = uiState.value.adminNumber
+                    )
+                }
             }
         }
     }
@@ -758,9 +811,9 @@ class SetupDeviceViewModel(
             when (messageUpdate) {
                 is MessageUpdate.Sent -> {
                     if (messageUpdate.requestCode == Constants.SET_CLI_MODE_REQUEST) {
-                        state.copy(callerLineId = state.callerLineId.copy(isUpdatingMode = false))
+                        state.copy(callerLineId = state.callerLineId.copy(isUpdatingMode = true))
                     } else {
-                        state.copy(callerLineId = state.callerLineId.copy(isUpdatingNumber = false))
+                        state.copy(callerLineId = state.callerLineId.copy(isUpdatingNumber = true))
                     }
                 }
 
