@@ -30,11 +30,11 @@ fun SelectGateIconDialog(
     onDismiss: () -> Unit
 ) {
     val icons = listOf(
-        R.drawable.ic_side_gate,
-        R.drawable.ic_parking_gate,
-        R.drawable.ic_office_gate,
-        R.drawable.ic_garage_gate,
-        R.drawable.ic_big_gate_brown,
+        Pair(R.drawable.ic_side_gate, "Side Gate"),
+        Pair(R.drawable.ic_parking_gate, "Parking Gate"),
+        Pair(R.drawable.ic_office_gate, "Office Gate"),
+        Pair(R.drawable.ic_garage_gate, "Garage Gate"),
+        Pair(R.drawable.ic_big_gate_brown, "Big Gate")
     )
 
     Dialog(onDismissRequest = onDismiss) {
@@ -59,15 +59,24 @@ fun SelectGateIconDialog(
                     horizontalArrangement = Arrangement.spacedBy(16.dp),
                     maxItemsInEachRow = 3
                 ) {
-                    icons.forEach {
-                        Card(
-                            onClick = { onSelectIcon(it); onDismiss() },
-                            border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary)
+                    icons.forEach { (icon, name) ->
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Icon(
-                                painter = painterResource(it),
-                                contentDescription = null,
-                                modifier = Modifier.padding(8.dp).size(48.dp)
+                            Card(
+                                onClick = { onSelectIcon(icon); onDismiss() },
+                                border = BorderStroke(width = 1.dp, color = MaterialTheme.colorScheme.primary)
+                            ) {
+                                Icon(
+                                    painter = painterResource(icon),
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(8.dp).size(48.dp)
+                                )
+                            }
+                            Text(
+                                text = name,
+                                style = MaterialTheme.typography.labelSmall,
                             )
                         }
                     }
