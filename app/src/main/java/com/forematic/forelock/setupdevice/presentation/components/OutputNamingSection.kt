@@ -134,7 +134,10 @@ fun OutputNamingSection(
                 }
 
                 ButtonWithLoadingIndicator(
-                    onClick = { onEvent(SetupDeviceEvent.OutputRelayEvent.OnUpdateClick) },
+                    onClick = {
+                        if(!isUpdatingNaming)
+                            onEvent(SetupDeviceEvent.OutputRelayEvent.OnUpdateClick)
+                    },
                     text = "Update",
                     isEnabled = canUpdateDetails,
                     isLoading = isUpdatingNaming,

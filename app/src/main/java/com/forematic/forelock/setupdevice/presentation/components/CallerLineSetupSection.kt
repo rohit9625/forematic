@@ -114,7 +114,7 @@ fun CallerLineSetupSection(
                             contentDescription = "Save",
                             onClick = {
                                 if (!callerLineId.isUpdatingMode)
-                                    onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUpdateClick)
+                                    onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUpdateMode)
                             },
                             isLoading = callerLineId.isUpdatingMode,
                             isEnabled = canUpdateMode
