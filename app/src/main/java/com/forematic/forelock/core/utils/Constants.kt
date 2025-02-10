@@ -17,4 +17,5 @@ object Constants {
     const val SET_ADMIN_NUMBER_REQUEST = 13
     const val SET_MIC_VOLUME_REQUEST = 14
     const val SET_SPEAKER_VOLUME_REQUEST = 15
+    const val SET_OUTPUT_NAME_RELAY_TIME_REQ = 16
 }

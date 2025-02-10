@@ -46,6 +46,7 @@ fun OutputNamingSection(
     onEvent: (SetupDeviceEvent.OutputRelayEvent) -> Unit,
     modifier: Modifier = Modifier,
     outputRelay2: OutputRelay? = null,
+    isUpdatingNaming: Boolean = false
 ) {
     val canUpdateDetails by remember(outputRelay1, outputRelay2) {
         derivedStateOf { outputRelay1.relayTimeError == null && outputRelay1.outputNameError == null
@@ -136,6 +137,7 @@ fun OutputNamingSection(
                     onClick = { onEvent(SetupDeviceEvent.OutputRelayEvent.OnUpdateClick) },
                     text = "Update",
                     isEnabled = canUpdateDetails,
+                    isLoading = isUpdatingNaming,
                     modifier = Modifier.widthIn(min = 96.dp).align(Alignment.End)
                 )
             }

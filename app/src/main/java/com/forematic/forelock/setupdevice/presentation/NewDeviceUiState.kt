@@ -10,6 +10,7 @@ data class NewDeviceUiState(
     val simAndPasswordState: SimAndPasswordState = SimAndPasswordState(programmingPassword = currentProgrammingPassword),
     val outputRelay1: OutputRelay = OutputRelay(),
     val outputRelay2: OutputRelay? = null,
+    val isUpdatingOutputNaming: Boolean = false,
     val timezoneMode: TimezoneMode = TimezoneMode.FREE,
     val currentTimezoneMode: TimezoneMode = TimezoneMode.FREE,
     val timezoneError: String? = null,

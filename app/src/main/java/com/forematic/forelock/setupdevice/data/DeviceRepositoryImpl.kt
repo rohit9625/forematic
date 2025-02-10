@@ -22,6 +22,19 @@ class DeviceRepositoryImpl(
         )
     }
 
+    override fun setOutputNameAndRelayTime(
+        simNumber: String, password: String,
+        relay1OutputName: String, relay1Time: String,
+        relay2OutputName: String, relay2Time: String
+    ) {
+        messageSender.sendMessage(
+            recipientNumber = simNumber,
+            messageContent = "$password#ID1#$relay1OutputName#RL1T#$relay1Time#" +
+                    "ID2#$relay2OutputName#RL2T#$relay2Time#",
+            requestCode = Constants.SET_OUTPUT_NAME_RELAY_TIME_REQ
+        )
+    }
+
     override fun setTimezoneMode(simNumber: String, password: String, timezoneMode: String) {
         messageSender.sendMessage(
             recipientNumber = simNumber,

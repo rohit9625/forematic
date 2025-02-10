@@ -9,6 +9,12 @@ interface DeviceRepository {
 
     fun setNewPassword(simNumber: String, oldPassword: String, newPassword: String)
 
+    fun setOutputNameAndRelayTime(
+        simNumber: String, password: String,
+        relay1OutputName: String, relay1Time: String,
+        relay2OutputName: String, relay2Time: String
+    )
+
     fun setTimezoneMode(simNumber: String, password: String, timezoneMode: String)
 
     fun setKeypadCodes(

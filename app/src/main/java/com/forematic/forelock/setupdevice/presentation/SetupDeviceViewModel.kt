@@ -62,6 +62,9 @@ class SetupDeviceViewModel(
         },
         Constants.SET_SPEAKER_VOLUME_REQUEST to { messageUpdate: MessageUpdate ->
             updateVolumeState(messageUpdate)
+        },
+        Constants.SET_OUTPUT_NAME_RELAY_TIME_REQ to { messageUpdate: MessageUpdate ->
+            updateOutputNamingState(messageUpdate)
         }
         // Add more request codes and update functions here...
     )
@@ -121,7 +124,7 @@ class SetupDeviceViewModel(
     private fun updateVolumeState(messageUpdate: MessageUpdate) {
         when (messageUpdate) {
             is MessageUpdate.Sent -> {
-                if(messageUpdate.requestCode == Constants.SET_MIC_VOLUME_REQUEST) {
+                if (messageUpdate.requestCode == Constants.SET_MIC_VOLUME_REQUEST) {
                     _uiState.update {
                         it.copy(volumeSettings = it.volumeSettings.copy(isUpdatingMicVolume = true))
                     }
@@ -131,44 +134,68 @@ class SetupDeviceViewModel(
                     }
                 }
             }
+
             is MessageUpdate.Delivered -> {
-                if(messageUpdate.requestCode == Constants.SET_MIC_VOLUME_REQUEST) {
+                if (messageUpdate.requestCode == Constants.SET_MIC_VOLUME_REQUEST) {
                     _uiState.update {
-                        it.copy(volumeSettings = it.volumeSettings.copy(
-                            currentMicVolume = it.volumeSettings.micVolume,
-                            isUpdatingMicVolume = false
-                        ))
+                        it.copy(
+                            volumeSettings = it.volumeSettings.copy(
+                                currentMicVolume = it.volumeSettings.micVolume,
+                                isUpdatingMicVolume = false
+                            )
+                        )
                     }
                 } else {
                     _uiState.update {
-                        it.copy(volumeSettings = it.volumeSettings.copy(
-                            currentSpeakerVolume = it.volumeSettings.speakerVolume,
-                            isUpdatingSpeakerVolume = false
-                        ))
+                        it.copy(
+                            volumeSettings = it.volumeSettings.copy(
+                                currentSpeakerVolume = it.volumeSettings.speakerVolume,
+                                isUpdatingSpeakerVolume = false
+                            )
+                        )
                     }
                 }
             }
+
             is MessageUpdate.Error -> {
                 showSnackbar(message = "Unable to send volume command message")
+                _uiState.update {
+                    it.copy(
+                        volumeSettings = it.volumeSettings.copy(
+                            isUpdatingSpeakerVolume = false,
+                            isUpdatingMicVolume = false
+                        )
+                    )
+                }
             }
+
             is MessageUpdate.Received -> TODO()
         }
     }
+
     private fun onVolumeSettingsEvent(e: SetupDeviceEvent.VolumeSettingsEvent) {
-        when(e) {
+        when (e) {
             is SetupDeviceEvent.VolumeSettingsEvent.OnMicVolumeChange -> {
                 _uiState.update {
                     it.copy(volumeSettings = it.volumeSettings.copy(micVolume = e.volume))
                 }
             }
+
             is SetupDeviceEvent.VolumeSettingsEvent.OnSpeakerVolumeChange -> {
                 _uiState.update {
                     it.copy(volumeSettings = it.volumeSettings.copy(speakerVolume = e.volume))
                 }
             }
+
             SetupDeviceEvent.VolumeSettingsEvent.OnSaveMicVolume -> {
                 executeIfValidSimNumber {
-                    _uiState.update { it.copy(volumeSettings = it.volumeSettings.copy(isUpdatingMicVolume = true)) }
+                    _uiState.update {
+                        it.copy(
+                            volumeSettings = it.volumeSettings.copy(
+                                isUpdatingMicVolume = true
+                            )
+                        )
+                    }
                     deviceRepository.setMicVolume(
                         simNumber = uiState.value.simAndPasswordState.simNumber,
                         password = uiState.value.currentProgrammingPassword,
@@ -176,9 +203,16 @@ class SetupDeviceViewModel(
                     )
                 }
             }
+
             SetupDeviceEvent.VolumeSettingsEvent.OnSaveSpeakerVolume -> {
                 executeIfValidSimNumber {
-                    _uiState.update { it.copy(volumeSettings = it.volumeSettings.copy(isUpdatingSpeakerVolume = true)) }
+                    _uiState.update {
+                        it.copy(
+                            volumeSettings = it.volumeSettings.copy(
+                                isUpdatingSpeakerVolume = true
+                            )
+                        )
+                    }
                     deviceRepository.setSpeakerVolume(
                         simNumber = uiState.value.simAndPasswordState.simNumber,
                         password = uiState.value.currentProgrammingPassword,
@@ -557,6 +591,25 @@ class SetupDeviceViewModel(
         }
     }
 
+    private fun updateOutputNamingState(update: MessageUpdate) {
+        when (update) {
+            is MessageUpdate.Sent -> {
+                _uiState.update { it.copy(isUpdatingOutputNaming = true) }
+            }
+
+            is MessageUpdate.Delivered -> {
+                _uiState.update { it.copy(isUpdatingOutputNaming = false) }
+            }
+
+            is MessageUpdate.Error -> {
+                showSnackbar("Unable to send command message")
+                _uiState.update { it.copy(isUpdatingOutputNaming = false) }
+            }
+
+            is MessageUpdate.Received -> TODO()
+        }
+    }
+
     private fun onOutputRelayEvent(e: SetupDeviceEvent.OutputRelayEvent) {
         when (e) {
             is SetupDeviceEvent.OutputRelayEvent.OnRelay1NameChange -> {
@@ -599,21 +652,19 @@ class SetupDeviceViewModel(
             }
 
             SetupDeviceEvent.OutputRelayEvent.OnGetNameForRelay1 -> {
-                _uiState.update {
-                    it.copy(outputRelay1 = it.outputRelay1.copy(isFetchingOutputName = true))
-                }
-                viewModelScope.launch {
-                    val outputName = getOutputName.invoke(
-                        simNumber = uiState.value.simAndPasswordState.simNumber,
-                        password = uiState.value.currentProgrammingPassword,
-                        requestCode = Constants.GET_R1_OUTPUT_NAME_REQUEST
-                    )
+                executeIfValidSimNumber {
                     _uiState.update {
-                        it.copy(
-                            outputRelay1 = it.outputRelay1.copy(
-                                isFetchingOutputName = false, name = outputName ?: ""
+                        it.copy(outputRelay1 = it.outputRelay1.copy(isFetchingOutputName = true))
+                    }
+                    viewModelScope.launch {
+                        val outputName = getRelayOutputName(Constants.GET_R1_OUTPUT_NAME_REQUEST)
+                        _uiState.update {
+                            it.copy(
+                                outputRelay1 = it.outputRelay1.copy(
+                                    isFetchingOutputName = false, name = outputName ?: ""
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -659,21 +710,19 @@ class SetupDeviceViewModel(
             }
 
             SetupDeviceEvent.OutputRelayEvent.OnGetNameForRelay2 -> {
-                _uiState.update {
-                    it.copy(outputRelay2 = it.outputRelay2?.copy(isFetchingOutputName = true))
-                }
-                viewModelScope.launch {
-                    val outputName = getOutputName.invoke(
-                        simNumber = uiState.value.simAndPasswordState.simNumber,
-                        password = uiState.value.currentProgrammingPassword,
-                        requestCode = Constants.GET_R2_OUTPUT_NAME_REQUEST
-                    )
+                executeIfValidSimNumber {
                     _uiState.update {
-                        it.copy(
-                            outputRelay2 = it.outputRelay2?.copy(
-                                isFetchingOutputName = false, name = outputName ?: ""
+                        it.copy(outputRelay2 = it.outputRelay2?.copy(isFetchingOutputName = true))
+                    }
+                    viewModelScope.launch {
+                        val outputName = getRelayOutputName(Constants.GET_R2_OUTPUT_NAME_REQUEST)
+                        _uiState.update {
+                            it.copy(
+                                outputRelay2 = it.outputRelay2?.copy(
+                                    isFetchingOutputName = false, name = outputName ?: ""
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -685,6 +734,20 @@ class SetupDeviceViewModel(
                     val relay2Error = if (it.outputRelay2!!.isAnyInputEmpty())
                         "Please configure relay completely" else null
 
+                    if (relay1Error == null && relay2Error == null) {
+                        executeIfValidSimNumber {
+                            _uiState.update { state -> state.copy(isUpdatingOutputNaming = true) }
+                            deviceRepository.setOutputNameAndRelayTime(
+                                simNumber = uiState.value.simAndPasswordState.simNumber,
+                                password = uiState.value.currentProgrammingPassword,
+                                relay1OutputName = uiState.value.outputRelay1.name,
+                                relay1Time = uiState.value.outputRelay1.relayTime,
+                                relay2OutputName = uiState.value.outputRelay2!!.name,
+                                relay2Time = uiState.value.outputRelay2!!.relayTime
+                            )
+                        }
+                    }
+
                     it.copy(
                         outputRelay1 = it.outputRelay1.copy(otherError = relay1Error),
                         outputRelay2 = it.outputRelay2.copy(otherError = relay2Error)
@@ -692,6 +755,14 @@ class SetupDeviceViewModel(
                 }
             }
         }
+    }
+
+    private suspend fun getRelayOutputName(requestCode: Int): String? {
+        return getOutputName.invoke(
+            simNumber = uiState.value.simAndPasswordState.simNumber,
+            password = uiState.value.currentProgrammingPassword,
+            requestCode = requestCode
+        )
     }
 
     private fun onKeypadCodeEvent(e: SetupDeviceEvent.KeypadCodeEvent) {
