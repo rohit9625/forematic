@@ -136,6 +136,7 @@ class SetupDeviceViewModel(
             }
 
             is MessageUpdate.Delivered -> {
+                showSnackbar("Command sent to the target device")
                 if (messageUpdate.requestCode == Constants.SET_MIC_VOLUME_REQUEST) {
                     _uiState.update {
                         it.copy(
@@ -237,20 +238,26 @@ class SetupDeviceViewModel(
                     )
                 )
 
-                is MessageUpdate.Delivered -> currentState.copy(
-                    simAndPasswordState = currentState.simAndPasswordState.copy(
-                        isLoading = false,
-                        simNumberError = null
-                    ),
-                    currentProgrammingPassword = uiState.value.simAndPasswordState.programmingPassword
-                )
-
-                is MessageUpdate.Error -> currentState.copy(
-                    simAndPasswordState = currentState.simAndPasswordState.copy(
-                        isLoading = false,
-                        simNumberError = messageUpdate.error.toString()
+                is MessageUpdate.Delivered -> {
+                    showSnackbar("Command sent to the target device")
+                    currentState.copy(
+                        simAndPasswordState = currentState.simAndPasswordState.copy(
+                            isLoading = false,
+                            simNumberError = null
+                        ),
+                        currentProgrammingPassword = uiState.value.simAndPasswordState.programmingPassword
                     )
-                )
+                }
+
+                is MessageUpdate.Error -> {
+                    showSnackbar("Unable to send command message")
+                    currentState.copy(
+                        simAndPasswordState = currentState.simAndPasswordState.copy(
+                            isLoading = false,
+                            simNumberError = messageUpdate.error.toString()
+                        )
+                    )
+                }
 
                 is MessageUpdate.Received -> TODO()
             }
@@ -288,6 +295,7 @@ class SetupDeviceViewModel(
                 }
 
                 is MessageUpdate.Delivered -> {
+                    showSnackbar("Command sent to the target device")
                     currentState.copy(
                         isUpdatingTimezone = false,
                         currentTimezoneMode = uiState.value.timezoneMode
@@ -295,6 +303,7 @@ class SetupDeviceViewModel(
                 }
 
                 is MessageUpdate.Error -> {
+                    showSnackbar("Unable to send command message")
                     currentState.copy(isUpdatingTimezone = false)
                 }
 
@@ -311,10 +320,12 @@ class SetupDeviceViewModel(
                 }
 
                 is MessageUpdate.Delivered -> {
+                    showSnackbar("Command sent to the target device")
                     currentState.copy(isUpdatingKeypadCodes = false)
                 }
 
                 is MessageUpdate.Error -> {
+                    showSnackbar("Unable to send command message")
                     currentState.copy(isUpdatingKeypadCodes = false)
                 }
 
@@ -417,6 +428,7 @@ class SetupDeviceViewModel(
             }
 
             is MessageUpdate.Delivered -> {
+                showSnackbar("Command sent to the target device")
                 if (update.requestCode == Constants.SET_CALLOUT_NUMBERS) {
                     _uiState.update { it.copy(isUpdatingCallOutNumbers = false) }
                 } else {
@@ -598,6 +610,7 @@ class SetupDeviceViewModel(
             }
 
             is MessageUpdate.Delivered -> {
+                showSnackbar("Command sent to the target device")
                 _uiState.update { it.copy(isUpdatingOutputNaming = false) }
             }
 
@@ -964,6 +977,7 @@ class SetupDeviceViewModel(
                 }
 
                 is MessageUpdate.Delivered -> {
+                    showSnackbar("Command sent to the target device")
                     if (messageUpdate.requestCode == Constants.SET_CLI_MODE_REQUEST) {
                         state.copy(
                             callerLineId = state.callerLineId.copy(
