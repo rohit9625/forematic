@@ -28,8 +28,18 @@ data class NewDeviceUiState(
     val isUpdatingAdminNumber: Boolean = false,
     val speakerVolume: Float = 0f,
     val micVolume: Float = 0f,
+    val volumeSettings: VolumeSettings = VolumeSettings(),
     val signalStrength: Int? = null,
     val isRefreshingSignal: Boolean = false
+)
+
+data class VolumeSettings(
+    val speakerVolume: Float = 0f,
+    val currentSpeakerVolume: Float = 0f,
+    val micVolume: Float = 0f,
+    val currentMicVolume: Float = 0f,
+    val isUpdatingMicVolume: Boolean = false,
+    val isUpdatingSpeakerVolume: Boolean = false
 )
 
 data class CallOutNumberUiState(

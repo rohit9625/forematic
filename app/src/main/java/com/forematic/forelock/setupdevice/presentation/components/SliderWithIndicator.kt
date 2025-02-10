@@ -19,6 +19,7 @@ import androidx.compose.ui.text.style.TextAlign
 fun SliderWithIndicator(
     value: Float,
     onValueChange: (Float) -> Unit,
+    modifier: Modifier = Modifier,
     steps: Int = 0,
     valueRange: ClosedFloatingPointRange<Float> = 0f..1f
 ) {
@@ -26,7 +27,8 @@ fun SliderWithIndicator(
 
     Row(
         horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
     ) {
         Slider(
             value = value,

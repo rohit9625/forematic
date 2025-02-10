@@ -151,8 +151,7 @@ fun SetupNewDeviceScreen(
             )
 
             AudioAdjustmentSection(
-                speakerVolume = uiState.speakerVolume,
-                micVolume = uiState.micVolume,
+                volumeSettings = uiState.volumeSettings,
                 signalStrength = uiState.signalStrength,
                 onSpeakerVolumeChange = {
                     onEvent(SetupDeviceEvent.OnSpeakerVolumeChange(it))
