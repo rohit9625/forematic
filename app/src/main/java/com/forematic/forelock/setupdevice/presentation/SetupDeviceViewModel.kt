@@ -293,22 +293,116 @@ class SetupDeviceViewModel(
 
     private fun onCallOutNumberEvent(e: SetupDeviceEvent.CallOutNumberEvent) {
         when (e) {
-            is SetupDeviceEvent.CallOutNumberEvent.OnNameChange -> {
+            is SetupDeviceEvent.CallOutNumberEvent.OnFirstNameChange -> {
+                val error = when (val result = inputValidator.validateName(e.name)) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.NameError.EMPTY -> "Name cannot be empty"
+                        InputError.NameError.TOO_SHORT -> "Name is too short"
+                        InputError.NameError.TOO_LONG -> "Name is too long"
+                        InputError.NameError.INVALID_FORMAT -> "Name can have only letters"
+                    }
+
+                    is Result.Success -> null
+                }
                 _uiState.update {
                     it.copy(
-                        callOutNumbers = it.callOutNumbers.mapIndexed { index, callOutNumber ->
-                            if (index == e.index) callOutNumber.copy(name = e.name) else callOutNumber
-                        }
+                        firstCallOut = it.firstCallOut.copy(
+                            name = e.name, nameError = error
+                        )
                     )
                 }
             }
 
-            is SetupDeviceEvent.CallOutNumberEvent.OnNumberChange -> {
+            is SetupDeviceEvent.CallOutNumberEvent.OnFirstNumberChange -> {
+                val error = when (val result = inputValidator.validateUkPhoneNumber(e.number)) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.PhoneNumberError.EMPTY -> "Call-out number cannot be empty"
+                        InputError.PhoneNumberError.INVALID_NUMBER -> "Invalid call-out number"
+                    }
+
+                    is Result.Success -> null
+                }
                 _uiState.update {
                     it.copy(
-                        callOutNumbers = it.callOutNumbers.mapIndexed { index, callOutNumber ->
-                            if (index == e.index) callOutNumber.copy(number = e.number) else callOutNumber
-                        }
+                        firstCallOut = it.firstCallOut.copy(
+                            number = e.number, numberError = error
+                        )
+                    )
+                }
+            }
+
+            is SetupDeviceEvent.CallOutNumberEvent.OnSecondNameChange -> {
+                val error = when (val result = inputValidator.validateName(e.name)) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.NameError.EMPTY -> "Name cannot be empty"
+                        InputError.NameError.TOO_SHORT -> "Name is too short"
+                        InputError.NameError.TOO_LONG -> "Name is too long"
+                        InputError.NameError.INVALID_FORMAT -> "Name can have only letters"
+                    }
+
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(
+                        secondCallOut = it.secondCallOut.copy(
+                            name = e.name, nameError = error
+                        )
+                    )
+                }
+            }
+
+            is SetupDeviceEvent.CallOutNumberEvent.OnSecondNumberChange -> {
+                val error = when (val result = inputValidator.validateUkPhoneNumber(e.number)) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.PhoneNumberError.EMPTY -> "Call-out number cannot be empty"
+                        InputError.PhoneNumberError.INVALID_NUMBER -> "Invalid call-out number"
+                    }
+
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(
+                        secondCallOut = it.secondCallOut.copy(
+                            number = e.number, numberError = error
+                        )
+                    )
+                }
+            }
+
+            is SetupDeviceEvent.CallOutNumberEvent.OnThirdNameChange -> {
+                val error = when (val result = inputValidator.validateName(e.name)) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.NameError.EMPTY -> "Name cannot be empty"
+                        InputError.NameError.TOO_SHORT -> "Name is too short"
+                        InputError.NameError.TOO_LONG -> "Name is too long"
+                        InputError.NameError.INVALID_FORMAT -> "Name can have only letters"
+                    }
+
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(
+                        thirdCallOut = it.thirdCallOut.copy(
+                            name = e.name, nameError = error
+                        )
+                    )
+                }
+            }
+
+            is SetupDeviceEvent.CallOutNumberEvent.OnThirdNumberChange -> {
+                val error = when (val result = inputValidator.validateUkPhoneNumber(e.number)) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.PhoneNumberError.EMPTY -> "Call-out number cannot be empty"
+                        InputError.PhoneNumberError.INVALID_NUMBER -> "Invalid call-out number"
+                    }
+
+                    is Result.Success -> null
+                }
+                _uiState.update {
+                    it.copy(
+                        thirdCallOut = it.thirdCallOut.copy(
+                            number = e.number, numberError = error
+                        )
                     )
                 }
             }
@@ -318,7 +412,15 @@ class SetupDeviceViewModel(
             }
 
             is SetupDeviceEvent.CallOutNumberEvent.OnAdminNumberChange -> {
-                _uiState.update { it.copy(adminNumber = e.number) }
+                val error = when (val result = inputValidator.validateUkPhoneNumber(e.number)) {
+                    is Result.Failure -> when (result.error) {
+                        InputError.PhoneNumberError.EMPTY -> "Admin number cannot be empty"
+                        InputError.PhoneNumberError.INVALID_NUMBER -> "Invalid admin number"
+                    }
+
+                    is Result.Success -> null
+                }
+                _uiState.update { it.copy(adminNumber = e.number, adminNumberError = error) }
             }
 
             SetupDeviceEvent.CallOutNumberEvent.OnChangeClick -> {
@@ -653,35 +755,42 @@ class SetupDeviceViewModel(
 
     private fun updateCallerLineState(messageUpdate: MessageUpdate) {
         _uiState.update { state ->
-            when(messageUpdate) {
+            when (messageUpdate) {
                 is MessageUpdate.Sent -> {
-                    if(messageUpdate.requestCode == Constants.SET_CLI_MODE_REQUEST) {
+                    if (messageUpdate.requestCode == Constants.SET_CLI_MODE_REQUEST) {
                         state.copy(callerLineId = state.callerLineId.copy(isUpdatingMode = false))
                     } else {
                         state.copy(callerLineId = state.callerLineId.copy(isUpdatingNumber = false))
                     }
                 }
+
                 is MessageUpdate.Delivered -> {
-                    if(messageUpdate.requestCode == Constants.SET_CLI_MODE_REQUEST) {
-                        state.copy(callerLineId = state.callerLineId.copy(
-                            isUpdatingMode = false, currentUserMode = state.callerLineId.userMode
-                        ))
+                    if (messageUpdate.requestCode == Constants.SET_CLI_MODE_REQUEST) {
+                        state.copy(
+                            callerLineId = state.callerLineId.copy(
+                                isUpdatingMode = false,
+                                currentUserMode = state.callerLineId.userMode
+                            )
+                        )
                     } else {
                         state.copy(callerLineId = state.callerLineId.copy(isUpdatingNumber = false))
                     }
                 }
+
                 is MessageUpdate.Error -> {
                     showSnackbar("Unable to send command message")
-                    if(messageUpdate.requestCode == Constants.SET_CLI_MODE_REQUEST) {
+                    if (messageUpdate.requestCode == Constants.SET_CLI_MODE_REQUEST) {
                         state.copy(callerLineId = state.callerLineId.copy(isUpdatingMode = false))
                     } else {
                         state.copy(callerLineId = state.callerLineId.copy(isUpdatingNumber = false))
                     }
                 }
+
                 is MessageUpdate.Received -> TODO()
             }
         }
     }
+
     private fun onCallerLineIdEvent(e: SetupDeviceEvent.CallerLineIdEvent) {
         when (e) {
             is SetupDeviceEvent.CallerLineIdEvent.OnUserModeChange -> {
@@ -690,14 +799,20 @@ class SetupDeviceViewModel(
 
             is SetupDeviceEvent.CallerLineIdEvent.OnNumberChange -> {
                 val error = when (val result = inputValidator.validateCliNumber(e.number)) {
-                    is Result.Failure -> when(result.error) {
+                    is Result.Failure -> when (result.error) {
                         InputError.PhoneNumberError.EMPTY -> "Call-In number cannot be empty"
                         InputError.PhoneNumberError.INVALID_NUMBER -> "Call-In number must have 8 digits"
                     }
+
                     is Result.Success -> null
                 }
                 _uiState.update {
-                    it.copy(callerLineId = it.callerLineId.copy(number = e.number, numberError = error))
+                    it.copy(
+                        callerLineId = it.callerLineId.copy(
+                            number = e.number,
+                            numberError = error
+                        )
+                    )
                 }
             }
 

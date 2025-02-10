@@ -139,8 +139,13 @@ fun SetupNewDeviceScreen(
             )
 
             CallOutNumberSection(
-                callOutNumbers = uiState.callOutNumbers,
+                firstCallOut = uiState.firstCallOut,
+                secondCallOut = uiState.secondCallOut,
+                thirdCallOut = uiState.thirdCallOut,
                 adminNumber = uiState.adminNumber,
+                adminNumberError = uiState.adminNumberError,
+                isUpdatingAdminNumber = uiState.isUpdatingAdminNumber,
+                isUpdatingCallOutNumbers = uiState.isUpdatingCallOutNumbers,
                 onEvent = { event -> onEvent(event) },
                 modifier = Modifier.padding(horizontal = 8.dp)
             )

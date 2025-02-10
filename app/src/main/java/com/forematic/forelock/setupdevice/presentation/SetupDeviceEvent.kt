@@ -56,8 +56,14 @@ sealed interface SetupDeviceEvent {
     }
 
     sealed interface CallOutNumberEvent: SetupDeviceEvent {
-        data class OnNumberChange(val index: Int, val number: String): CallOutNumberEvent
-        data class OnNameChange(val index: Int, val name: String): CallOutNumberEvent
+        data class OnFirstNumberChange(val number: String): CallOutNumberEvent
+        data class OnFirstNameChange(val name: String): CallOutNumberEvent
+
+        data class OnSecondNumberChange(val number: String): CallOutNumberEvent
+        data class OnSecondNameChange(val name: String): CallOutNumberEvent
+        data class OnThirdNumberChange(val number: String): CallOutNumberEvent
+        data class OnThirdNameChange(val name: String): CallOutNumberEvent
+
         data class OnAdminNumberChange(val number: String): CallOutNumberEvent
         data object OnChangeClick: CallOutNumberEvent
         data object OnUpdateClick: CallOutNumberEvent

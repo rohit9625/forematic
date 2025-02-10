@@ -3,7 +3,6 @@ package com.forematic.forelock.setupdevice.presentation
 import android.annotation.SuppressLint
 import androidx.annotation.DrawableRes
 import com.forematic.forelock.R
-import com.forematic.forelock.setupdevice.domain.model.CallOutNumber
 
 data class NewDeviceUiState(
     val deviceType: DeviceType = DeviceType.G24_INTERCOM,
@@ -20,12 +19,24 @@ data class NewDeviceUiState(
     val deliveryCode: KeypadCodeForOutput = KeypadCodeForOutput(locationRange = 151..200),
     val isUpdatingKeypadCodes: Boolean = false,
     val callerLineId: CallerLineIdentification = CallerLineIdentification(locationRange = 201..250),
-    val callOutNumbers: List<CallOutNumber> = listOf(CallOutNumber(), CallOutNumber(), CallOutNumber()),
+    val firstCallOut: CallOutNumberUiState = CallOutNumberUiState(),
+    val secondCallOut: CallOutNumberUiState = CallOutNumberUiState(),
+    val thirdCallOut: CallOutNumberUiState = CallOutNumberUiState(),
+    val isUpdatingCallOutNumbers: Boolean = false,
     val adminNumber: String = "",
+    val adminNumberError: String? = null,
+    val isUpdatingAdminNumber: Boolean = false,
     val speakerVolume: Float = 0f,
     val micVolume: Float = 0f,
     val signalStrength: Int? = null,
     val isRefreshingSignal: Boolean = false
+)
+
+data class CallOutNumberUiState(
+    val number: String = "",
+    val name: String = "",
+    val numberError: String? = null,
+    val nameError: String? = null
 )
 
 data class SimAndPasswordState(
