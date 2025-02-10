@@ -27,15 +27,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.forematic.forelock.R
 import com.forematic.forelock.home.presentation.components.IconButtonWithLoader
+import com.forematic.forelock.setupdevice.presentation.SetupDeviceEvent
 import com.forematic.forelock.setupdevice.presentation.VolumeSettings
 import com.forematic.forelock.ui.theme.ForeLockTheme
 
 @Composable
 fun AudioAdjustmentSection(
     volumeSettings: VolumeSettings,
+    onEvent: (SetupDeviceEvent.VolumeSettingsEvent) -> Unit,
     signalStrength: Int?,
-    onSpeakerVolumeChange: (Float) -> Unit,
-    onMicVolumeChange: (Float) -> Unit,
     onCheckSignalStrength: () -> Unit,
     modifier: Modifier = Modifier,
     isRefreshingSignal: Boolean = false
@@ -63,8 +63,13 @@ fun AudioAdjustmentSection(
             ) {
                 VolumeControls(
                     volume = volumeSettings.speakerVolume,
-                    onVolumeChange = onSpeakerVolumeChange,
-                    onUpdateVolume = onCheckSignalStrength,
+                    onVolumeChange = {
+                        onEvent(SetupDeviceEvent.VolumeSettingsEvent.OnSpeakerVolumeChange(it))
+                    },
+                    onUpdateVolume = {
+                        if(!volumeSettings.isUpdatingSpeakerVolume)
+                            onEvent(SetupDeviceEvent.VolumeSettingsEvent.OnSaveSpeakerVolume)
+                    },
                     isUpdatingVolume = volumeSettings.isUpdatingSpeakerVolume,
                     currentVolume = volumeSettings.currentSpeakerVolume,
                     isUpdateButtonEnabled = canUpdateSpeakerVolume,
@@ -78,8 +83,13 @@ fun AudioAdjustmentSection(
 
                 VolumeControls(
                     volume = volumeSettings.micVolume,
-                    onVolumeChange = onMicVolumeChange,
-                    onUpdateVolume = onCheckSignalStrength,
+                    onVolumeChange = {
+                        onEvent(SetupDeviceEvent.VolumeSettingsEvent.OnMicVolumeChange(it))
+                    },
+                    onUpdateVolume = {
+                        if(!volumeSettings.isUpdatingMicVolume)
+                            onEvent(SetupDeviceEvent.VolumeSettingsEvent.OnSaveMicVolume)
+                    },
                     isUpdatingVolume = volumeSettings.isUpdatingMicVolume,
                     currentVolume = volumeSettings.currentMicVolume,
                     isUpdateButtonEnabled = canUpdateMicVolume,
@@ -193,9 +203,8 @@ private fun AudioAdjustmentSectionPreview() {
                     speakerVolume = 3f, micVolume = 7f,
                     currentMicVolume = 3f, currentSpeakerVolume = 5f
                 ),
+                onEvent = { },
                 signalStrength = 5,
-                onSpeakerVolumeChange = { },
-                onMicVolumeChange = { },
                 onCheckSignalStrength = { },
                 modifier = Modifier.padding(8.dp)
             )

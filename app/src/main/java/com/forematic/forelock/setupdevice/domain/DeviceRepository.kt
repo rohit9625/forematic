@@ -30,4 +30,8 @@ interface DeviceRepository {
     )
 
     fun setAdminNumber(simNumber: String, password: String, adminNumber: String)
+
+    fun setMicVolume(simNumber: String, password: String, volume: String)
+
+    fun setSpeakerVolume(simNumber: String, password: String, volume: String)
 }

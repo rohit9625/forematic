@@ -89,4 +89,20 @@ class DeviceRepositoryImpl(
             requestCode = Constants.SET_ADMIN_NUMBER_REQUEST
         )
     }
+
+    override fun setMicVolume(simNumber: String, password: String, volume: String) {
+        messageSender.sendMessage(
+            recipientNumber = simNumber,
+            messageContent = "$password#MIC#$volume#",
+            requestCode = Constants.SET_MIC_VOLUME_REQUEST
+        )
+    }
+
+    override fun setSpeakerVolume(simNumber: String, password: String, volume: String) {
+        messageSender.sendMessage(
+            recipientNumber = simNumber,
+            messageContent = "$password#SP#$volume#",
+            requestCode = Constants.SET_SPEAKER_VOLUME_REQUEST
+        )
+    }
 }

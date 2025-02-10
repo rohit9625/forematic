@@ -119,7 +119,7 @@ fun CallOutNumberSection(
                             onEvent(SetupDeviceEvent.CallOutNumberEvent.OnSecondNumberChange(it))
                         },
                         error = secondCallOut.numberError ?: secondCallOut.nameError,
-                        label = "1. Call-Out Number",
+                        label = "2. Call-Out Number",
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -133,7 +133,7 @@ fun CallOutNumberSection(
                             onEvent(SetupDeviceEvent.CallOutNumberEvent.OnThirdNumberChange(it))
                         },
                         error = thirdCallOut.numberError ?: thirdCallOut.nameError,
-                        label = "1. Call-Out Number",
+                        label = "3. Call-Out Number",
                         modifier = Modifier.fillMaxWidth()
                     )
                 }

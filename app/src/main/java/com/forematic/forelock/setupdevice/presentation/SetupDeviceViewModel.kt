@@ -56,6 +56,12 @@ class SetupDeviceViewModel(
         },
         Constants.SET_ADMIN_NUMBER_REQUEST to { messageUpdate: MessageUpdate ->
             updateCallOutNumberState(messageUpdate)
+        },
+        Constants.SET_MIC_VOLUME_REQUEST to { messageUpdate: MessageUpdate ->
+            updateVolumeState(messageUpdate)
+        },
+        Constants.SET_SPEAKER_VOLUME_REQUEST to { messageUpdate: MessageUpdate ->
+            updateVolumeState(messageUpdate)
         }
         // Add more request codes and update functions here...
     )
@@ -88,13 +94,7 @@ class SetupDeviceViewModel(
 
             is SetupDeviceEvent.CallerLineIdEvent -> onCallerLineIdEvent(e)
 
-            is SetupDeviceEvent.OnSpeakerVolumeChange -> {
-                _uiState.update { it.copy(speakerVolume = e.volume) }
-            }
-
-            is SetupDeviceEvent.OnMicVolumeChange -> {
-                _uiState.update { it.copy(micVolume = e.volume) }
-            }
+            is SetupDeviceEvent.VolumeSettingsEvent -> onVolumeSettingsEvent(e)
 
             SetupDeviceEvent.OnCheckSignalStrength -> {
                 executeIfValidSimNumber {
@@ -116,6 +116,81 @@ class SetupDeviceViewModel(
                 }
             }
         }
+    }
+
+    private fun updateVolumeState(messageUpdate: MessageUpdate) {
+        when (messageUpdate) {
+            is MessageUpdate.Sent -> {
+                if(messageUpdate.requestCode == Constants.SET_MIC_VOLUME_REQUEST) {
+                    _uiState.update {
+                        it.copy(volumeSettings = it.volumeSettings.copy(isUpdatingMicVolume = true))
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(volumeSettings = it.volumeSettings.copy(isUpdatingSpeakerVolume = true))
+                    }
+                }
+            }
+            is MessageUpdate.Delivered -> {
+                if(messageUpdate.requestCode == Constants.SET_MIC_VOLUME_REQUEST) {
+                    _uiState.update {
+                        it.copy(volumeSettings = it.volumeSettings.copy(
+                            currentMicVolume = it.volumeSettings.micVolume,
+                            isUpdatingMicVolume = false
+                        ))
+                    }
+                } else {
+                    _uiState.update {
+                        it.copy(volumeSettings = it.volumeSettings.copy(
+                            currentSpeakerVolume = it.volumeSettings.speakerVolume,
+                            isUpdatingSpeakerVolume = false
+                        ))
+                    }
+                }
+            }
+            is MessageUpdate.Error -> {
+                showSnackbar(message = "Unable to send volume command message")
+            }
+            is MessageUpdate.Received -> TODO()
+        }
+    }
+    private fun onVolumeSettingsEvent(e: SetupDeviceEvent.VolumeSettingsEvent) {
+        when(e) {
+            is SetupDeviceEvent.VolumeSettingsEvent.OnMicVolumeChange -> {
+                _uiState.update {
+                    it.copy(volumeSettings = it.volumeSettings.copy(micVolume = e.volume))
+                }
+            }
+            is SetupDeviceEvent.VolumeSettingsEvent.OnSpeakerVolumeChange -> {
+                _uiState.update {
+                    it.copy(volumeSettings = it.volumeSettings.copy(speakerVolume = e.volume))
+                }
+            }
+            SetupDeviceEvent.VolumeSettingsEvent.OnSaveMicVolume -> {
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(volumeSettings = it.volumeSettings.copy(isUpdatingMicVolume = true)) }
+                    deviceRepository.setMicVolume(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        volume = formatedVolume(uiState.value.volumeSettings.micVolume)
+                    )
+                }
+            }
+            SetupDeviceEvent.VolumeSettingsEvent.OnSaveSpeakerVolume -> {
+                executeIfValidSimNumber {
+                    _uiState.update { it.copy(volumeSettings = it.volumeSettings.copy(isUpdatingSpeakerVolume = true)) }
+                    deviceRepository.setSpeakerVolume(
+                        simNumber = uiState.value.simAndPasswordState.simNumber,
+                        password = uiState.value.currentProgrammingPassword,
+                        volume = formatedVolume(uiState.value.volumeSettings.speakerVolume)
+                    )
+                }
+            }
+        }
+    }
+
+    private fun formatedVolume(volume: Float): String {
+        return "%02d".format(volume.toInt())
     }
 
     private fun updateSimAndPasswordState(messageUpdate: MessageUpdate) {

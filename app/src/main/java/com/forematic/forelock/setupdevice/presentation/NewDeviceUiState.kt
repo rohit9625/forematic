@@ -26,8 +26,6 @@ data class NewDeviceUiState(
     val adminNumber: String = "",
     val adminNumberError: String? = null,
     val isUpdatingAdminNumber: Boolean = false,
-    val speakerVolume: Float = 0f,
-    val micVolume: Float = 0f,
     val volumeSettings: VolumeSettings = VolumeSettings(),
     val signalStrength: Int? = null,
     val isRefreshingSignal: Boolean = false

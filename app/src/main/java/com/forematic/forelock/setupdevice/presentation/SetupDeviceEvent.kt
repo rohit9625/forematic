@@ -69,7 +69,12 @@ sealed interface SetupDeviceEvent {
         data object OnUpdateClick: CallOutNumberEvent
     }
 
-    data class OnSpeakerVolumeChange(val volume: Float): SetupDeviceEvent
-    data class OnMicVolumeChange(val volume: Float): SetupDeviceEvent
+    sealed interface VolumeSettingsEvent: SetupDeviceEvent {
+        data class OnSpeakerVolumeChange(val volume: Float): VolumeSettingsEvent
+        data class OnMicVolumeChange(val volume: Float): VolumeSettingsEvent
+        data object OnSaveSpeakerVolume: VolumeSettingsEvent
+        data object OnSaveMicVolume: VolumeSettingsEvent
+    }
+
     data object OnCheckSignalStrength: SetupDeviceEvent
 }

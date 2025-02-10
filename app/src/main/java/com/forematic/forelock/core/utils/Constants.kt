@@ -15,4 +15,6 @@ object Constants {
     const val SET_CLI_NUMBER_REQUEST = 11
     const val SET_CALLOUT_NUMBERS = 12
     const val SET_ADMIN_NUMBER_REQUEST = 13
+    const val SET_MIC_VOLUME_REQUEST = 14
+    const val SET_SPEAKER_VOLUME_REQUEST = 15
 }

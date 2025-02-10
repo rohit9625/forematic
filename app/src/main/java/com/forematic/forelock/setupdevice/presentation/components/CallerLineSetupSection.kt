@@ -113,7 +113,7 @@ fun CallerLineSetupSection(
                             imageVector = Icons.Default.Done,
                             contentDescription = "Save",
                             onClick = {
-                                if (!canUpdateMode)
+                                if (!callerLineId.isUpdatingMode)
                                     onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUpdateClick)
                             },
                             isLoading = callerLineId.isUpdatingMode,
