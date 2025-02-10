@@ -8,16 +8,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Card
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.FilledIconButton
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -32,6 +28,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.forematic.forelock.home.presentation.components.IconButtonWithLoader
 import com.forematic.forelock.setupdevice.presentation.CallerLineIdentification
 import com.forematic.forelock.setupdevice.presentation.CallerLineMode
 import com.forematic.forelock.setupdevice.presentation.SetupDeviceEvent
@@ -112,27 +109,16 @@ fun CallerLineSetupSection(
                             },
                             label = CallerLineMode.AUTHORIZED.displayName
                         )
-                        FilledIconButton(
+                        IconButtonWithLoader(
+                            imageVector = Icons.Default.Done,
+                            contentDescription = "Save",
                             onClick = {
-                                if (!callerLineId.isUpdatingMode)
-                                    onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUpdateMode)
+                                if (!canUpdateMode)
+                                    onEvent(SetupDeviceEvent.CallerLineIdEvent.OnUpdateClick)
                             },
-                            enabled = canUpdateMode,
-                            shape = MaterialTheme.shapes.medium,
-                        ) {
-                            if (callerLineId.isUpdatingMode) {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(24.dp),
-                                    strokeWidth = 2.dp,
-                                    color = MaterialTheme.colorScheme.onPrimary
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Default.Done,
-                                    contentDescription = "Save"
-                                )
-                            }
-                        }
+                            isLoading = callerLineId.isUpdatingMode,
+                            isEnabled = canUpdateMode
+                        )
                     }
                 }
 
