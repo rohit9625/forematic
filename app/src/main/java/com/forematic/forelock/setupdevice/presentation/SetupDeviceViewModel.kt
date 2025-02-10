@@ -741,30 +741,29 @@ class SetupDeviceViewModel(
             }
 
             SetupDeviceEvent.OutputRelayEvent.OnUpdateClick -> {
+                val relay1Error = if (uiState.value.outputRelay1.isAnyInputEmpty())
+                    "Please configure relay completely" else null
+                val relay2Error = if (uiState.value.outputRelay2!!.isAnyInputEmpty())
+                    "Please configure relay completely" else null
+
                 _uiState.update {
-                    val relay1Error = if (it.outputRelay1.isAnyInputEmpty())
-                        "Please configure relay completely" else null
-                    val relay2Error = if (it.outputRelay2!!.isAnyInputEmpty())
-                        "Please configure relay completely" else null
-
-                    if (relay1Error == null && relay2Error == null) {
-                        executeIfValidSimNumber {
-                            _uiState.update { state -> state.copy(isUpdatingOutputNaming = true) }
-                            deviceRepository.setOutputNameAndRelayTime(
-                                simNumber = uiState.value.simAndPasswordState.simNumber,
-                                password = uiState.value.currentProgrammingPassword,
-                                relay1OutputName = uiState.value.outputRelay1.name,
-                                relay1Time = uiState.value.outputRelay1.relayTime,
-                                relay2OutputName = uiState.value.outputRelay2!!.name,
-                                relay2Time = uiState.value.outputRelay2!!.relayTime
-                            )
-                        }
-                    }
-
                     it.copy(
                         outputRelay1 = it.outputRelay1.copy(otherError = relay1Error),
-                        outputRelay2 = it.outputRelay2.copy(otherError = relay2Error)
+                        outputRelay2 = it.outputRelay2?.copy(otherError = relay2Error)
                     )
+                }
+                if (relay1Error == null && relay2Error == null) {
+                    executeIfValidSimNumber {
+                        _uiState.update { state -> state.copy(isUpdatingOutputNaming = true) }
+                        deviceRepository.setOutputNameAndRelayTime(
+                            simNumber = uiState.value.simAndPasswordState.simNumber,
+                            password = uiState.value.currentProgrammingPassword,
+                            relay1OutputName = uiState.value.outputRelay1.name,
+                            relay1Time = uiState.value.outputRelay1.relayTime,
+                            relay2OutputName = uiState.value.outputRelay2!!.name,
+                            relay2Time = uiState.value.outputRelay2!!.relayTime
+                        )
+                    }
                 }
             }
         }
