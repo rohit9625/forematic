@@ -21,8 +21,11 @@ import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.rounded.Phone
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -43,7 +46,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -77,7 +79,6 @@ fun HomeScreen(
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
-    var isToolTipVisible by remember { mutableStateOf(false) }
     var isFabExpanded by remember { mutableStateOf(false) }
     val menuItems by remember { mutableStateOf(listOf(
             "R21 Relay" to { /* Navigate to R21 Relay setup */ },
@@ -122,12 +123,12 @@ fun HomeScreen(
                 .padding(innerPadding)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             GateDeviceControls(
                 gateName = "Office Gate",
                 isGateOpen = isOfficeGateOpen,
-                gateIcon = R.drawable.ic_office_gate_brown,
+                gateIcon = R.drawable.ic_office_gate,
                 deviceType = DeviceType.G24_INTERCOM,
                 statusText = OutputRelayText.UNLOCK_LOCK,
                 onStatusChange = { isOfficeGateOpen = it },
@@ -282,22 +283,29 @@ fun GateDeviceControls(
     val splitStatusText = remember(statusText) { splitStatusText(statusText.displayName) }
     Card(
         modifier = modifier,
-        shape = RoundedCornerShape(24.dp)
+        shape = MaterialTheme.shapes.extraLarge
     ) {
         Row(
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 24.dp)
+                .padding(horizontal = 16.dp, vertical = 16.dp)
                 .fillMaxWidth()
                 .height(IntrinsicSize.Max)
         ) {
-            Icon(
-                painter = painterResource(gateIcon),
-                contentDescription = gateName,
-                tint = Color.Unspecified,
-                modifier = Modifier.size(48.dp)
-            )
+            ElevatedCard(
+                shape = MaterialTheme.shapes.large,
+                colors = CardDefaults.elevatedCardColors(
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.tertiary
+                )
+            ) {
+                Icon(
+                    painter = painterResource(gateIcon),
+                    contentDescription = gateName,
+                    modifier = Modifier.padding(8.dp).size(40.dp)
+                )
+            }
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(4.dp)
@@ -316,27 +324,25 @@ fun GateDeviceControls(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                SwitchWithText(
-                    isChecked = isGateOpen,
-                    onCheckedChange = onStatusChange,
-                    textOnOFF = splitStatusText
-                )
-            }
+            SwitchWithText(
+                isChecked = isGateOpen,
+                onCheckedChange = onStatusChange,
+                textOnOFF = splitStatusText
+            )
 
             ElevatedButton(
                 onClick = { },
                 contentPadding = PaddingValues(),
                 shape = CircleShape,
+                colors = ButtonDefaults.elevatedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ),
                 modifier = Modifier.size(48.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Call,
-                    contentDescription = null,
-                    tint = Color.Blue
+                    contentDescription = null
                 )
             }
         }
